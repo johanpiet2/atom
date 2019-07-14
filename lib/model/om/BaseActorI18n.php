@@ -114,6 +114,18 @@ abstract class BaseActorI18n implements ArrayAccess
     }
   }
 
+	// get by AUTHORIZED_FORM_OF_NAME jjp SITA - Return ID
+  public static function getByAuthFormOfName($authName, array $options = array())
+  {
+    $criteria = new Criteria;
+    $criteria->add(QubitActorI18n::AUTHORIZED_FORM_OF_NAME, $authName);
+
+    if (1 == count($query = self::getOne($criteria, $options)))
+    {
+      return $query;
+    }
+  }
+
   public static function doDelete(Criteria $criteria, $connection = null)
   {
     if (!isset($connection))

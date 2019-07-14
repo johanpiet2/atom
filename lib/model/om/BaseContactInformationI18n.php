@@ -9,7 +9,9 @@ abstract class BaseContactInformationI18n implements ArrayAccess
 
     CONTACT_TYPE = 'contact_information_i18n.CONTACT_TYPE',
     CITY = 'contact_information_i18n.CITY',
+    POSTAL_CITY = 'contact_information_i18n.POSTAL_CITY', 		//jjp SITA 17 Dec 2014 - Added Postal Address
     REGION = 'contact_information_i18n.REGION',
+    POSTAL_REGION = 'contact_information_i18n.POSTAL_REGION', 	//jjp SITA 17 Dec 2014 - Added Postal Address
     NOTE = 'contact_information_i18n.NOTE',
     ID = 'contact_information_i18n.ID',
     CULTURE = 'contact_information_i18n.CULTURE';
@@ -18,7 +20,9 @@ abstract class BaseContactInformationI18n implements ArrayAccess
   {
     $criteria->addSelectColumn(QubitContactInformationI18n::CONTACT_TYPE);
     $criteria->addSelectColumn(QubitContactInformationI18n::CITY);
+    $criteria->addSelectColumn(QubitContactInformationI18n::POSTAL_CITY);
     $criteria->addSelectColumn(QubitContactInformationI18n::REGION);
+    $criteria->addSelectColumn(QubitContactInformationI18n::POSTAL_REGION);
     $criteria->addSelectColumn(QubitContactInformationI18n::NOTE);
     $criteria->addSelectColumn(QubitContactInformationI18n::ID);
     $criteria->addSelectColumn(QubitContactInformationI18n::CULTURE);
@@ -36,8 +40,8 @@ abstract class BaseContactInformationI18n implements ArrayAccess
   public static function getFromRow(array $row)
   {
     $keys = array();
-    $keys['id'] = $row[4];
-    $keys['culture'] = $row[5];
+    $keys['id'] = $row[6];
+    $keys['culture'] = $row[7];
 
     $key = serialize($keys);
     if (!isset(self::$contactInformationI18ns[$key]))

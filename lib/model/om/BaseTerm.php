@@ -67,6 +67,20 @@ abstract class BaseTerm extends QubitObject implements ArrayAccess
     }
   }
 
+	//SITA JJP XmlImportArchivalDescription
+  public static function getEntityTerm($name)
+  {
+	if (!isset($options['connection']))
+	{
+		$options['connection'] = Propel::getConnection(QubitTerm::DATABASE_NAME);
+	}
+
+	$statement = $options['connection']->prepare('SELECT '.QubitTerm::ID.' FROM '.QubitTermI18n::TABLE_NAME.','.QubitTerm::TABLE_NAME.' WHERE term.id=term_i18n.id AND term_i18n.NAME="'.$name.'"');
+	$statement->execute();
+	$row = $statement->fetch();
+	return $row[0];
+  }
+
   public static function addOrderByPreorder(Criteria $criteria, $order = Criteria::ASC)
   {
     if ($order == Criteria::DESC)
@@ -193,7 +207,32 @@ abstract class BaseTerm extends QubitObject implements ArrayAccess
     {
       return true;
     }
-
+//SITA
+	if ('informationObjectsRelatedByformatId' == $name)
+     {
+       return true;
+     }
+//SITA
+	if ('informationObjectsRelatedBysizeId' == $name)
+     {
+       return true;
+     }
+//SITA
+	if ('informationObjectsRelatedBytypId' == $name)
+     {
+       return true;
+     }
+//SITA
+	if ('informationObjectsRelatedByequipmentId' == $name)
+     {
+       return true;
+     }
+//SITA
+	if ('informationObjectsRelatedBymovePermanent' == $name)
+     {
+       return true;
+     }
+//SITA
     if ('notes' == $name)
     {
       return true;
@@ -626,6 +665,93 @@ abstract class BaseTerm extends QubitObject implements ArrayAccess
 
       return $this->refFkValues['informationObjectsRelatedBydisplayStandardId'];
     }
+	
+////////////////////////////////////////////////////////////////////////////////////////////////////////	
+    if ('informationObjectsRelatedByformatId' == $name) 
+    {
+      if (!isset($this->refFkValues['informationObjectsRelatedByformatId']))
+      {
+        if (!isset($this->id))
+        {
+          $this->refFkValues['informationObjectsRelatedByformatId'] = QubitQuery::create();
+        }
+        else
+        {
+          $this->refFkValues['informationObjectsRelatedByformatId'] = self::getinformationObjectsRelatedByformatIdById($this->id, array('self' => $this) + $options);
+        }
+      }
+
+      return $this->refFkValues['informationObjectsRelatedByformatId']; 
+    }
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+    if ('informationObjectsRelatedBysizeId' == $name) 
+    {
+      if (!isset($this->refFkValues['informationObjectsRelatedBysizeId']))
+      {
+        if (!isset($this->id))
+        {
+          $this->refFkValues['informationObjectsRelatedBysizeId'] = QubitQuery::create();
+        }
+        else
+        {
+          $this->refFkValues['informationObjectsRelatedBysizeId'] = self::getinformationObjectsRelatedBysizeIdById($this->id, array('self' => $this) + $options);
+        }
+      }
+
+      return $this->refFkValues['informationObjectsRelatedBysizeId']; 
+    }
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+    if ('informationObjectsRelatedBytypId' == $name) 
+    {
+      if (!isset($this->refFkValues['informationObjectsRelatedBytypId']))
+      {
+        if (!isset($this->id))
+        {
+          $this->refFkValues['informationObjectsRelatedBytypId'] = QubitQuery::create();
+        }
+        else
+        {
+          $this->refFkValues['informationObjectsRelatedBytypId'] = self::getinformationObjectsRelatedBytypIdById($this->id, array('self' => $this) + $options);
+        }
+      }
+
+      return $this->refFkValues['informationObjectsRelatedBytypId']; 
+    }
+//SITA 
+    if ('informationObjectsRelatedByequipmentId' == $name) 
+    {
+      if (!isset($this->refFkValues['informationObjectsRelatedByequipmentId']))
+      {
+        if (!isset($this->id))
+        {
+          $this->refFkValues['informationObjectsRelatedByequipmentId'] = QubitQuery::create();
+        }
+        else
+        {
+          $this->refFkValues['informationObjectsRelatedByequipmentId'] = self::getinformationObjectsRelatedByequipmentIdById($this->id, array('self' => $this) + $options);
+        }
+      }
+
+      return $this->refFkValues['informationObjectsRelatedByequipmentId']; 
+    }
+    if ('informationObjectsRelatedBymovePermanent' == $name) 
+    {
+      if (!isset($this->refFkValues['informationObjectsRelatedBymovePermanent']))
+      {
+        if (!isset($this->id))
+        {
+          $this->refFkValues['informationObjectsRelatedBymovePermanent'] = QubitQuery::create();
+        }
+        else
+        {
+          $this->refFkValues['informationObjectsRelatedBymovePermanent'] = self::getinformationObjectsRelatedBymovePermanentById($this->id, array('self' => $this) + $options);
+        }
+      }
+
+      return $this->refFkValues['informationObjectsRelatedBymovePermanent']; 
+    }
+//SITA 
+	
 
     if ('notes' == $name)
     {
@@ -1534,6 +1660,120 @@ abstract class BaseTerm extends QubitObject implements ArrayAccess
   {
     return self::addinformationObjectsRelatedBydisplayStandardIdCriteriaById($criteria, $this->id);
   }
+  
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////  
+  public static function addinformationObjectsRelatedByformatIdCriteriaById(Criteria $criteria, $id)
+  {
+    $criteria->add(QubitInformationObject::FORMAT_ID, $id);
+ 
+     return $criteria;
+  }
+
+  public static function getinformationObjectsRelatedByformatIdById($id, array $options = array())
+  {
+    $criteria = new Criteria;
+    self::addinformationObjectsRelatedByformatIdCriteriaById($criteria, $id);
+ 
+     return QubitInformationObject::get($criteria, $options);
+  }
+
+  public function addinformationObjectsRelatedByformatIdCriteria(Criteria $criteria)
+  {
+    return self::addinformationObjectsRelatedByformatIdCriteriaById($criteria, $this->id);
+  }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  public static function addinformationObjectsRelatedBysizeIdCriteriaById(Criteria $criteria, $id)
+  {
+    $criteria->add(QubitInformationObject::SIZE_ID, $id);
+ 
+     return $criteria;
+  }
+
+  public static function getinformationObjectsRelatedBysizeIdById($id, array $options = array())
+  {
+    $criteria = new Criteria;
+    self::addinformationObjectsRelatedBysizeIdCriteriaById($criteria, $id);
+ 
+     return QubitInformationObject::get($criteria, $options);
+  }
+
+  public function addinformationObjectsRelatedBysizeIdCriteria(Criteria $criteria)
+  {
+    return self::addinformationObjectsRelatedBysizeIdCriteriaById($criteria, $this->id);
+  }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  public static function addinformationObjectsRelatedBytypIdCriteriaById(Criteria $criteria, $id)
+  {
+    $criteria->add(QubitInformationObject::TYP_ID, $id);
+ 
+     return $criteria;
+  }
+
+  public static function getinformationObjectsRelatedBytypIdById($id, array $options = array())
+  {
+    $criteria = new Criteria;
+    self::addinformationObjectsRelatedBytypIdCriteriaById($criteria, $id);
+ 
+     return QubitInformationObject::get($criteria, $options);
+  }
+
+  public function addinformationObjectsRelatedBytypIdCriteria(Criteria $criteria)
+  {
+    return self::addinformationObjectsRelatedBytypIdCriteriaById($criteria, $this->id);
+  }
+//SITA
+  public static function addinformationObjectsRelatedByequipmentIdCriteriaById(Criteria $criteria, $id)
+  {
+    $criteria->add(QubitInformationObject::EQUIPMENT_ID, $id);
+ 
+     return $criteria;
+  }
+
+  public static function getinformationObjectsRelatedByequipmentIdById($id, array $options = array())
+  {
+    $criteria = new Criteria;
+    self::addinformationObjectsRelatedByequipmentIdCriteriaById($criteria, $id);
+ 
+     return QubitInformationObject::get($criteria, $options);
+  }
+
+  public function addinformationObjectsRelatedByequipmentIdCriteria(Criteria $criteria)
+  {
+    return self::addinformationObjectsRelatedByequipmentIdCriteriaById($criteria, $this->id);
+  }
+
+  public static function addinformationObjectsRelatedBymovePermanentCriteriaById(Criteria $criteria, $id)
+  {
+    $criteria->add(QubitInformationObject::MOVE_PERMANENT, $id);
+ 
+     return $criteria;
+  }
+
+  public static function getinformationObjectsRelatedBymovePermanentById($id, array $options = array())
+  {
+    $criteria = new Criteria;
+    self::addinformationObjectsRelatedBymovePermanentCriteriaById($criteria, $id);
+ 
+     return QubitInformationObject::get($criteria, $options);
+  }
+
+  public function addinformationObjectsRelatedBymovePermanentCriteria(Criteria $criteria)
+  {
+    return self::addinformationObjectsRelatedBymovePermanentCriteriaById($criteria, $this->id);
+  }
+
+  public static function getByParentId($parentid, array $options = array())
+  {
+    $criteria = new Criteria;
+    $criteria->add(QubitTerm::PARENT_ID, $parentid);
+    $criteria->addJoin(QubitTerm::ID, QubitTermI18n::ID);
+    if (count($query = self::get($criteria, $options)) >= 1)
+    {
+      return $query;
+    }
+  }
+
+//SITA
 
   public static function addnotesCriteriaById(Criteria $criteria, $id)
   {

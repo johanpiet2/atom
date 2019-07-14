@@ -1,0 +1,211 @@
+/*
+ * This file is part of the Access to Memory (AtoM) software.
+ *
+ * Access to Memory (AtoM) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Access to Memory (AtoM) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Access to Memory (AtoM).  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
+ * H    #header-admin > .navbar > ...
+ * E    #header > .container
+ * A     |- #header-lvl1.row > span12 > { #header-nav, #header-council }
+ * D     |- #header-lvl2.row > span12
+ * E          |- #logo-and-name
+ * R          |- #header-search
+ */
+
+#header {
+  height: 99px;
+  border-bottom: 1px solid @grayDark;
+  background-color: @white;
+  #gradient > .vertical(@white, lighten(@orange, 10%));
+  @shadow: 0 3px 3px rgba(0, 0 , 0, .25);
+  .box-shadow(@shadow);
+}
+
+#header .container {
+  margin: 0 auto;
+}
+
+#header-admin {
+}
+
+#header-lvl1 {
+}
+
+#header-lvl2 {
+ right: 10px; left:100px; bottom:10px;
+}
+
+#header-nav {
+  .pull-right();
+  margin-bottom: 0;
+}
+
+#header-nav > li > a {
+  .border-radius(0);
+  margin-top: 0px;
+  margin-bottom: 0px;
+  font-family: 'Open Sans Semibold';
+  font-size: 16px;
+  font-variant: small-caps;
+  text-transform: lowercase;
+  color: @red;
+  background-color: @grayDark;
+}
+
+#header-nav > li > a:hover {
+  color: @orange;
+  background-color: @grayDark;
+}
+
+#header-council {
+  .pull-right;
+}
+
+#logo-and-name h1 {
+  margin-left: 10px;
+  margin-top: -14px;
+}
+
+#search-form-wrapper {
+
+  form {
+    position: relative; // Positiionate search autocomplete;
+    margin: 12px 0 0 0;
+  }
+
+  .search-popover {
+    left: 37px;
+    top: 30px;
+    right: 33px;
+  }
+
+  // Make the border darker
+  input[type=text],
+  .btn-group,
+  .btn {
+    border-color: #9a9a9a;
+  }
+
+  // Cancel some Dominion and Bootstrap defaults
+  input[type=text] {
+
+    display: inline-block;
+    font-size: 14px;
+    color: #333;
+    outline: none;
+    .placeholder(#999);
+    .transition(width .5s);
+
+    &:focus {
+      border: 1px solid #999;
+      @shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+      .box-shadow(@shadow);
+      outline: 0 none;
+    }
+
+  }
+
+  .input-append {
+    text-align: right;
+    margin-bottom: 0;
+  }
+
+  // Customize browse menu
+  .dropdown-menu {
+
+    text-align: left;
+    border: 2px solid #333;
+    @shadow:  2px  2px 0px rgba(255, 255, 255, .5),
+             -2px  2px 0px rgba(255, 255, 255, .5),
+             -2px -2px 0px rgba(255, 255, 255, .5),
+              2px -2px 0px rgba(255, 255, 255, .5);
+    .box-shadow(@shadow);
+
+    li > a {
+      padding: 3px 20px 3px 10px;
+    }
+
+    img {
+      .square(24px);
+      margin-right: 4px;
+    }
+
+    .divider {
+      margin-top: 4px;
+      margin-bottom: 4px;
+    }
+
+    .advanced-search {
+      i {
+        font-size: 20px;
+        padding: 0 4px;
+      }
+    }
+
+  }
+
+  // Integrate middle button
+  #btn-advanced-search {
+    .border-radius(0);
+  }
+
+}
+
+// Responsive design
+
+@media (min-width: 1215px) {
+  #header-search input[type=text] {
+    width: 500px;
+  }
+}
+
+@media (min-width: 980px) and (max-width: 1214px) {
+  #header-search input[type=text] {
+    width: 390px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 979px) {
+  #header-search input[type=text] {
+    width: 290px;
+  }
+}
+
+@media (max-width: 767px) {
+  #header-search input[type=text] {
+    width: auto;
+  }
+  #header-admin,
+  #header-lvl1 {
+    .hide();
+  }
+  #logo-and-name h1 {
+    margin: 6px 0 0 0;
+    text-align: center;
+  }
+  #header {
+    margin-left: -20px;
+    margin-right: -20px;
+  }
+  #header-search {
+    margin: 10px auto 0 auto;
+    .input-append {
+      text-align: center;
+    }
+    input[type=text] {
+      width: 70%;
+    }
+  }
+}

@@ -23,13 +23,24 @@
  * @package    AccesstoMemory
  * @subpackage physicalobject
  * @author     David Juhasz <david@artefactual.com>
+ * @author     Johan Pieterse <johan.pieterse@sita.co.za>
  */
 class PhysicalObjectEditAction extends DefaultEditAction
 {
   public static
     $NAMES = array(
       'location',
+      'repositoryId',
       'name',
+	  'uniqueIdentifier',	  
+	  'extent',	  
+ 	  'descriptionTitle',
+	  'periodCovered',
+	  'findingAids',
+	  'accrualSpace', 
+	  'shelf', 
+	  'rowNumber', 	  
+	  'forms',
       'type');
 
   protected function earlyExecute()
@@ -58,7 +69,49 @@ class PhysicalObjectEditAction extends DefaultEditAction
   {
     switch ($name)
     {
+      case 'repositoryId':
+ 		$choices = array();
+        // Show only Repositories linked to user - Administrator can see all JJP SITA One Instance
+        if ((!$this->context->user->isAdministrator()) && (QubitSetting::getByName('open_system') == '0')) {
+			$repositories = new QubitUser;
+			foreach (QubitRepository::getAll() as $item)
+			{
+				if ($item->__toString() != "")
+				{
+				    if (0 < count($userRepos = $repositories->getRepositoriesById($this->context->user->getAttribute('user_id')))) {
+				    	$key = array_search($item->id, $userRepos);
+				    	if (false !== $key) {
+							$choices[$item->id] = $item->__toString();
+						}
+					}
+				}
+			}
+		} else {
+			foreach (QubitRepository::getAll() as $item)
+			{
+				if ($item->__toString() != "")
+				{
+					$choices[$item->id] = $item->__toString();
+				}
+			}
+		} 				
+		
+        $this->form->setDefault('repositoryId', $this->resource['repositoryId']);
+        $this->form->setValidator('repositoryId', new sfValidatorChoice(array('choices' => array_keys($choices))));
+        $this->form->setWidget('repositoryId', new sfWidgetFormSelect(array('choices' => $choices)));
+
+        break;
+
       case 'location':
+	  case 'uniqueIdentifier': 	 	  
+	  case 'extent':	  
+ 	  case 'descriptionTitle':
+	  case 'periodCovered':
+	  case 'findingAids': 	  
+	  case 'accrualSpace':  
+	  case 'shelf':
+	  case 'rowNumber':	  
+	  case 'forms':   
       case 'name':
         $this->form->setDefault($name, $this->resource[$name]);
         $this->form->setValidator($name, new sfValidatorString);

@@ -167,6 +167,12 @@ class QubitAclPermission extends BaseAclPermission
       }
     }
 
+	// possible bug SITA One Instance
+
+
+    //SITA - It should loop through all repos. If correct one is found then set value to true else value stays false
+	$multiRepoCondition = false;
+
     // Substitute parameters
     if (preg_match_all('/%p\[(\w+)\]/', $conditional, $matches))
     {

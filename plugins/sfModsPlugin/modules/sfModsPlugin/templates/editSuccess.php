@@ -155,7 +155,8 @@
 
         <div class="form-item">
           <?php echo $form->repository->renderLabel() ?>
-          <?php echo $form->repository->render(array('class' => 'form-autocomplete')) ?>
+          <?php echo $form->repository->render() ?> <!--One Instance-->
+          <!--?php echo $form->repository->render(array('class' => 'form-autocomplete')) ?-->
           <?php echo $form->repository
             ->help(__('Identifies the institution or repository holding the resource. Search for an existing repository name by typing the first few letters of the name. ALternatively, type a new name to create and link to a new repository record.'))
             ->renderHelp() ?>

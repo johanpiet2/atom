@@ -24,6 +24,7 @@
  * @package    AccesstoMemory
  * @subpackage menu
  * @author     David Juhasz <david@artefactual.com>
+ * @author     Johan Pieterse <johan.pieterse@sita.co.za>
  */
 class MenuMainMenuComponent extends sfComponent
 {
@@ -41,6 +42,7 @@ class MenuMainMenuComponent extends sfComponent
     $groupsAllowedToAddContent = array(
       QubitAclGroup::CONTRIBUTOR_ID,
       QubitAclGroup::EDITOR_ID,
+      QubitAclGroup::SUPER_ID,
       QubitAclGroup::ADMINISTRATOR_ID
     );
 

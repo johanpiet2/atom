@@ -17,6 +17,14 @@
  * along with Access to Memory (AtoM).  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Display a list of recently updates to the db
+ *
+ * @package AccesstoMemory
+ * @subpackage Validate Password
+ * @author Johan Pieterse <johan.pieterse@sita.co.za>
+ */
+
 class QubitValidatorPassword extends sfValidatorString
 {
   protected function configure($options = array(), $messages = array())
@@ -50,14 +58,20 @@ class QubitValidatorPassword extends sfValidatorString
       $score++;
     }
 
-    // Check 4: contains everything but 1), 2) and 3) (special characters)
+    // Check 4: contains numbers
+    if (preg_match('/[!@#$%&*?]/', $value))
+    {
+      $score++;
+    }
+
+    // Check 5: contains everything but 1), 2) and 3) (special characters)
     if (preg_match('/[^A-Za-z0-9]/', $value))
     {
       $score++;
     }
 
-    // If less than three checks were passed
-    if ($score < 3)
+    // If less than four checks were passed
+    if ($score < 4)
     {
       throw new sfValidatorError($this, 'invalid', array('value' => null));
     }

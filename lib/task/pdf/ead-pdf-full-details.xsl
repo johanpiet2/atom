@@ -57,6 +57,17 @@
         <xsl:attribute name="keep-with-next.within-page">always</xsl:attribute>
     </xsl:attribute-set>
 
+	<!-- JJP SITA -->
+    <xsl:attribute-set name="h5">
+        <xsl:attribute name="font-size">12pt</xsl:attribute>
+        <xsl:attribute name="font-weight">bold</xsl:attribute>
+        <xsl:attribute name="margin-top">4pt</xsl:attribute>
+        <xsl:attribute name="padding-top">8pt</xsl:attribute>
+        <xsl:attribute name="margin-bottom">2pt</xsl:attribute>
+        <xsl:attribute name="padding-bottom">0</xsl:attribute>
+        <xsl:attribute name="keep-with-next.within-page">always</xsl:attribute>
+    </xsl:attribute-set>
+
     <!-- Headings with id attribute -->
     <xsl:attribute-set name="h1ID" use-attribute-sets="h1">
         <xsl:attribute name="id"><xsl:value-of select="local:buildID(.)"/></xsl:attribute>
@@ -68,6 +79,11 @@
         <xsl:attribute name="id"><xsl:value-of select="local:buildID(.)"/></xsl:attribute>
     </xsl:attribute-set>
     <xsl:attribute-set name="h4ID" use-attribute-sets="h4">
+        <xsl:attribute name="id"><xsl:value-of select="local:buildID(.)"/></xsl:attribute>
+    </xsl:attribute-set>
+
+	<!-- JJP SITA -->
+    <xsl:attribute-set name="h5ID" use-attribute-sets="h5">
         <xsl:attribute name="id"><xsl:value-of select="local:buildID(.)"/></xsl:attribute>
     </xsl:attribute-set>
 
@@ -140,6 +156,12 @@
                     <fo:region-before extent="0.5in"/>
                     <fo:region-after extent="0.2in"/>
                 </fo:simple-page-master>
+                <!-- Page master for Mandates/sources of authority -->
+                <fo:simple-page-master master-name="repo-mandates" page-width="8.5in" page-height="11in" margin="0.5in">
+                    <fo:region-body margin-top="0.25in" margin-bottom="0.25in"/>
+                    <fo:region-before extent="0.5in"/>
+                    <fo:region-after extent="0.2in"/>
+                </fo:simple-page-master>
                 <!-- Page master for Finding Aid Contents -->
                 <fo:simple-page-master master-name="contents" page-width="8.5in" page-height="11in" margin="0.5in">
                     <fo:region-body margin-top="0.25in" margin-bottom="0.25in"/>
@@ -189,6 +211,41 @@
                     <xsl:apply-templates select="/ead:ead/ead:archdesc" mode="toc"/>
                 </fo:flow>
             </fo:page-sequence>
+            
+            <!-- Mandates/sources of authority -->
+            <xsl:variable name="mandatesSources" select="/ead:ead/ead:archdesc/ead:repomandates"/>
+            <!-- If this isn't a title notes <odd> this function will return string len 0 -->
+            <xsl:if test="string-length($mandatesSources) &gt; 0">
+		        <fo:page-sequence master-reference="repo-mandates">
+		            <!-- Page header -->
+		            <fo:static-content flow-name="xsl-region-before" margin-top=".15in">
+		                <fo:block color="black" font-weight="normal" font-size="12pt" text-align="left" text-align-last="justify" border-bottom-style="solid">
+		                    <xsl:value-of select="//ead:eadid"/>
+		                <fo:leader leader-pattern="space"/>
+		                    <xsl:apply-templates select="ead:ead/ead:eadheader/ead:filedesc/ead:titlestmt" mode="pageHeader"/>
+		                    <xsl:text/>
+		                </fo:block>
+		            </fo:static-content>
+		            <!-- Page footer-->
+		            <fo:static-content flow-name="xsl-region-after">
+		                <fo:block text-align="left" text-align-last="justify" border-top-style="solid">
+		                    <xsl:apply-templates select="(//ead:repository/ead:corpname)[1]"/>
+		                    <fo:leader leader-pattern="space"/>
+
+		                    <xsl:text/>
+		                    <fo:leader leader-pattern="space"/>
+
+		                    <xsl:text>Page </xsl:text>
+		                    <fo:page-number/>
+		                </fo:block>
+		            </fo:static-content>
+		            <!-- Content of page -->
+		            <fo:flow flow-name="xsl-region-body">
+		                <xsl:apply-templates select="/ead:ead/ead:archdesc/ead:repomandates"/>
+		            </fo:flow>
+		        </fo:page-sequence>
+            </xsl:if>
+
             <!-- All the rest -->
             <fo:page-sequence master-reference="contents">
                 <!-- Page header -->
@@ -262,12 +319,12 @@
 
     <!-- Named template to link back to the table of contents  -->
     <xsl:template name="toc">
-        <!-- Uncomment to enable 'back to toc' links on each section.
+        <!-- Uncomment to enable 'back to toc' links on each section. -->
         <fo:block font-size="11pt" margin-top="12pt" margin-bottom="18pt">
             <fo:basic-link text-decoration="none" internal-destination="toc" color="#14A6DC">
             <fo:inline font-weight="bold">^</fo:inline> Return to Table of Contents </fo:basic-link>
         </fo:block>
-        -->
+        
     </xsl:template>
 
     <!-- Cover page templates -->
@@ -306,7 +363,11 @@
             </xsl:if>
         </fo:block>
         <fo:block margin-top="8pt">
-            <xsl:apply-templates select="/ead:ead/ead:eadheader/ead:profiledesc"/>
+            <xsl:apply-templates select="/ead:ead/ead:eadheader/ead:profiledesc/ead:creation"/>
+            <xsl:apply-templates select="/ead:ead/ead:eadheader/ead:profiledesc/ead:langusage"/>
+	    	<fo:block xsl:use-attribute-sets="h5ID">Rules and/or conventions used</fo:block>
+            <xsl:apply-templates select="/ead:ead/ead:eadheader/ead:profiledesc/ead:descrules"/>
+<!--			<xsl:call-template name="icon"/> -->
         </fo:block>
         <fo:block margin-top="8pt">
             <xsl:apply-templates select="/ead:ead/ead:eadheader/ead:filedesc/ead:editionstmt"/>
@@ -330,7 +391,6 @@
     <xsl:template match="ead:profiledesc/child::*">
         <fo:block><xsl:apply-templates/></fo:block>
     </xsl:template>
-
 
     <xsl:template match="ead:profiledesc/ead:language">
         <xsl:value-of select="."/>
@@ -361,6 +421,12 @@
             <xsl:if test="ead:did">
                 <fo:bookmark internal-destination="{local:buildID(ead:did)}">
                     <fo:bookmark-title><xsl:value-of select="local:tagName(ead:did)"/></fo:bookmark-title>
+                </fo:bookmark>
+            </xsl:if>
+			<!-- JJP SITA -->
+            <xsl:if test="ead:repomandates">
+                <fo:bookmark internal-destination="{local:buildID(ead:repomandates[1])}">
+                    <fo:bookmark-title><xsl:value-of select="local:tagName(ead:repomandates[1])"/></fo:bookmark-title>
                 </fo:bookmark>
             </xsl:if>
             <xsl:if test="ead:bioghist">
@@ -447,6 +513,17 @@
         <fo:block line-height="18pt" margin-top="0.25in">
             <fo:block xsl:use-attribute-sets="h2" id="toc">Table of contents</fo:block>
             <fo:block xsl:use-attribute-sets="section">
+			    <!-- SITA JJP AI history 
+                <xsl:if test="ead:repomandates">
+                    <fo:block text-align-last="justify">
+                        <fo:basic-link internal-destination="{local:buildID(ead:repomandates[1])}">Mandates/sources of authority</fo:basic-link>
+                        <xsl:text>&#160;&#160;</xsl:text>
+                        <fo:leader leader-pattern="dots"/>
+                        <xsl:text>&#160;&#160;</xsl:text>
+                        <fo:page-number-citation ref-id="{local:buildID(ead:repomandates[1])}"/>
+                    </fo:block>
+                </xsl:if>-->
+                <!-- SITA End -->
                 <xsl:if test="ead:did">
                     <fo:block text-align-last="justify">
                         <fo:basic-link internal-destination="{local:buildID(ead:did)}"><xsl:value-of select="local:tagName(ead:did)"/></fo:basic-link>
@@ -617,7 +694,7 @@
                 <fo:block xsl:use-attribute-sets="section">
                     <fo:block xsl:use-attribute-sets="h2" id="adminInfo">Notes</fo:block>
                     <!-- Try to handle EAD tags in RAD order... -->
-                    <xsl:call-template name="titleNotes"/>
+                    <!--xsl:call-template name="titleNotes"/ JJP SITA-->
                     <xsl:apply-templates select="ead:phystech"/>
                     <xsl:apply-templates select="ead:acqinfo"/>
                     <xsl:apply-templates select="ead:arrangement"/>
@@ -662,7 +739,7 @@
                     <xsl:apply-templates select="ead:langmaterial/ead:language" mode="overview"/>
                     <xsl:apply-templates select="ead:materialspec" mode="overview"/>
                     <xsl:apply-templates select="ead:physdesc" mode="overview"/>
-                    <xsl:apply-templates select="ead:physloc" mode="overview"/>
+                    <!--xsl:apply-templates select="ead:physloc" mode="overview"/-->
                     <xsl:apply-templates select="ead:note" mode="overview"/>
                 </fo:table-body>
             </fo:table>
@@ -699,7 +776,16 @@
                     <xsl:otherwise>
                         <xsl:value-of select="local:tagName(.)"/>
                         <!-- Test for type attribute used by unitdate -->
-                        <xsl:if test="@type"> [<xsl:value-of select="@type"/>]</xsl:if>
+                        <!-- SITA JJP -->
+                        <xsl:if test="@type"> 
+							[<xsl:value-of 
+							select="if (@type = 'sourcesDescription') then 
+								'Sources Description'
+							else if (@type = 'generalNote') then 
+								'General Note'
+							else 
+								'Other Note'"/>]
+                        </xsl:if>
                     </xsl:otherwise>
                 </xsl:choose>:
                 </fo:block>
@@ -754,8 +840,8 @@
             <fo:list-block xsl:use-attribute-sets="section">
                 <xsl:for-each select="ead:odd">
                     <xsl:variable name="otherNoteHeading">
-                        <xsl:if test="current()[@type='levelOfDetail']">Level of detail</xsl:if>
-                        <xsl:if test="current()[@type='statusDescription']">Status description</xsl:if>
+                        <!--xsl:if test="current()[@type='levelOfDetail']">Level of detail</xsl:if-->
+                        <!--xsl:if test="current()[@type='statusDescription']">Status description</xsl:if-->
                         <xsl:if test="current()[@type='descriptionIdentifier']">Description identifier</xsl:if>
                         <xsl:if test="current()[@type='institutionIdentifier']">Institution identifier</xsl:if>
                         <xsl:if test="current()[@type='edition']">Edition</xsl:if>
@@ -766,7 +852,7 @@
                         <xsl:if test="current()[@type='bibSeries']">Publisher's series</xsl:if>
                         <xsl:if test="current()[@type='rights']">Rights</xsl:if>
                         <xsl:if test="current()[@type='general']">General note</xsl:if>
-                        <xsl:if test="current()[@type='publicationStatus']">Publication status</xsl:if>
+                        <!--xsl:if test="current()[@type='publicationStatus']">Publication status</xsl:if-->
                     </xsl:variable>
                     <xsl:if test="string-length($otherNoteHeading) &gt; 0">
                         <fo:list-item>
@@ -785,6 +871,17 @@
                         </fo:list-item-body>
                         </fo:list-item>
                     </xsl:if>
+                    
+					<!-- We have an error if everything is empty. JJP SITA -->
+                    <xsl:if test="string-length($otherNoteHeading) = 0">
+                        <fo:list-item>
+                        <fo:list-item-label end-indent="label-end()">
+                        </fo:list-item-label>
+                        <fo:list-item-body start-indent="body-start()">
+                        </fo:list-item-body>
+                        </fo:list-item>
+                    </xsl:if>
+
                 </xsl:for-each>
             </fo:list-block>
         </xsl:if>
@@ -794,8 +891,8 @@
         <xsl:if test="following-sibling::ead:odd">
             <xsl:for-each select="following-sibling::ead:odd">
                 <xsl:variable name="otherNoteHeading">
-                    <xsl:if test="current()[@type='levelOfDetail']">Level of detail</xsl:if>
-                    <xsl:if test="current()[@type='statusDescription']">Status description</xsl:if>
+                    <!--xsl:if test="current()[@type='levelOfDetail']">Level of detail</xsl:if-->
+                    <!--xsl:if test="current()[@type='statusDescription']">Status description</xsl:if-->
                     <xsl:if test="current()[@type='descriptionIdentifier']">Description identifier</xsl:if>
                     <xsl:if test="current()[@type='institutionIdentifier']">Institution identifier</xsl:if>
                     <xsl:if test="current()[@type='edition']">Edition</xsl:if>
@@ -806,7 +903,7 @@
                     <xsl:if test="current()[@type='bibSeries']">Publisher's series</xsl:if>
                     <xsl:if test="current()[@type='rights']">Rights</xsl:if>
                     <xsl:if test="current()[@type='general']">General note</xsl:if>
-                    <xsl:if test="current()[@type='publicationStatus']">Publication status</xsl:if>
+                    <!--xsl:if test="current()[@type='publicationStatus']">Publication status</xsl:if-->
                 </xsl:variable>
                 <xsl:if test="string-length($otherNoteHeading) &gt; 0">
                     <fo:block font-size="12" padding="2" margin="2">
@@ -818,6 +915,15 @@
                         <xsl:text>: </xsl:text><fo:block></fo:block><fo:block margin="4" padding="4"><xsl:value-of select="."/></fo:block>
                     </fo:block>
                 </xsl:if>
+					<!-- We have an error if everything is empty. JJP SITA -->
+                    <xsl:if test="string-length($otherNoteHeading) = 0">
+                        <fo:list-item>
+                        <fo:list-item-label end-indent="label-end()">
+                        </fo:list-item-label>
+                        <fo:list-item-body start-indent="body-start()">
+                        </fo:list-item-body>
+                        </fo:list-item>
+                    </xsl:if>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
@@ -827,7 +933,7 @@
 
     <!-- Formats children of arcdesc not in administrative or related materials sections-->
     <xsl:template match="ead:bibliography | ead:odd |
-        ead:bioghist | ead:scopecontent | ead:fileplan">
+        ead:bioghist | ead:scopecontent | ead:fileplan | ead:repomandates">
         <fo:block xsl:use-attribute-sets="section">
             <fo:block xsl:use-attribute-sets="h2ID"><xsl:value-of select="local:tagName(.)"/></fo:block>
                 <xsl:apply-templates/>
@@ -848,29 +954,198 @@
 
     <!-- Publication statement included in administrative information section -->
 
-    <xsl:template match="ead:publicationstmt"></xsl:template>
+    <!-- Named template to link back to the table of contents  -->
+    <xsl:template name="address">
+        <fo:block><xsl:value-of select="local:tagName(.)"/></fo:block>
+		<fo:table inline-progression-dimension="auto" table-layout="auto" width="100%">
+			<fo:table-column width="4cm"/>
+			<fo:table-column width="4cm"/>
+			<fo:table-column width="4cm"/>
+			<fo:table-column width="4cm"/>
+		    <fo:table-body>
+				<fo:table-row>
+				    <fo:table-cell text-align="right" width="4cm">
+				        <fo:block font-size="8pt">Title:</fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell text-align="left" width="4cm">
+				        <fo:block text-align="start" font-size="9pt"><xsl:value-of select="ead:title"/></fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell text-align="right" width="4cm">
+				        <fo:block font-size="8pt">Contact Person:</fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell width="4cm">
+				        <fo:block text-align="start" font-size="9pt"><xsl:value-of select="ead:contactperson"/></fo:block>
+				    </fo:table-cell>
+				</fo:table-row>
 
-    <!-- Formats Address elements -->
-    <xsl:template match="ead:address">
-        <fo:block>
-            <xsl:apply-templates/>
-        </fo:block>
+				<fo:table-row>
+				    <fo:table-cell text-align="right">
+				        <fo:block font-size="8pt">Telephone:</fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell padding-bottom="1pt">
+				        <fo:block text-align="start" font-size="9pt"><xsl:value-of select="ead:telephone"/></fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell text-align="right">
+				        <fo:block font-size="8pt">Fax:</fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell text-align="start" padding-bottom="1pt">
+				        <fo:block font-size="9pt"><xsl:value-of select="ead:fax"/></fo:block>
+				    </fo:table-cell>
+				</fo:table-row>
+
+				<fo:table-row>
+				    <fo:table-cell text-align="right">
+				        <fo:block font-size="8pt">Cellphone number:</fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell padding-bottom="1pt">
+				        <fo:block font-size="9pt"><xsl:value-of select="ead:cell"/></fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell text-align="right">
+				        <fo:block font-size="8pt">Email Address:</fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell padding-bottom="1pt">
+				        <fo:block font-size="9pt"><xsl:value-of select="ead:email"/></fo:block>
+				    </fo:table-cell>
+				</fo:table-row>
+
+<!--			
+				<fo:table-row>
+				    <fo:table-cell text-align="right">
+				        <fo:block font-size="9pt">Physical Address</fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell padding-bottom="1pt">
+				        <fo:block></fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell text-align="right">
+				        <fo:block font-size="9pt">Postal Address</fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell padding-bottom="1pt">
+				        <fo:block></fo:block>
+				    </fo:table-cell>
+				</fo:table-row>
+-->		
+				<fo:table-row>
+				    <fo:table-cell text-align="right">
+				        <fo:block font-size="8pt"></fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell padding-bottom="1pt">
+				        <fo:block font-size="9pt"></fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell text-align="right">
+				        <fo:block font-size="8pt">Postal Address:</fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell padding-bottom="1pt">
+				        <fo:block font-size="9pt"><xsl:value-of select="ead:postaladdress"/></fo:block>
+				    </fo:table-cell>
+				</fo:table-row>
+
+				<fo:table-row>
+				    <fo:table-cell text-align="right">
+				        <fo:block font-size="8pt">City:</fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell padding-bottom="1pt">
+				        <fo:block font-size="9pt"><xsl:value-of select="ead:city"/></fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell text-align="right">
+				        <fo:block font-size="8pt">City:</fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell padding-bottom="1pt">
+				        <fo:block font-size="9pt"><xsl:value-of select="ead:postalcity"/></fo:block>
+				    </fo:table-cell>
+				</fo:table-row>
+
+				<fo:table-row>
+				    <fo:table-cell text-align="right">
+				        <fo:block font-size="8pt">Region:</fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell padding-bottom="1pt">
+				        <fo:block font-size="9pt"><xsl:value-of select="ead:region"/></fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell text-align="right">
+				        <fo:block font-size="8pt">Region:</fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell padding-bottom="1pt">
+				        <fo:block font-size="9pt"><xsl:value-of select="ead:postalregion"/></fo:block>
+				    </fo:table-cell>
+				</fo:table-row>
+
+				<fo:table-row>
+				    <fo:table-cell text-align="right">
+				        <fo:block font-size="8pt">Country:</fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell padding-bottom="1pt">
+				        <fo:block font-size="9pt"><xsl:value-of select="ead:countrycode"/></fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell text-align="right">
+				        <fo:block font-size="8pt">Country:</fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell padding-bottom="1pt">
+				        <fo:block font-size="9pt"><xsl:value-of select="ead:postalcountrycode"/></fo:block>
+				    </fo:table-cell>
+				</fo:table-row>
+
+				<fo:table-row>
+				    <fo:table-cell text-align="right">
+				        <fo:block font-size="8pt">Postal Code:</fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell padding-bottom="1pt">
+				        <fo:block font-size="9pt"><xsl:value-of select="ead:postalcode"/></fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell text-align="right">
+				        <fo:block font-size="8pt">Postal Code:</fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell padding-bottom="1pt">
+				        <fo:block font-size="9pt"><xsl:value-of select="ead:postalpostcode"/></fo:block>
+				    </fo:table-cell>
+				</fo:table-row>
+
+				<fo:table-row>
+				    <fo:table-cell text-align="right">
+				        <fo:block font-size="8pt">Email:</fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell padding-bottom="1pt">
+				        <fo:block font-size="9pt"><xsl:value-of select="ead:email"/></fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell text-align="right">
+				        <fo:block font-size="8pt">Website address:</fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell padding-bottom="1pt">
+				        <fo:block font-size="9pt"><xsl:value-of select="ead:website"/></fo:block>
+				    </fo:table-cell>
+				</fo:table-row>
+
+				<fo:table-row>
+				    <fo:table-cell text-align="right">
+				        <fo:block font-size="8pt">Latitude:</fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell padding-bottom="1pt">
+				        <fo:block font-size="9pt"><xsl:value-of select="ead:latitude"/></fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell text-align="right">
+				        <fo:block font-size="8pt">Longitude:</fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell padding-bottom="1pt">
+				        <fo:block font-size="9pt"><xsl:value-of select="ead:longitude"/></fo:block>
+				    </fo:table-cell>
+				</fo:table-row>
+
+				<fo:table-row>
+				    <fo:table-cell text-align="right">
+				        <fo:block font-size="8pt">Note:</fo:block>
+				    </fo:table-cell>
+				    <fo:table-cell number-columns-spanned="3" padding-bottom="1pt">
+				        <fo:block font-size="8pt"><xsl:value-of select="ead:note"/></fo:block>
+				    </fo:table-cell>
+				</fo:table-row>
+ 
+		    </fo:table-body>
+        </fo:table>
+
     </xsl:template>
-    <xsl:template match="ead:addressline">
-        <xsl:choose>
-            <xsl:when test="contains(.,'@')">
-                <fo:block>
-                    <fo:basic-link external-destination="url('mailto:{.}')" xsl:use-attribute-sets="ref">
-                        <xsl:value-of select="."/>
-                    </fo:basic-link>
-                </fo:block>
-            </xsl:when>
-            <xsl:otherwise>
-                <fo:block>
-                    <xsl:apply-templates/>
-                </fo:block>
-            </xsl:otherwise>
-        </xsl:choose>
+
+    <xsl:template match="ead:address">
+		<!-- create address block-->
+		<xsl:call-template name="address" />
     </xsl:template>
 
     <!-- Templates for revision description  -->
@@ -1143,7 +1418,7 @@
                     <xsl:when test="@label"><fo:block xsl:use-attribute-sets="h4ID"><xsl:value-of select="@label"/></fo:block><xsl:apply-templates/></xsl:when>
                     <xsl:otherwise>
                         <fo:block xsl:use-attribute-sets="h4ID">
-                            Note
+                            Archival history
                         </fo:block>
                         <xsl:apply-templates/>
                     </xsl:otherwise>
@@ -1353,7 +1628,7 @@
     <!-- Collection Inventory (dsc) templates -->
     <xsl:template match="ead:archdesc/ead:dsc">
         <fo:block xsl:use-attribute-sets="sectionTable" margin-top="10pt">
-            <fo:block xsl:use-attribute-sets="h2ID">Collection holdings</fo:block>
+            <fo:block xsl:use-attribute-sets="h2ID">Collection list</fo:block>
             <xsl:apply-templates select="*[not(self::ead:head)]"/>
         </fo:block>
     </xsl:template>
@@ -1538,7 +1813,7 @@
         | ead:physdesc | ead:physloc | ead:materialspec | ead:container
         | ead:abstract | ead:note | ead:phystech | ead:acqinfo | ead:arrangement | ead:originalsloc
         | ead:altformavail | ead:accessrestrict | ead:userestrict | ead:otherfindaid | ead:relatedmaterial
-        | ead:accruals | ead:odd" mode="dsc">
+        | ead:accruals | ead:odd | ead:repomandates" mode="dsc">
 
         <fo:block xsl:use-attribute-sets="smpDsc">
             <fo:inline text-decoration="underline">

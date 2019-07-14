@@ -23,6 +23,7 @@
  * @package    AccesstoMemory
  * @subpackage digitalobject
  * @author     david juhasz <david@artefactual.com>
+ * @author     johan pieterse <johan.pieterse@sita.co.za>
  */
 class DigitalObjectImageflowComponent extends sfComponent
 {
@@ -44,8 +45,14 @@ class DigitalObjectImageflowComponent extends sfComponent
     // Add thumbs
     $criteria = new Criteria;
     $criteria->addJoin(QubitInformationObject::ID, QubitDigitalObject::OBJECT_ID);
-    $criteria->add(QubitInformationObject::LFT, $this->resource->lft, Criteria::GREATER_THAN);
-    $criteria->add(QubitInformationObject::RGT, $this->resource->rgt, Criteria::LESS_THAN);
+    
+    //SITA removed to display the multiple images
+    //$criteria->add(QubitInformationObject::LFT, $this->resource->lft, Criteria::GREATER_THAN);
+    //$criteria->add(QubitInformationObject::RGT, $this->resource->rgt, Criteria::LESS_THAN);
+
+    $criteria->add(QubitInformationObject::LFT, $this->resource->lft, Criteria::GREATER_EQUAL);
+    $criteria->add(QubitInformationObject::RGT, $this->resource->rgt, Criteria::LESS_EQUAL);
+
 
     if (isset($this->limit))
     {

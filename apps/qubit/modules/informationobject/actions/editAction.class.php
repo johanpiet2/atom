@@ -166,6 +166,20 @@ class InformationObjectEditAction extends DefaultEditAction
   {
     switch ($name)
     {
+      case 'identifier':
+        $this->form->setDefault($name, $this->resource[$name]);
+        $this->form->setValidator($name, new sfValidatorString);
+        $this->form->setWidget($name, new sfWidgetFormInput);
+
+        break;
+
+      case 'title':
+        $this->form->setDefault($name, $this->resource[$name]);
+        $this->form->setValidator($name, new sfValidatorString);
+        $this->form->setWidget($name, new sfWidgetFormTextarea);
+
+        break;
+
       case 'levelOfDescription':
         $this->form->setDefault('levelOfDescription', $this->context->routing->generate(null, array($this->resource->levelOfDescription, 'module' => 'term')));
         $this->form->setValidator('levelOfDescription', new sfValidatorString);
@@ -203,25 +217,34 @@ class InformationObjectEditAction extends DefaultEditAction
         break;
 
       case 'repository':
-        $this->form->setDefault('repository', $this->context->routing->generate(null, array($this->resource->repository, 'module' => 'repository')));
-        $this->form->setValidator('repository', new sfValidatorString);
-
-        $choices = array();
-        if (isset($this->resource->repository))
-        {
-          $choices[$this->context->routing->generate(null, array($this->resource->repository, 'module' => 'repository'))] = $this->resource->repository;
-        }
-
-        $this->form->setWidget('repository', new sfWidgetFormSelect(array('choices' => $choices)));
-
-        if (isset($this->getRoute()->resource))
-        {
-          $this->repoAcParams = array('module' => 'repository', 'action' => 'autocomplete', 'aclAction' => 'update');
-        }
-        else
-        {
-          $this->repoAcParams = array('module' => 'repository', 'action' => 'autocomplete', 'aclAction' => 'create');
-        }
+	 	$choices = array();
+	    // Show only Repositories linked to user - Administrator can see all JJP SITA One Instance
+	    if ((!$this->context->user->isAdministrator()) && (QubitSetting::getByName('open_system') == '0')) {
+			$repositories = new QubitUser;
+			foreach (QubitRepository::getAll() as $item)
+			{
+				if ($item->__toString() != "")
+				{
+					if (0 < count($userRepos = $repositories->getRepositoriesById($this->context->user->getAttribute('user_id')))) {
+						$key = array_search($item->id, $userRepos);
+						if (false !== $key) {
+							$choices[$item->id] = $item->__toString();
+						}
+					}
+				}
+			}
+		} else {
+			foreach (QubitRepository::getAll() as $item)
+			{
+				if ($item->__toString() != "")
+				{
+					$choices[$item->id] = $item->__toString();
+				}
+			}
+		} 				
+		$this->form->setDefault('repository', $this->resource->repositoryId);
+	    $this->form->setValidator('repository', new sfValidatorChoice(array('choices' => array_keys($choices), 'required' => true)));
+		$this->form->setWidget('repository', new sfWidgetFormSelect(array('choices' => $choices)));
 
         break;
 
@@ -234,6 +257,35 @@ class InformationObjectEditAction extends DefaultEditAction
       case 'findingAids':
       case 'locationOfCopies':
       case 'locationOfOriginals':
+      case 'partNo':		  
+      case 'volumeNumberIdentifier':		  
+        $this->form->setDefault($name, $this->resource[$name]);
+        $this->form->setValidator($name, new sfValidatorString);
+        $this->form->setWidget($name, new sfWidgetFormInput);
+
+        break;
+
+      case 'fileNumberIdentifier':		  
+        $this->form->setDefault($name, $this->resource[$name]);
+        $this->form->setValidator($name, new sfValidatorString);
+        $this->form->setWidget($name, new sfWidgetFormInput);
+
+        break;
+
+      case 'partNumberIdentifier':		  
+        $this->form->setDefault($name, $this->resource[$name]);
+        $this->form->setValidator($name, new sfValidatorString);
+        $this->form->setWidget($name, new sfWidgetFormInput);
+
+        break;
+
+      case 'itemNumberIdentifier':		  
+        $this->form->setDefault($name, $this->resource[$name]);
+        $this->form->setValidator($name, new sfValidatorString);
+        $this->form->setWidget($name, new sfWidgetFormInput);
+
+        break;
+
       case 'physicalCharacteristics':
       case 'relatedUnitsOfDescription':
       case 'reproductionConditions':
@@ -513,6 +565,72 @@ class InformationObjectEditAction extends DefaultEditAction
 
         break;
 
+	  case 'format'://SITA
+ /*       $selectCriteria = new Criteria;
+        $selectCriteria->add(QubitInformationObject::ID, $this->resource->id);
+
+        $updateCriteria = new Criteria;
+        $updateCriteria->add(QubitInformationObject::FORMAT_ID, $this->form->getValue('format'));
+
+        BasePeer::doUpdate(
+          $selectCriteria,
+          $updateCriteria,
+          Propel::getConnection(QubitObject::DATABASE_NAME));
+*/
+        break;
+
+      case 'size'://SITA
+/*        $selectCriteria = new Criteria;
+        $selectCriteria->add(QubitInformationObject::ID, $this->resource->id);
+
+        $updateCriteria = new Criteria;
+        $updateCriteria->add(QubitInformationObject::SIZE_ID, $this->form->getValue('size'));
+
+        BasePeer::doUpdate(
+          $selectCriteria,
+          $updateCriteria,
+          Propel::getConnection(QubitObject::DATABASE_NAME));
+*/
+        break;		
+
+      case 'typ'://SITA
+ /*       $selectCriteria = new Criteria;
+        $selectCriteria->add(QubitInformationObject::ID, $this->resource->id);
+
+        $updateCriteria = new Criteria;
+        $updateCriteria->add(QubitInformationObject::TYP_ID, $this->form->getValue('typ'));
+
+        BasePeer::doUpdate(
+          $selectCriteria,
+          $updateCriteria,
+          Propel::getConnection(QubitObject::DATABASE_NAME));
+*/
+        break;		
+
+      case 'equipment'://SITA
+/*        $selectCriteria = new Criteria;
+        $selectCriteria->add(QubitInformationObject::ID, $this->resource->id);
+
+        $updateCriteria = new Criteria;
+        $updateCriteria->add(QubitInformationObject::EQUIPMENT_ID, $this->form->getValue('equipment'));
+
+        BasePeer::doUpdate(
+          $selectCriteria,
+          $updateCriteria,
+          Propel::getConnection(QubitObject::DATABASE_NAME));
+*/
+        break;		
+
+	case 'sensitivity'://SITA
+/*        unset($this->resource->sensitivity);
+        $params = $this->context->routing->parse(Qubit::pathInfo($this->form->getValue('sensitivity')));
+        $this->resource->sensitivity = $params['_sf_route']->resource;
+*/
+        break;	
+
+	case 'movepermanent': //SITA
+/*        break;	
+*/
       default:
 
         return parent::processField($field);
@@ -633,7 +751,52 @@ class InformationObjectEditAction extends DefaultEditAction
       {
         $this->processForm();
 
+	$this->resource->formatId = $this->form->getValue('format');
+	$this->resource->sizeId = $this->form->getValue('size');
+	$this->resource->equipmentId = $this->form->getValue('equipment');
+	$this->resource->sensitivity = $this->form->getValue('sensitivity');
+	$this->resource->typId = $this->form->getValue('typ');
+	$this->resource->repositoryId = $this->form->getValue('repository');
+		
+	//JJP SITA 
+        if ($this->resource->importId == '' || $this->resource->importId == null) {
+		//create unique import_id 50 long
+		$uuIDImportId = XmlImportArchivalDescription::rand_chars(20, FALSE);
+		$unitImportId = substr($this->resource->identifier."-".$uuIDImportId, 0, 1024);
+		$unitImportId = preg_replace('/[^A-Za-z0-9\. -]/', '', $unitImportId);
+		$this->resource->importId = $unitImportId;
+	}
+	//SITA 
+	if ('sfIsadPlugin' == $this->request->module)
+	{
+		if (QubitSetting::getByName('concatenate_identifier') == '1') {
+			$volumeNumberIdentifier = $this->form->getValue('volumeNumberIdentifier');
+			if (trim($volumeNumberIdentifier) == '') {
+				$volumeNumberIdentifier = "#";
+			}
+			$fileNumberIdentifier = $this->form->getValue('fileNumberIdentifier');
+			if (trim($fileNumberIdentifier) == '') {
+				$fileNumberIdentifier = "#";
+			}
+			$partNumberIdentifier = $this->form->getValue('partNumberIdentifier');
+			if (trim($partNumberIdentifier) == '') {
+				$partNumberIdentifier = "#";
+			}
+			$itemNumberIdentifier = $this->form->getValue('itemNumberIdentifier');
+			if (trim($itemNumberIdentifier) == '') {
+				$itemNumberIdentifier = "#";
+			}
+			$this->resource->identifier = $volumeNumberIdentifier . "_" . $fileNumberIdentifier . "_" . $partNumberIdentifier . "_" . $itemNumberIdentifier;
+		}
+	}
         $this->resource->save();
+
+	foreach ($this->resource->getAccessObjects() as $item)
+	{
+		$item->published = false;  // update published to No in order for update to go to website
+		$item->save();
+	}
+
         $this->resource->updateXmlExports();
 
         $this->redirect(array($this->resource, 'module' => 'informationobject'));
@@ -747,7 +910,18 @@ class InformationObjectEditAction extends DefaultEditAction
       $childLevel = new QubitInformationObject;
       $childLevel->identifier = $item['identifier'];
       $childLevel->title = $item['title'];
-      $childLevel->setPublicationStatus($childrenPublicationStatusId);
+
+		//JJP SITA
+ 	  //create unique import_id 20+ long
+	  $uuIDImportId = XmlImportArchivalDescription::rand_chars(20, FALSE);
+	  $unitImportId = substr($item['identifier']."-".$uuIDImportId, 0, 1024);
+	  $unitImportId = preg_replace('/[^A-Za-z0-9\. -]/', '', $unitImportId);
+	  $childLevel->importId = $unitImportId;
+
+      if (null != ($pubStatus = $this->resource->getPublicationStatus()))
+      {
+        $childLevel->setPublicationStatus($pubStatus->statusId);
+      }
 
       if (0 < strlen($item['levelOfDescription']) && (null !== QubitTerm::getById($item['levelOfDescription'])))
       {

@@ -9,16 +9,22 @@ abstract class BaseContactInformation implements ArrayAccess
 
     ACTOR_ID = 'contact_information.ACTOR_ID',
     PRIMARY_CONTACT = 'contact_information.PRIMARY_CONTACT',
+    TITLE = 'contact_information.TITLE',		//jjp SITA
     CONTACT_PERSON = 'contact_information.CONTACT_PERSON',
+    POSITION = 'contact_information.POSITION',		//jjp SITA
     STREET_ADDRESS = 'contact_information.STREET_ADDRESS',
     WEBSITE = 'contact_information.WEBSITE',
     EMAIL = 'contact_information.EMAIL',
     TELEPHONE = 'contact_information.TELEPHONE',
     FAX = 'contact_information.FAX',
+    CELL = 'contact_information.CELL',		//jjp SITA 17 Dec 2014 - Added Cell number
     POSTAL_CODE = 'contact_information.POSTAL_CODE',
     COUNTRY_CODE = 'contact_information.COUNTRY_CODE',
     LONGITUDE = 'contact_information.LONGITUDE',
-    LATITUDE = 'contact_information.LATITUDE',
+    LATITUDE = 'contact_information.LATITUDE', 
+    POSTAL_ADDRESS = 'contact_information.POSTAL_ADDRESS',	//jjp SITA 17 Dec 2014 - Added Postal Address
+    POSTAL_POST_CODE = 'contact_information.POSTAL_POST_CODE',
+    POSTAL_COUNTRY_CODE = 'contact_information.POSTAL_COUNTRY_CODE',
     CREATED_AT = 'contact_information.CREATED_AT',
     UPDATED_AT = 'contact_information.UPDATED_AT',
     SOURCE_CULTURE = 'contact_information.SOURCE_CULTURE',
@@ -29,14 +35,20 @@ abstract class BaseContactInformation implements ArrayAccess
   {
     $criteria->addSelectColumn(QubitContactInformation::ACTOR_ID);
     $criteria->addSelectColumn(QubitContactInformation::PRIMARY_CONTACT);
+    $criteria->addSelectColumn(QubitContactInformation::TITLE);
     $criteria->addSelectColumn(QubitContactInformation::CONTACT_PERSON);
+    $criteria->addSelectColumn(QubitContactInformation::POSITION);
     $criteria->addSelectColumn(QubitContactInformation::STREET_ADDRESS);
     $criteria->addSelectColumn(QubitContactInformation::WEBSITE);
     $criteria->addSelectColumn(QubitContactInformation::EMAIL);
     $criteria->addSelectColumn(QubitContactInformation::TELEPHONE);
     $criteria->addSelectColumn(QubitContactInformation::FAX);
+    $criteria->addSelectColumn(QubitContactInformation::CELL);  //jjp SITA 17 Dec 2014 - Added Cell number
     $criteria->addSelectColumn(QubitContactInformation::POSTAL_CODE);
     $criteria->addSelectColumn(QubitContactInformation::COUNTRY_CODE);
+    $criteria->addSelectColumn(QubitContactInformation::POSTAL_ADDRESS);   //jjp SITA 17 Dec 2014 - Added Postal Address
+    $criteria->addSelectColumn(QubitContactInformation::POSTAL_POST_CODE);
+    $criteria->addSelectColumn(QubitContactInformation::POSTAL_COUNTRY_CODE);
     $criteria->addSelectColumn(QubitContactInformation::LONGITUDE);
     $criteria->addSelectColumn(QubitContactInformation::LATITUDE);
     $criteria->addSelectColumn(QubitContactInformation::CREATED_AT);
@@ -58,7 +70,7 @@ abstract class BaseContactInformation implements ArrayAccess
   public static function getFromRow(array $row)
   {
     $keys = array();
-    $keys['id'] = $row[15];
+    $keys['id'] = $row[21];
 
     $key = serialize($keys);
     if (!isset(self::$contactInformations[$key]))
@@ -113,6 +125,18 @@ abstract class BaseContactInformation implements ArrayAccess
     if (1 == count($query = self::get($criteria, $options)))
     {
       return $query[0];
+    }
+  }
+
+	//jjp SITA 07 Jan 2015 - Get by Actor ID for import
+  public static function getByActorId($id, array $options = array())
+  {
+    $criteria = new Criteria;
+    $criteria->add(QubitContactInformation::ACTOR_ID, $id);
+
+    if (1 == count($query = self::getOne($criteria, $options)))
+    {
+      return $query;
     }
   }
 

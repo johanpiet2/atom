@@ -66,6 +66,18 @@ abstract class BaseRepository extends QubitActor implements ArrayAccess
       return $query[0];
     }
   }
+  
+  // jjp SITA
+  public static function getByIdentifier($identifier, array $options = array())
+  {
+    $criteria = new Criteria;
+    $criteria->add(QubitRepository::IDENTIFIER, $identifier);
+
+    if (1 == count($query = self::getOne($criteria, $options)))
+    {
+      return $query;
+    }
+  }
 
   public function __construct()
   {

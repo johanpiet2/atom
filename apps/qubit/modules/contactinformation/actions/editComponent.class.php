@@ -23,11 +23,14 @@ class ContactInformationEditComponent extends sfComponent
   public static
     $NAMES = array(
       'city',
+      'title',							//jjp SITA
       'contactPerson',
+      'position',						//jjp SITA
       'contactType',
       'countryCode',
       'email',
       'fax',
+      'cell',							//jjp SITA 17 Dec 2014 - Added Cell number
       'latitude',
       'longitude',
       'note',
@@ -36,12 +39,31 @@ class ContactInformationEditComponent extends sfComponent
       'primaryContact',
       'telephone',
       'streetAddress',
-      'website');
+      'website',
+      'postalAddress',					//jjp SITA 17 Dec 2014 - Added Postal Address
+      'postalCity',
+      'postalRegion',
+      'postalCountryCode',
+      'postalPostCode');
 
   protected function addField($name)
   {
     switch ($name)
     {
+	  case 'title':			//jjp SITA
+          $this->form->setValidator('title', new sfValidatorString);
+
+          $choices = array();
+          $choices[null] = null;
+          foreach (QubitTaxonomy::getTermsById(QubitTaxonomy::TITLE) as $item)
+          {
+            $choices[$item->id] = $item;
+          }
+
+          $this->form->setWidget('title', new sfWidgetFormSelect(array('choices' => $choices)));
+
+        break;
+
       case 'countryCode':
         $this->form->setValidator('countryCode', new sfValidatorI18nChoiceCountry);
         $this->form->setWidget('countryCode', new sfWidgetFormI18nChoiceCountry(array('add_empty' => true, 'culture' => $this->context->user->getCulture())));
@@ -56,6 +78,9 @@ class ContactInformationEditComponent extends sfComponent
         break;
 
       case 'latitude':
+        $this->form->setValidator($name, new sfValidatorNumber);
+        $this->form->setWidget($name, new sfWidgetFormInput);
+
       case 'longitude':
         $this->form->setValidator($name, new sfValidatorNumber);
         $this->form->setWidget($name, new sfWidgetFormInput);
@@ -64,6 +89,19 @@ class ContactInformationEditComponent extends sfComponent
 
       case 'streetAddress':
       case 'note':
+        $this->form->setValidator($name, new sfValidatorString);
+        $this->form->setWidget($name, new sfWidgetFormTextArea(array(), array('rows' => 2)));
+
+        break;
+        
+	  //jjp SITA 17 Dec 2014
+      case 'postalCountryCode':
+        $this->form->setValidator('postalCountryCode', new sfValidatorI18nChoiceCountry);
+        $this->form->setWidget('postalCountryCode', new sfWidgetFormI18nChoiceCountry(array('add_empty' => true, 'culture' => $this->context->user->getCulture())));
+
+        break;
+
+      case 'postalAddress':
         $this->form->setValidator($name, new sfValidatorString);
         $this->form->setWidget($name, new sfWidgetFormTextArea(array(), array('rows' => 2)));
 

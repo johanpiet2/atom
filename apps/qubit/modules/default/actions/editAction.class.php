@@ -184,7 +184,10 @@ class DefaultEditAction extends sfAction
   {
     foreach ($this->form as $field)
     {
-      $this->processField($field);
+      if (isset($this->request[$field->getName()]))
+      {
+        $this->processField($field);
+      }
     }
   }
 

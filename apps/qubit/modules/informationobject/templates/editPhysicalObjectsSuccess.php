@@ -24,6 +24,7 @@
               <th colspan="2" style="width: 90%;">
                 <?php echo __('Containers') ?>
               </th><th style="width: 5%;">
+                <?php echo image_tag('delete', array('align' => 'top', 'class' => 'deleteIcon')) ?>
               </th>
             </tr>
           </thead><tbody>
@@ -31,8 +32,11 @@
               <tr class="related_obj_<?php echo $item->id ?>">
                 <td style="width: 90%"><div class="animateNicely">
                   <?php echo $item->subject->getLabel() ?>
-                </div></td><td style="width: 20px;"><div class="animateNicely">
-                  <?php echo link_to(image_tag('pencil', array('style' => 'align: top', 'alt' => __('Edit'))), array($item->subject, 'module' => 'physicalobject', 'action' => 'edit')) ?>
+                </div>
+                </td>
+                 <!-- SITA to manage strongroom separate -->
+               <!-- td style="width: 20px;"><div class="animateNicely" -->
+                  <?php //echo link_to(image_tag('pencil', array('align' => 'top')), array($item->subject, 'module' => 'physicalobject', 'action' => 'edit')) ?>
                 </div></td><td style="width: 20px;"><div class="animateNicely">
                   <input class="multiDelete" name="delete_relations[]" type="checkbox" value="<?php echo url_for(array($item, 'module' => 'relation')) ?>"/>
                 </div></td>
@@ -41,30 +45,50 @@
           </tbody>
         </table>
       <?php endif; ?>
+      
+	  <?php if (0 < count($relations)): ?>
+		<table>
+			<tr>
+				<td align="right"><b>
+					<?php echo "Shelf: " ?>
+				</b></td>
+				<td>
+					<?php echo $resource->shelf ?>
+				</td>
+			</tr>
+			<tr>
+				<td align="right"><b>
+					<?php echo "Row: " ?>
+				</b></td>
+				<td>
+					<?php echo $resource->row ?>
+				</td>
+			</tr>
+			<tr>
+				<td align="right"><b>
+					<?php echo "Bin/Box: " ?>
+				</b></td>
+				<td>
+					<?php echo $resource->bin ?>
+				</td>
+			</tr>
+		</table>
+      <?php endif; ?>
 
-      <fieldset class="collapsible">
+    <fieldset class="single">
 
         <legend><?php echo __('Add container links (duplicate links will be ignored)') ?></legend>
 
         <div class="form-item">
           <?php echo $form->containers->renderLabel() ?>
-          <?php echo $form->containers->render(array('class' => 'form-autocomplete', 'data-autocomplete-delay' => 0.3)) ?>
-          <input class="add" type="hidden" data-link-existing="false" value="<?php echo url_for(array($resource, 'module' => 'informationobject', 'action' => 'editPhysicalObjects')) ?> #name"/>
+          <?php echo $form->containers->render(array('class' => 'form-autocomplete')) ?>
+          <input class="add" type="hidden" value="<?php echo url_for(array($resource, 'module' => 'informationobject', 'action' => 'editPhysicalObjects')) ?> #name"/>
           <input class="list" type="hidden" value="<?php echo url_for(array('module' => 'physicalobject', 'action' => 'autocomplete')) ?>"/>
         </div>
 
-      </fieldset>
-
-      <fieldset class="collapsible">
-
-        <legend><?php echo __('Or, create a new container') ?></legend>
-
-        <?php echo $form->name->renderRow() ?>
-
-        <?php echo $form->location->renderRow() ?>
-
-        <?php echo $form->type->renderRow() ?>
-
+		<?php echo $form->shelf->renderRow(array('value' => $resource->shelf)) ?>
+		<?php echo $form->rowNumber->renderRow(array('value' => $resource->row)) ?>		
+		<?php echo $form->bin->label(__('Bin/Box'))->renderRow(array('value' => $resource->bin)) ?>		
       </fieldset>
 
     </div>

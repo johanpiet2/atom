@@ -26,10 +26,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td><?php echo __('Strip file extensions from information object names') ?></td>
-            <td><?php echo $form->stripExtensions ?></td>
-          </tr>
+          <?php echo $dipUploadForm ?>
         </tbody>
       </table>
 

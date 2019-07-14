@@ -55,7 +55,7 @@ abstract class arOaiPluginComponent extends sfComponent
     }
     else
     {
-      $this->from = strtotime($request->from);
+      $this->from = $request->from;
     }
 
     if (!isset($request->until))
@@ -64,7 +64,7 @@ abstract class arOaiPluginComponent extends sfComponent
     }
     else
     {
-      $this->until = strtotime($request->until);
+      $this->until = $request->until;
     }
 
     if (!isset($request->set))

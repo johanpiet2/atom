@@ -50,7 +50,6 @@ class digitalObjectLoadTask extends sfBaseTask
       new sfCommandOption('path', 'p', sfCommandOption::PARAMETER_OPTIONAL, 'Path prefix for digital objects', null),
       new sfCommandOption('limit', 'l', sfCommandOption::PARAMETER_OPTIONAL, 'Limit number of digital objects imported to n', null),
       new sfCommandOption('index', 'i', sfCommandOption::PARAMETER_NONE, 'Update search index (defaults to false)', null),
-      new sfCommandOption('attach-only', 'a', sfCommandOption::PARAMETER_NONE, 'Always attach digital objects instead of linking', null),
     ));
 
     $this->namespace = 'digitalobject';
@@ -183,19 +182,17 @@ EOF;
       }
 
       // No information_object_id specified, try looking up id via identifier
-      $ioQuery->execute(array($key));
-      $results = $ioQuery->fetch();
-      if (!$results)
+      if (!$ioQuery->execute(array($key)))
       {
         $this->log("Couldn't find information object with $idType: $key");
 
         continue;
       }
 
-      // If attach-only is set, the task will attach the new DO via a new
-      // information obj regardless of whether there is one vs more in the
-      // import CSV.
-      if (!is_array($item) && !$options['attach-only'])
+      // Fetch results
+      $results = $ioQuery->fetch();
+
+      if (!is_array($item))
       {
         // Skip if this information object already has a digital object attached
         if ($results[1] !== null)
@@ -206,45 +203,21 @@ EOF;
           continue;
         }
 
-        if (!file_exists($path = self::getPath($item)))
-        {
-          $this->log(sprintf("Couldn't read file '$item'"));
-          $this->skippedCount++;
-
-          continue;
-        }
-
         self::addDigitalObject($results[0], $item, $options);
       }
       else
       {
-        if (!is_array($item))
+        // If more than one digital object linked to this information object
+        for ($i=0; $i < count($item); $i++)
         {
-          if (!file_exists($path = self::getPath($item)))
-          {
-            $this->log(sprintf("Couldn't read file '$item'"));
-            $this->skippedCount++;
+          // Create new information objects, to maintain one-to-one
+          // relationship with digital objects
+          $informationObject = new QubitInformationObject;
+          $informationObject->parent = QubitInformationObject::getById($results[0]);
+          $informationObject->title = basename($item[$i]);
+          $informationObject->save($options['conn']);
 
-            continue;
-          }
-
-          self::attachDigitalObject($item, $results[0]);
-        }
-        else
-        {
-          // If more than one digital object linked to this information object
-          for ($i=0; $i < count($item); $i++)
-          {
-            if (!file_exists($path = self::getPath($item[$i])))
-            {
-              $this->log(sprintf("Couldn't read file '$item[$i]'"));
-              $this->skippedCount++;
-
-              continue;
-            }
-
-            self::attachDigitalObject($item[$i], $results[0]);
-          }
+          self::addDigitalObject($informationObject->id, $item[$i], $options);
         }
       }
 
@@ -260,43 +233,19 @@ EOF;
     }
   }
 
-  protected function attachDigitalObject($item, $informationObjectId)
-  {
-    // Create new information objects, to maintain one-to-one
-    // relationship with digital objects
-    $informationObject = new QubitInformationObject;
-    $informationObject->parent = QubitInformationObject::getById($informationObjectId);
-    $informationObject->title = basename($item);
-    $informationObject->save($options['conn']);
-
-    self::addDigitalObject($informationObject->id, $item, $options);
-  }
-
-  protected function getPath($path)
-  {
-    if (isset($options['path']))
-    {
-      $path = $options['path'].$path;
-    }
-    return $path;
-  }
-
   protected function addDigitalObject($objectId, $path, $options = array())
   {
     $this->curObjNum++;
 
-    $path = self::getPath($path);
+    if (isset($options['path']))
+    {
+      $path = $options['path'].$path;
+    }
 
     $filename = basename($path);
 
     $remainingImportCount = $this->totalObjCount - $this->skippedCount - $importedCount;
     $message = "Loading '$filename' " . "({$this->curObjNum} of {$remainingImportCount} remaining";
-
-    if (!file_exists($path))
-    {
-      $this->log("Couldn't read file '$path'");
-      return;
-    }
 
     if (isset($options['limit']))
     {
@@ -312,16 +261,15 @@ EOF;
 
     if ($options['link-source'])
     {
-      if (false === $do->importFromFile($path))
-      {
-        return;
-      }
+      $do->importFromFile($path);
     }
     else
     {
       // Read file contents
       if (false === $content = file_get_contents($path))
       {
+        $this->log("Couldn't read file '$path'");
+
         return;
       }
 

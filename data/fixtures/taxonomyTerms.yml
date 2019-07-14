@@ -1395,6 +1395,46 @@ QubitTaxonomy:
       zh: 档案描述內容标准(DACS)说明
     note:
       en: 'Note types that occur specifically within the Society of American Archivists "Describing Archives: a Content Standard" (DACS).'
+  QubitTaxonomy_format:
+    source_culture: en
+    id: 1071
+    parent_id: QubitTaxonomy_root
+    name:
+      en: 'Type or form of Archive'
+    note:
+      en: 'Type or form of Archive - NARSSA'
+  QubitTaxonomy_size:
+    source_culture: en
+    id: 1072
+    parent_id: QubitTaxonomy_root
+    name:
+      en: 'Description Size'
+    note:
+      en: 'Description Item Size - NARSSA'
+  QubitTaxonomy_typ:
+    source_culture: en
+    id: 1073
+    parent_id: QubitTaxonomy_root
+    name:
+      en: 'Description Type'
+    note:
+      en: 'Description Item Type - NARSSA'
+  QubitTaxonomy_equipment:
+    source_culture: en
+    id: 1074
+    parent_id: QubitTaxonomy_root
+    name:
+      en: 'Description Equipment'
+    note:
+      en: 'Description Equipment Availability - NARSSA'
+  QubitTaxonomy_title:
+    source_culture: en
+    id: 1075
+    parent_id: QubitTaxonomy_root
+    name:
+      en: 'Contact person Title'
+    note:
+      en: 'The title of the Contact Person Mr, Ms, etc.'
   QubitTaxonomy_genre:
     source_culture: en
     id: 78
@@ -1487,6 +1527,244 @@ QubitTaxonomy:
       fr: 'Actions des utilisateurs'
       id: 'Tindakan pengguna'
       sv: Användaråtgärder
+  QubitTaxonomy_23:
+    source_culture: en
+    id: 88
+    parent_id: QubitTaxonomy_root
+    name:
+      de: 'Art des Physischen Objekts'
+      en: 'Preservation Object Type'
+      es: 'Physical Object Type'
+      fr: 'Type d''objet physique'
+      gl: 'Tipo de obxecto físico'
+      id: 'Tipe fisik objek'
+      it: 'tipo di oggetto fisico'
+      ja: 物理的オブジェクト種別
+      ka: 'ფიზიკური ობიექტის ტიპი'
+      nl: 'Soorten fysieke objecten'
+      pt: 'Tipo de objeto tridimensional'
+      sl: 'Vrsta fizičnega objekta'
+      th: ประเภทวัตถุหางทางกายภาพ
+  QubitTaxonomy_access_record_classification:
+    source_culture: en
+    id: 89
+    parent_id: QubitTaxonomy_root
+    name:
+      de: 'Access Classification'
+      en: 'Access Classification'
+      es: 'Access Classification'
+      fr: 'Access Classification'
+      gl: 'Access Classification'
+      id: 'Access Classification'
+      it: 'Access Classification'
+      ja: 物理的オブジェクト種別
+      ka: 'Access Classification'
+      nl: 'Access Classification'
+      pt: 'Access Classification'
+      sl: 'Access Classification'
+      th: ประเภทวัตถุหางทางกายภาพ
+    note:
+      en: 'Classification of content - Minimum Information Security Standard (MISS) - NARSSA'
+  QubitTaxonomy_Access_Record_Sensitivity:
+    source_culture: en
+    id: 90
+    parent_id: QubitTaxonomy_root
+    name:
+      de: 'Access Record Sensitivity'
+      en: 'Access Record Sensitivity'
+      es: 'Access Record Sensitivity'
+      fr: 'Access Record Sensitivity'
+      gl: 'Access Record Sensitivity'
+      id: 'Access Record Sensitivity'
+      it: 'Access Record Sensitivity'
+      ja: 物理的オブジェクト種別
+      ka: 'Access Record Sensitivity'
+      nl: 'Access Record Sensitivity'
+      pt: 'Access Record Sensitivity'
+      sl: 'Access Record Sensitivity'
+      th: ประเภทวัตถุหางทางกายภาพ
+    note:
+      en: 'Sensitivity of content - NARSSA'
+  QubitTaxonomy_26:
+    source_culture: en
+    id: 91
+    parent_id: QubitTaxonomy_root
+    name:
+      de: 'Access Record Refusal'
+      en: 'Access Record Refusal'
+      es: 'Access Record Refusal'
+      fr: 'Access Record Refusal'
+      gl: 'Access Record Refusal'
+      id: 'Access Record Refusal'
+      it: 'Access Record Refusal'
+      ja: 物理的オブジェクト種別
+      ka: 'Access Record Refusal'
+      nl: 'Access Record Refusal'
+      pt: 'Access Record Refusal'
+      sl: 'Access Record Refusal'
+      th: ประเภทวัตถุหางทางกายภาพ
+    note:
+      en: 'Refusal of access to content - NARSSA'
+  QubitTaxonomy_27:
+    source_culture: en
+    id: 92
+    parent_id: QubitTaxonomy_root
+    name:
+      de: 'Access Record Restrictions'
+      en: 'Access Record Restrictions'
+      es: 'Access Record Restrictions'
+      fr: 'Access Record Restrictions'
+      gl: 'Access Record Restrictions'
+      id: 'Access Record Restrictions'
+      it: 'Access Record Restrictions'
+      ja: 物理的オブジェクト種別
+      ka: 'Access Record Restrictions'
+      nl: 'Access Record Restrictions'
+      pt: 'Access Record Restrictions'
+      sl: 'Access Record Restrictions'
+      th: ประเภทวัตถุหางทางกายภาพ
+    note:
+      en: 'Restrictions on content - NARSSA'
+  QubitTaxonomy_28:
+    source_culture: en
+    id: 93
+    parent_id: QubitTaxonomy_root
+    name:
+      de: 'Preservation Record Availability'
+      en: 'Preservation Record Availability'
+      es: 'Preservation Record Availability'
+      fr: 'Preservation Record Availability'
+      gl: 'Preservation Record Availability'
+      id: 'Preservation Record Availability'
+      it: 'Preservation Record Availability'
+      ja: 物理的オブジェクト種別
+      ka: 'Preservation Record Availability'
+      nl: 'Preservation Record Availability'
+      pt: 'Preservation Record Availability'
+      sl: 'Preservation Record Availability'
+      th: ประเภทวัตถุหางทางกายภาพ
+    note:
+      en: 'Content availability indicator - NARSSA' 
+  QubitTaxonomy_29:
+    source_culture: en
+    id: 94
+    parent_id: QubitTaxonomy_root
+    name:
+      de: 'Preservation Record Conservation'
+      en: 'Preservation Record Conservation'
+      es: 'Preservation Record Conservation'
+      fr: 'Preservation Record Conservation'
+      gl: 'Preservation Record Conservation'
+      id: 'Preservation Record Conservation'
+      it: 'Preservation Record Conservation'
+      ja: 物理的オブジェクト種別
+      ka: 'Preservation Record Conservation'
+      nl: 'Preservation Record Conservation'
+      pt: 'Preservation Record Conservation'
+      sl: 'Preservation Record Conservation'
+      th: ประเภทวัตถุหางทางกายภาพ
+    note:
+      en: 'Content conservation - NARSSA'
+  QubitTaxonomy_30:
+    source_culture: en
+    id: 95
+    parent_id: QubitTaxonomy_root
+    name:
+      de: 'Preservation Measure'
+      en: 'Preservation Measure'
+      es: 'Preservation Measure'
+      fr: 'Preservation Measure'
+      gl: 'Preservation Measure'
+      id: 'Preservation Measure'
+      it: 'Preservation Measure'
+      ja: 物理的オブジェクト種別
+      ka: 'Preservation Measure'
+      nl: 'Preservation Measure'
+      pt: 'Preservation Measure'
+      sl: 'Preservation Measure'
+      th: ประเภทวัตถุหางทางกายภาพ
+    note:
+      en: 'Content preservation measure - NARSSA'
+  QubitTaxonomy_31:
+    source_culture: en
+    id: 96
+    parent_id: QubitTaxonomy_root
+    name:
+      de: 'Preservation Condition'
+      en: 'Preservation Condition'
+      es: 'Preservation Condition'
+      fr: 'Preservation Condition'
+      gl: 'Preservation Condition'
+      id: 'Preservation Condition'
+      it: 'Preservation Condition'
+      ja: 物理的オブジェクト種別
+      ka: 'Preservation Condition'
+      nl: 'Preservation Condition'
+      pt: 'Preservation Condition'
+      sl: 'Preservation Condition'
+      th: ประเภทวัตถุหางทางกายภาพ
+    note:
+      en: 'Content preservation condition - NARSSA'
+  QubitTaxonomy_32:
+    source_culture: en
+    id: 97
+    parent_id: QubitTaxonomy_root
+    name:
+      de: 'Preservation Medium'
+      en: 'Preservation Medium'
+      es: 'Preservation Medium'
+      fr: 'Preservation Medium'
+      gl: 'Preservation Medium'
+      id: 'Preservation Medium'
+      it: 'Preservation Medium'
+      ja: 物理的オブジェクト種別
+      ka: 'Preservation Medium'
+      nl: 'Preservation Medium'
+      pt: 'Preservation Medium'
+      sl: 'Preservation Medium'
+      th: ประเภทวัตถุหางทางกายภาพ
+    note:
+      en: 'Content medium - NARSSA'
+  QubitTaxonomy_33:
+    source_culture: en
+    id: 98
+    parent_id: QubitTaxonomy_root
+    name:
+      de: 'Preservation Restoration'
+      en: 'Preservation Restoration'
+      es: 'Preservation Restoration'
+      fr: 'Preservation Restoration'
+      gl: 'Preservation Restoration'
+      id: 'Preservation Restoration'
+      it: 'Preservation Restoration'
+      ja: 物理的オブジェクト種別
+      ka: 'Preservation Restoration'
+      nl: 'Preservation Restoration'
+      pt: 'Preservation Restoration'
+      sl: 'Preservation Restoration'
+      th: ประเภทวัตถุหางทางกายภาพ
+    note:
+      en: 'Content restoration - NARSSA'
+  QubitTaxonomy_34:
+    source_culture: en
+    id: 99
+    parent_id: QubitTaxonomy_root
+    name:
+      de: 'Preservation Usability'
+      en: 'Preservation Usability'
+      es: 'Preservation Usability'
+      fr: 'Preservation Usability'
+      gl: 'Preservation Usability'
+      id: 'Preservation Usability'
+      it: 'Preservation Usability'
+      ja: 物理的オブジェクト種別
+      ka: 'Preservation Usability'
+      nl: 'Preservation Usability'
+      pt: 'Preservation Usability'
+      sl: 'Preservation Usability'
+      th: ประเภทวัตถุหางทางกายภาพ
+    note:
+      en: 'Content usability - NARSSA'
 QubitTerm:
   QubitTerm_110:
     taxonomy_id: 30
@@ -2592,6 +2870,150 @@ QubitTerm:
       th: ภาชนะ
       vi: 'Bao hàm'
       zh: 容器
+  QubitTerm_103:
+    taxonomy_id: QubitTaxonomy_18
+    parent_id: QubitTerm_110
+    id: 200
+    source_culture: en
+    name:
+      de: Delete
+      en: Delete 
+  QubitTerm_104:
+    taxonomy_id: QubitTaxonomy_31
+    parent_id: QubitTerm_110
+    id: 104
+    source_culture: en
+    name:
+      de: Condition
+      en: Condition
+  QubitTerm_105:
+    taxonomy_id: QubitTaxonomy_34
+    parent_id: QubitTerm_110
+    id: 105
+    source_culture: en
+    name:
+      de: Usability
+      en: Usability
+  QubitTerm_106:
+    taxonomy_id: QubitTaxonomy_30
+    parent_id: QubitTerm_110
+    id: 106
+    source_culture: en
+    name:
+      de: Measure
+      en: Measure
+  QubitTerm_107:
+    taxonomy_id: QubitTaxonomy_32
+    parent_id: QubitTerm_110
+    id: 107
+    source_culture: en
+    name:
+      de: Medium
+      en: Medium
+  QubitTerm_108:
+    taxonomy_id: QubitTaxonomy_33
+    parent_id: QubitTerm_110
+    id: 108
+    source_culture: en
+    name:
+      de: Restoration
+      en: Restoration
+  QubitTerm_109:
+    taxonomy_id: QubitTaxonomy_29
+    parent_id: QubitTerm_110
+    id: 109
+    source_culture: en
+    name:
+      de: Conservation
+      en: Conservation
+  QubitTerm_1009:
+    taxonomy_id: QubitTaxonomy_28
+    parent_id: QubitTerm_110
+    id: 1009
+    source_culture: en
+    name:
+      de: Availability
+      en: Availability
+  QubitTerm_1010:
+    taxonomy_id: QubitTaxonomy_23
+    parent_id: QubitTerm_110
+    id: 1010
+    source_culture: en
+    name:
+      de: Hard
+      en: Hard
+  QubitTerm_1011:
+    taxonomy_id: QubitTaxonomy_Access_Record_Sensitivity
+    parent_id: QubitTerm_110
+    id: 1011
+    source_culture: en
+    name:
+      de: Sensitivity
+      en: Sensitivity
+  QubitTerm_1012:
+    taxonomy_id: QubitTaxonomy_23
+    parent_id: QubitTerm_110
+    id: 1012
+    source_culture: en
+    name:
+      de: Publish
+      en: Publish
+  QubitTerm_1014:
+    taxonomy_id: QubitTaxonomy_27
+    parent_id: QubitTerm_110
+    id: 1014
+    source_culture: en
+    name:
+      de: Restrictions
+      en: Restrictions
+  QubitTerm_1015:
+    taxonomy_id: QubitTaxonomy_28
+    parent_id: QubitTerm_110
+    id: 1015
+    source_culture: en
+    name:
+      de: Availability
+      en: Availability
+  QubitTerm_1016:
+    taxonomy_id: QubitTaxonomy_29
+    parent_id: QubitTerm_110
+    id: 1016
+    source_culture: en
+    name:
+      de: Conservation
+      en: Conservation
+  QubitTerm_1013:
+    taxonomy_id: QubitTaxonomy_access_record_classification
+    parent_id: QubitTerm_110
+    id: 1013
+    source_culture: en
+    name:
+      de: Classification
+      en: Classification
+  QubitTerm_1017:
+    taxonomy_id: QubitTaxonomy_26
+    parent_id: QubitTerm_110
+    id: 1017
+    source_culture: en
+    name:
+      de: Refusal
+      en: Refusal
+  QubitTerm_1008:
+    taxonomy_id: QubitTaxonomy_23
+    parent_id: QubitTerm_110
+    id: 1008
+    source_culture: en
+    name:
+      de: Digital
+      en: Digital
+  QubitTerm_1007:
+    taxonomy_id: QubitTaxonomy_23
+    parent_id: QubitTerm_110
+    id: 1007
+    source_culture: en
+    name:
+      de: Ground for refusal
+      en: Ground for refusal
   QubitTerm_142:
     taxonomy_id: QubitTaxonomy_18
     parent_id: QubitTerm_110
@@ -7439,6 +7861,483 @@ QubitTerm:
       uz: Qism
       vi: 'Một phần'
       zh: 部分
+  QubitTerm_258:
+    taxonomy_id: QubitTaxonomy_31
+    parent_id: QubitTerm_104
+    source_culture: en
+    name:
+      de: Please Select
+      en: Please Select
+  QubitTerm_259:
+    taxonomy_id: QubitTaxonomy_31
+    parent_id: QubitTerm_104
+    source_culture: en
+    name:
+      de: Chemically unstable
+      en: Chemically unstable
+  QubitTerm_260:
+    taxonomy_id: QubitTaxonomy_31
+    parent_id: QubitTerm_104
+    source_culture: en
+    name:
+      de: Fading text
+      en: Fading text
+  QubitTerm_261:
+    taxonomy_id: QubitTaxonomy_31
+    parent_id: QubitTerm_104
+    source_culture: en
+    name:
+      de: Insect damage
+      en: Insect damage
+  QubitTerm_262:
+    taxonomy_id: QubitTaxonomy_31
+    parent_id: QubitTerm_104
+    source_culture: en
+    name:
+      de: Mouldy
+      en: Mouldy
+  QubitTerm_263:
+    taxonomy_id: QubitTaxonomy_31
+    parent_id: QubitTerm_104
+    source_culture: en
+    name:
+      de: Can cause health risk
+      en: Can cause health risk
+  QubitTerm_335:
+    taxonomy_id: QubitTaxonomy_31
+    parent_id: QubitTerm_104
+    source_culture: en
+    name:
+      de: Water damaged
+      en: Water damaged
+  QubitTerm_336:
+    taxonomy_id: QubitTaxonomy_31
+    parent_id: QubitTerm_104
+    source_culture: en
+    name:
+      de: Fire damaged
+      en: Fire damaged
+  QubitTerm_264:
+    taxonomy_id: QubitTaxonomy_34
+    parent_id: QubitTerm_105
+    source_culture: en
+    name:
+      de: Please Select
+      en: Please Select  
+  QubitTerm_265:
+    taxonomy_id: QubitTaxonomy_34
+    parent_id: QubitTerm_105
+    source_culture: en
+    name:
+      de: Unusable
+      en: Unusable
+  QubitTerm_266:
+    taxonomy_id: QubitTaxonomy_34
+    parent_id: QubitTerm_105
+    source_culture: en
+    name:
+      de: Usable under supervision
+      en: Usable under supervision
+  QubitTerm_267:
+    taxonomy_id: QubitTaxonomy_34
+    parent_id: QubitTerm_105
+    source_culture: en
+    name:
+      de: Usable
+      en: Usable
+  QubitTerm_268:
+    taxonomy_id: QubitTaxonomy_34
+    parent_id: QubitTerm_105
+    source_culture: en
+    name:
+      de: Can be copied
+      en: Can be copied
+  QubitTerm_269:
+    taxonomy_id: QubitTaxonomy_34
+    parent_id: QubitTerm_105
+    source_culture: en
+    name:
+      de: Cannot be copied
+      en: Cannot be copied
+  QubitTerm_270:
+    taxonomy_id: QubitTaxonomy_34
+    parent_id: QubitTerm_105
+    source_culture: en
+    name:
+      de: Can be scanned
+      en: Can be scanned
+  QubitTerm_271:
+    taxonomy_id: QubitTaxonomy_34
+    parent_id: QubitTerm_105
+    source_culture: en
+    name:
+      de: Cannot be scanned
+      en: Cannot be scanned
+  QubitTerm_272:
+    taxonomy_id: QubitTaxonomy_34
+    parent_id: QubitTerm_105
+    source_culture: en
+    name:
+      de: Permanently out of circulation
+      en: Permanently out of circulation
+  QubitTerm_273:
+    taxonomy_id: QubitTaxonomy_34
+    parent_id: QubitTerm_105
+    source_culture: en
+    name:
+      de: Temporarily out of circulation
+      en: Temporarily out of circulation
+  QubitTerm_274:
+    taxonomy_id: QubitTaxonomy_32
+    parent_id: QubitTerm_107
+    source_culture: en
+    name:
+      en: Please Select
+  QubitTerm_275:
+    taxonomy_id: QubitTaxonomy_32
+    parent_id: QubitTerm_107
+    source_culture: en
+    name:
+      en: Paper record
+  QubitTerm_276:
+    taxonomy_id: QubitTaxonomy_32
+    parent_id: QubitTerm_107
+    source_culture: en
+    name:
+      en: Photographic material
+  QubitTerm_277:
+    taxonomy_id: QubitTaxonomy_32
+    parent_id: QubitTerm_107
+    source_culture: en
+    name:
+      en: Sound
+  QubitTerm_278:
+    taxonomy_id: QubitTaxonomy_32
+    parent_id: QubitTerm_107
+    source_culture: en
+    name:
+      en: Film
+  QubitTerm_331:
+    taxonomy_id: QubitTaxonomy_32
+    parent_id: QubitTerm_107
+    source_culture: en
+    name:
+      en: Video
+  QubitTerm_332:
+    taxonomy_id: QubitTaxonomy_32
+    parent_id: QubitTerm_107
+    source_culture: en
+    name:
+      en: Pictorial material and cartographic
+  QubitTerm_279:
+    taxonomy_id: QubitTaxonomy_33
+    parent_id: QubitTerm_108
+    source_culture: en
+    name:
+      en: Please Select
+  QubitTerm_280:
+    taxonomy_id: QubitTaxonomy_33
+    parent_id: QubitTerm_108
+    source_culture: en
+    name:
+      en: Rebind
+  QubitTerm_282:
+    taxonomy_id: QubitTaxonomy_33
+    parent_id: QubitTerm_108
+    source_culture: en
+    name:
+      en: Refurbish
+  QubitTerm_283:
+    taxonomy_id: QubitTaxonomy_33
+    parent_id: QubitTerm_108
+    source_culture: en
+    name:
+      en: Reform (Digitised, macro-film, photo copy/photo-duplication)
+  QubitTerm_285:
+    taxonomy_id: QubitTaxonomy_29
+    parent_id: QubitTerm_109
+    source_culture: en
+    name:
+      en: Please Select
+  QubitTerm_286:
+    taxonomy_id: QubitTaxonomy_29
+    parent_id: QubitTerm_109
+    source_culture: en
+    name:
+      en: Repairs
+  QubitTerm_287:
+    taxonomy_id: QubitTaxonomy_29
+    parent_id: QubitTerm_109
+    source_culture: en
+    name:
+      en: Reformat
+  QubitTerm_288:
+    taxonomy_id: QubitTaxonomy_29
+    parent_id: QubitTerm_109
+    source_culture: en
+    name:
+      en: Outsource restoration
+  QubitTerm_289:
+    taxonomy_id: QubitTaxonomy_30
+    parent_id: QubitTerm_106
+    source_culture: en
+    name:
+      en: Please Select
+  QubitTerm_290:
+    taxonomy_id: QubitTaxonomy_30
+    parent_id: QubitTerm_106
+    source_culture: en
+    name:
+      en: Others
+  QubitTerm_291:
+    taxonomy_id: QubitTaxonomy_30
+    parent_id: QubitTerm_106
+    source_culture: en
+    name:
+      en: Repairs
+  QubitTerm_292:
+    taxonomy_id: QubitTaxonomy_30
+    parent_id: QubitTerm_106
+    source_culture: en
+    name:
+      en: Cannot be scanned
+  QubitTerm_293:
+    taxonomy_id: QubitTaxonomy_30
+    parent_id: QubitTerm_106
+    source_culture: en
+    name:
+      en: Can be copied
+  QubitTerm_294:
+    taxonomy_id: QubitTaxonomy_28
+    parent_id: QubitTerm_1009
+    source_culture: en
+    name:
+      en: Yes
+  QubitTerm_295:
+    taxonomy_id: QubitTaxonomy_28
+    parent_id: QubitTerm_1009
+    source_culture: en
+    name:
+      en: No
+  QubitTerm_296:
+    taxonomy_id: QubitTaxonomy_23
+    parent_id: QubitTerm_1010
+    source_culture: en
+    name:
+      en: Please Select
+  QubitTerm_298:
+    taxonomy_id: QubitTaxonomy_26
+    parent_id: QubitTerm_1016
+    source_culture: en
+    name:
+      en: Please Select
+  QubitTerm_299:
+    taxonomy_id: QubitTaxonomy_26
+    parent_id: QubitTerm_1016
+    source_culture: en
+    name:
+      en: Mandatory protection of privacy of third party who is natural person
+  QubitTerm_300:
+    taxonomy_id: QubitTaxonomy_26
+    parent_id: QubitTerm_1016
+    source_culture: en
+    name:
+      en: Mandatory protection of certain records of South African Revenue Service 
+  QubitTerm_301:
+    taxonomy_id: QubitTaxonomy_26
+    parent_id: QubitTerm_1016
+    source_culture: en
+    name:
+      en: Mandatory protection of commercial information of third party
+  QubitTerm_302:
+    taxonomy_id: QubitTaxonomy_26
+    parent_id: QubitTerm_1016
+    source_culture: en
+    name:
+      en: Mandatory protection of certain confidential information, protection of law enforcement and legal proceeding 
+  QubitTerm_303:
+    taxonomy_id: QubitTaxonomy_26
+    parent_id: QubitTerm_1016
+    source_culture: en
+    name:
+      en: Mandatory protection of safety of individual, and protection of property
+  QubitTerm_304:
+    taxonomy_id: QubitTaxonomy_26
+    parent_id: QubitTerm_1016
+    source_culture: en
+    name:
+      en: Mandatory protection of police dockets in bail proceedings and protection of law enforcement and legal proceedings
+  QubitTerm_305:
+    taxonomy_id: QubitTaxonomy_26
+    parent_id: QubitTerm_1016
+    source_culture: en
+    name:
+      en: Mandatory protection of records privileged from production in legal proceeding
+  QubitTerm_306:
+    taxonomy_id: QubitTaxonomy_26
+    parent_id: QubitTerm_1016
+    source_culture: en
+    name:
+      en: Defence, security and international relation of the republic
+  QubitTerm_307:
+    taxonomy_id: QubitTaxonomy_26
+    parent_id: QubitTerm_1016
+    source_culture: en
+    name:
+      en: Economic interest and financial welfare of the republic and commercial activities of public bodies
+  QubitTerm_308:
+    taxonomy_id: QubitTaxonomy_26
+    parent_id: QubitTerm_1016
+    source_culture: en
+    name:
+      en: Mandatory protection of research information of third party and protection of research information of public body
+  QubitTerm_309:
+    taxonomy_id: QubitTaxonomy_26
+    parent_id: QubitTerm_1016
+    source_culture: en
+    name:
+      en: Operations of public bodies
+  QubitTerm_310:
+    taxonomy_id: QubitTaxonomy_26
+    parent_id: QubitTerm_1016
+    source_culture: en
+    name:
+      en: Manifestly frivolous or vexatious requests or substantial and unreasonable diversion of resources
+  QubitTerm_333:
+    taxonomy_id: QubitTaxonomy_26
+    parent_id: QubitTerm_1016
+    source_culture: en
+    name:
+      en: None
+  QubitTerm_311:
+    taxonomy_id: QubitTaxonomy_23
+    parent_id: QubitTerm_1008
+    source_culture: en
+    name:
+      en: Document Temporarily not Available
+  QubitTerm_312:
+    taxonomy_id: QubitTaxonomy_23
+    parent_id: QubitTerm_1008
+    source_culture: en
+    name:
+      en: Document Permanantly not available (reason as a text field)
+  QubitTerm_313:
+    taxonomy_id: QubitTaxonomy_23
+    parent_id: QubitTerm_1008
+    source_culture: en
+    name:
+      en: Digital copy available
+  QubitTerm_314:
+    taxonomy_id: QubitTaxonomy_23
+    parent_id: QubitTerm_1007
+    source_culture: en
+    name:
+      en: Please Select
+  QubitTerm_315:
+    taxonomy_id: QubitTaxonomy_23
+    parent_id: QubitTerm_1007
+    source_culture: en
+    name:
+      en: Digital copy on request
+  QubitTerm_316:
+    taxonomy_id: QubitTaxonomy_23
+    parent_id: QubitTerm_1007
+    source_culture: en
+    name:
+      en: Digital copy permanantly not Available (reason as text field)
+  QubitTerm_317:
+    taxonomy_id: QubitTaxonomy_23
+    parent_id: QubitTerm_1010
+    source_culture: en
+    name:
+      en: None
+  QubitTerm_318:
+    taxonomy_id: QubitTaxonomy_Access_Record_Sensitivity
+    parent_id: QubitTerm_1011
+    id: 201
+    source_culture: en
+    name:
+      en: Please Select
+  QubitTerm_319:
+    taxonomy_id: QubitTaxonomy_Access_Record_Sensitivity
+    parent_id: QubitTerm_1011
+    id: 202
+    source_culture: en
+    name:
+      en: Yes
+  QubitTerm_320:
+    taxonomy_id: QubitTaxonomy_Access_Record_Sensitivity
+    parent_id: QubitTerm_1011
+    id: 203
+    source_culture: en
+    name:
+      en: No
+  QubitTerm_321:
+    taxonomy_id: QubitTaxonomy_23
+    parent_id: QubitTerm_1012
+    source_culture: en
+    name:
+      en: Please Select
+  QubitTerm_322:
+    taxonomy_id: QubitTaxonomy_23
+    parent_id: QubitTerm_1012
+    source_culture: en
+    name:
+      en: Yes
+  QubitTerm_323:
+    taxonomy_id: QubitTaxonomy_23
+    parent_id: QubitTerm_1012
+    source_culture: en
+    name:
+      en: No
+  QubitTerm_324:
+    taxonomy_id: QubitTaxonomy_27
+    parent_id: QubitTerm_1014
+    source_culture: en
+    name:
+      en: Please Select
+  QubitTerm_325:
+    taxonomy_id: QubitTaxonomy_27
+    parent_id: QubitTerm_1014
+    source_culture: en
+    name:
+      en: Contractual Restrictions
+  QubitTerm_326:
+    taxonomy_id: QubitTaxonomy_27
+    parent_id: QubitTerm_1014
+    source_culture: en
+    name:
+      en: Copyright Restrictions
+  QubitTerm_327:
+    taxonomy_id: QubitTaxonomy_27
+    parent_id: QubitTerm_1014
+    source_culture: en
+    name:
+      en: None
+  QubitTerm_328:
+    taxonomy_id: QubitTaxonomy_access_record_classification
+    parent_id: QubitTerm_1013
+    source_culture: en
+    name:
+      en: Confidential
+  QubitTerm_329:
+    taxonomy_id: QubitTaxonomy_access_record_classification
+    parent_id: QubitTerm_1013
+    source_culture: en
+    name:
+      en: Secret
+  QubitTerm_330:
+    taxonomy_id: QubitTaxonomy_access_record_classification
+    parent_id: QubitTerm_1013
+    source_culture: en
+    name:
+      en: Top Secret
+  QubitTerm_331:
+    taxonomy_id: QubitTaxonomy_access_record_classification
+    parent_id: QubitTerm_1013
+    source_culture: en
+    name:
+       en: Public 
   QubitTerm_mods_resource_type_text:
     taxonomy_id: QubitTaxonomy_mods_resource_type
     parent_id: QubitTerm_110
@@ -9366,6 +10265,468 @@ QubitTerm:
       uz: 'RAD, 2008 Iyul versiyasi. Kanada arxiv kengashi'
       vi: 'RAD, July 2008 version. Canadian Council of Archives'
       zh: '快速应用程序开发, 2008年七月版本. 加拿大档案理事会'
+  QubitTerm_Accession:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: accession
+    name:
+      en: ' Accession'
+  QubitTerm_Acceptions:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: acceptions
+    name:
+      en: 'Acceptions'
+  QubitTerm_AG_Collection:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: ag_collection
+    name:
+      en: 'AG Collection'
+  QubitTerm_Arms:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: arms
+    name:
+      en: 'Arms'
+  QubitTerm_Audio_Cassette:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: audio_cassette
+    name:
+      en: 'Audio Cassette'
+  QubitTerm_Badge:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: badge
+    name:
+      en: 'Badge'
+  QubitTerm_Badge_of_Rank:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: badge_of_rank
+    name:
+      en: 'Badge of Rank'
+  QubitTerm_Banner:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: banner
+    name:
+      en: 'Banner'
+  QubitTerm_Book:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: book
+    name:
+      en: 'Book'
+  QubitTerm_Burgee:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: burgee
+    name:
+      en: 'Burgee'
+  QubitTerm_Compact_Discs:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: compact_discs
+    name:
+      en: 'Compact Discs'
+  QubitTerm_Copies:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: copies
+    name:
+      en: 'Copies'
+  QubitTerm_Correspondence:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: correspondence_file
+    name:
+      en: 'Correspondence File'
+  QubitTerm_Decoration:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: decoration
+    name:
+      en: 'Decoration'
+  QubitTerm_Emblem:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: emblem
+    name:
+      en: 'Emblem'
+  QubitTerm_Ephemera:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: ephemera
+    name:
+      en: 'Ephemera'
+  QubitTerm_Film:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: film
+    name:
+      en: 'Film'
+  QubitTerm_Flag:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: flag
+    name:
+      en: 'Flag'
+  QubitTerm_Glass_Negative:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: glass_negative
+    name:
+      en: 'Glass negative'
+  QubitTerm_Guidon:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: guidon
+    name:
+      en: 'Guidon'
+  QubitTerm_Gramophone:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: gramophone
+    name:
+      en: 'Gramophone Record'
+  QubitTerm_Gravestones:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: gravestones
+    name:
+      en: 'Gravestones'
+  QubitTerm_Insignia:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: insignia
+    name:
+      en: 'Insignia'
+  QubitTerm_Jewel_of_Office:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: jewel_of_office
+    name:
+      en: 'Jewel of Office'
+  QubitTerm_Letter:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: letter
+    name:
+      en: 'Letter'
+  QubitTerm_Library_Material:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: library_material
+    name:
+      en: 'Library Material'
+  QubitTerm_Manuscript:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: manuscript
+    name:
+      en: 'Manuscript'
+  QubitTerm_Map:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: map
+    name:
+      en: 'Map'
+  QubitTerm_Magazine:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: magazine
+    name:
+      en: 'Magazine'
+  QubitTerm_Medal:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: medal
+    name:
+      en: 'Medal'
+  QubitTerm_Medallion:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: medallion
+    name:
+      en: 'Medallion'
+  QubitTerm_Microfilm:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: microfilm
+    name:
+      en: 'Microfilm'
+  QubitTerm_Minute:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: minute
+    name:
+      en: 'Minute'
+  QubitTerm_Official_Publications:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: official_publications
+    name:
+      en: 'Official Publications'
+  QubitTerm_Name_Archives_Type:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: Name_Archives_Type
+    name:
+      en: 'Name, Special Name, Uniform and Badge'
+  QubitTerm_Oral History:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: oral_history
+    name:
+      en: 'Oral History'
+  QubitTerm_Other_Archives:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: other_archives
+    name:
+      en: 'Other Archives'
+  QubitTerm_Pamphlet:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: pamphlet
+    name:
+      en: 'Pamphlet'
+  QubitTerm_Pennant:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: pennant
+    name:
+      en: 'Pennant'
+  QubitTerm_Photographic:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: photographic
+    name:
+      en: 'Photographic and pictoral material'
+  QubitTerm_Posters:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: posters
+    name:
+      en: 'Posters'
+  QubitTerm_Private_Collection:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: private_collection
+    name:
+      en: 'Private Collection'
+  QubitTerm_Seal:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: seal
+    name:
+      en: 'Seal'
+  QubitTerm_Series:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: series
+    name:
+      en: 'Series'
+  QubitTerm_Sketch:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: sketch
+    name:
+      en: 'Sketch'
+  QubitTerm_Slide:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: slide
+    name:
+      en: 'Slide'
+  QubitTerm_Standard:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: standard
+    name:
+      en: 'Standard'
+  QubitTerm_Thesis:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: thesis
+    name:
+      en: 'Thesis'
+  QubitTerm_Various:
+    taxonomy_id: 1071
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: various
+    name:
+      en: 'Various'
+  QubitTerm_Length:
+    taxonomy_id: 1072
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: len
+    name:
+      en: 'Length'
+  QubitTerm_Duration:
+    taxonomy_id: 1072
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: dur
+    name:
+      en: 'Duration'	  
+  QubitTerm_Bytes:
+    taxonomy_id: 1072
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: byt
+    name:
+      en: 'Bytes'
+  QubitTerm_PDF:
+    taxonomy_id: 1073
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: pdf
+    name:
+      en: 'Pdf'
+  QubitTerm_Word:
+    taxonomy_id: 1073
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: wor
+    name:
+      en: 'Word'	  
+  QubitTerm_Bwf:
+    taxonomy_id: 1073
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: bwf
+    name:
+      en: 'Bwf'
+  QubitTerm_Jpeg:
+    taxonomy_id: 1073
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: jpe
+    name:
+      en: 'Jpeg'
+  QubitTerm_Mpeg:
+    taxonomy_id: 1073
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: mpe
+    name:
+      en: 'Mpeg'
+  QubitTerm_Tiff:
+    taxonomy_id: 1073
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: tif
+    name:
+      en: 'Tiff'
+  QubitTerm_Yes:
+    taxonomy_id: 1074
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: yes
+    name:
+      en: 'Yes'
+  QubitTerm_No:
+    taxonomy_id: 1074
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: no
+    name:
+      en: 'No'	  
+  QubitTerm_Mr:
+    taxonomy_id: 1075
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: Mr
+    name:
+      en: 'Mr.'
+  QubitTerm_Ms:
+    taxonomy_id: 1075
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: Ms
+    name:
+      en: 'Ms.'
+  QubitTerm_Miss:
+    taxonomy_id: 1075
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: Miss
+    name:
+      en: 'Miss.'
+  QubitTerm_Me:
+    taxonomy_id: 1075
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: Me
+    name:
+      en: 'Me.'
+  QubitTerm_Prof:
+    taxonomy_id: 1075
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: Prof
+    name:
+      en: 'Prof.'
+  QubitTerm_Dr:
+    taxonomy_id: 1075
+    parent_id: QubitTerm_110
+    source_culture: en
+    code: Dr
+    name:
+      en: 'Dr.'
   QubitTerm_template_dacs:
     taxonomy_id: 70
     parent_id: QubitTerm_110

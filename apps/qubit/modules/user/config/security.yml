@@ -1,13 +1,13 @@
 create:
-  credentials: administrator
+  credentials: [[ administrator, superuser ]]
   is_secure: true
 
 delete:
-  credentials: administrator
+  credentials: [[ administrator, superuser ]]
   is_secure: true
 
 edit:
-  credentials: [[ administrator, translator ]]
+  credentials: [[ administrator, translator, superuser ]]
   is_secure: true
 
 index:
@@ -15,15 +15,15 @@ index:
   is_secure: true
 
 list:
-  credentials: administrator
+  credentials: [[ administrator, superuser ]]
   is_secure: true
 
 passwordEdit:
-  credentials: [[ researcher, contributor, editor, administrator, translator, authenticated ]]
+  credentials: [[ researcher, contributor, editor, administrator, translator, authenticated, superuser ]]
   is_secure: true
 
 update:
-  credentials: administrator
+  credentials: [[ administrator, superuser ]]
   is_secure: true
 
 indexTermAcl:

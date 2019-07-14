@@ -1,0 +1,474 @@
+# This file is part of Access to Memory (AtoM).
+#
+# Access to Memory (AtoM) is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the Free
+# Software Foundation; either version 2 of the License, or (at your option)
+# any later version.
+#
+# Access to Memory (AtoM) is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# Access to Memory (AtoM); if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+# EAD XML (2002) IMPORT FILTER MAPPINGS
+#
+# @package AccesstoMemory
+# @subpackage object import
+# @author MJ Suhonos <mj@suhonos.ca>
+# @author Peter Van Garderen <peter@artefactual.com>
+# @author Mike Cantelon <mike@artefactual.com>
+# @version svn: $Id:$
+
+information_object:
+  XPath:  "//archdesc | //c | //c01 | //c02 | //c03 | //c04 | //c05 | //c06 | //c07 | //c08 | //c09 | //c10 | //c11 | //c12"
+  Object:  InformationObject
+  # define an axis for the parent object; if no node is matched here, the object is rooted if possible
+  Parent:  "ancestor::archdesc | ancestor::c | ancestor::c01 | ancestor::c02 | ancestor::c03 | ancestor::c04 | ancestor::c05 | ancestor::c06 | ancestor::c07 | ancestor::c08 | ancestor::c09 | ancestor::c10 | ancestor::c11 | ancestor::c12"
+  Methods:
+    collection_type:
+      XPath:   "."    # not really a match, just use self
+      Method:  setCollectionTypeId
+      Parameters: [QubitTerm::ARCHIVAL_MATERIAL_ID]
+
+    sourceStandard:
+      XPath:   "."    # not really a match, just use self
+      Method:  setSourceStandard
+      Parameters: ["'http://www.loc.gov/ead/ead.xsd'"]
+
+    publicationStatus:
+      XPath:   "."    # not really a match, just use self
+      Method:  setStatus
+      Parameters: ["array('typeId' => QubitTerm::STATUS_TYPE_PUBLICATION_ID, 'statusId' => sfConfig::get('app_defaultPubStatus', QubitTerm::PUBLICATION_STATUS_DRAFT_ID))"]
+
+    # each of the following XPath expressions are relative to the current matched node:
+
+    level:
+      XPath:  "@level"
+      Method: SetLevelOfDescriptionByName
+
+    other_level:
+      XPath:  "@otherlevel"
+      Method: SetLevelOfDescriptionByName
+
+    repository:
+      XPath:   "(did/repository[not(*)] | did/repository/corpname | did/repository/name)[1]"
+      Method:  setRepositoryByName
+
+    creator:
+      XPath:  "(did/origination/name|origination/name)"
+      Method:  setActorByName
+      Parameters: [$nodeValue, "$options = array('event_type_id' => QubitTerm::CREATION_ID)"]
+
+    creator_person:
+      XPath:   "(did/origination/persname|origination/persname)"
+      Method:  setActorByName
+      Parameters: [$nodeValue, "$options = array('event_type_id' => QubitTerm::CREATION_ID, 'entity_type_id' => QubitTerm::PERSON_ID)"]
+
+    creator_corporate_body:
+      XPath:   "(did/origination/corpname|origination/corpname)"
+      Method:  setActorByName
+      Parameters: [$nodeValue, "$options = array('event_type_id' => QubitTerm::CREATION_ID, 'entity_type_id' => QubitTerm::CORPORATE_BODY_ID)"]
+
+    creator_family:
+      XPath:   "(did/origination/famname|origination/famname)"
+      Method:  setActorByName
+      Parameters: [$nodeValue, "$options = array('event_type_id' => QubitTerm::CREATION_ID, 'entity_type_id' => QubitTerm::FAMILY_ID)"]
+
+    title:
+      XPath: "did/unittitle[not(@type)]"
+      Method:  setTitle
+
+    alternate_title:
+      XPath: "did/unittitle[@type='parallel']"
+      Method:  setAlternateTitle
+
+    edition_statement:
+      XPath: "did/unittitle[@type='editionStat']"
+      Method:  setEdition
+
+    other_title:
+      XPath: "did/unittitle[@type='otherInfo']"
+      Method:  addProperty
+      Parameters: ["otherTitleInformation", $nodeValue]
+
+    publishers_series_title:
+      XPath:   "did/unittitle/bibseries/title[not(@type)]"
+      Method:  addProperty
+      Parameters: ["titleProperOfPublishersSeries", $nodeValue]
+
+    publishers_series_title_parallel:
+      XPath:   "did/unittitle/bibseries/title[@type='parallel']"
+      Method:  addProperty
+      Parameters: ["parallelTitleOfPublishersSeries", $nodeValue]
+
+    publishers_series_title_other_info:
+      XPath:   "did/unittitle/bibseries/title[@type='otherInfo']"
+      Method:  addProperty
+      Parameters: ["otherTitleInformationOfPublishersSeries", $nodeValue]
+
+    publishers_series_statement_of_responsibility:
+      XPath:   "did/unittitle/bibseries/title[@type='statRep']"
+      Method:  addProperty
+      Parameters: ["statementOfResponsibilityRelatingToPublishersSeries", $nodeValue]
+
+    publishers_series_numbering:
+      XPath:   "did/unittitle/bibseries/num"
+      Method:  addProperty
+      Parameters: ["numberingWithinPublishersSeries", $nodeValue]
+
+    statement_of_responsibility:
+      XPath:   "did/unittitle[@type='statRep' and not(*)]"
+      Method:  addProperty
+      Parameters: ["titleStatementOfResponsibility", $nodeValue]
+
+    edition:
+      XPath:   "did/unittitle[not(@type)]/edition"
+      Method:  setEdition
+
+    edition_statement_of_responsibility:
+      XPath:   "did/unittitle[@type='statRep']/edition"
+      Method: addProperty
+      Parameters: ["editionStatementOfResponsibility", $nodeValue]
+
+    cartographic:
+      XPath:   "did/materialspec[@type='cartographic']"
+      Method:  addProperty
+      Parameters: ["statementOfScaleCartographic", $nodeValue]
+
+    projection:
+      XPath:   "did/materialspec[@type='projection']"
+      Method:  addProperty
+      Parameters: ["statementOfProjection", $nodeValue]
+
+    coordinates:
+      XPath:   "did/materialspec[@type='coordinates']"
+      Method:  addProperty
+      Parameters: ["statementOfCoordinates", $nodeValue]
+
+    architectural:
+      XPath:   "did/materialspec[@type='architectural']"
+      Method:  addProperty
+      Parameters: ["statementOfScaleArchitectural", $nodeValue]
+
+    philatelic:
+      XPath:   "did/materialspec[@type='philatelic']"
+      Method:  addProperty
+      Parameters: ["issuingJurisdictionAndDenomination", $nodeValue]
+
+    digital_object:
+      XPath:   "(did/dao[1]/@href | did/daogrp[1]/daoloc[1]/@href)[1]"
+      Method:  importDigitalObjectFromUri
+
+    publicationStatus:
+      XPath:  "odd[@type='publicationStatus']"
+      Method: setPublicationStatusByName
+
+    draftingStatus:
+      XPath:  "odd[@type='statusDescription']"
+      Method: setDescriptionStatusByName
+
+    levelOfDetail:
+      XPath:  "odd[@type='levelOfDetail']"
+      Method: setDescriptionLevelOfDetailByName
+
+    descriptionIdentifier:
+      XPath:  "../eadheader/eadid/@identifier"
+      Method: setDescriptionIdentifier
+
+    institutionIdentifier:
+      XPath:  "odd[@type='institutionIdentifier']"
+      Method: setInstitutionResponsibleIdentifier
+
+    title_variation_notes:
+      XPath:  "odd[@type='titleVariation']"
+      Method: importEadNote
+      Parameters: ["$options = array('note' => $nodeValue, 'noteTypeId' => $titleVariationNoteTypeId)"]
+
+    title_attributions_notes:
+      XPath:  "odd[@type='titleAttributions']"
+      Method: importEadNote
+      Parameters: ["$options = array('note' => $nodeValue, 'noteTypeId' => $titleAttributionsNoteTypeId)"]
+
+    title_continuation_notes:
+      XPath:  "odd[@type='titleContinuation']"
+      Method: importEadNote
+      Parameters: ["$options = array('note' => $nodeValue, 'noteTypeId' => $titleContinuationNoteTypeId)"]
+
+    title_statement_of_responsibility_notes:
+      XPath:  "odd[@type='titleStatRep']"
+      Method: importEadNote
+      Parameters: ["$options = array('note' => $nodeValue, 'noteTypeId' => $titleStatRepNoteTypeId)"]
+
+    title_parallel_notes:
+      XPath:  "odd[@type='titleParallel']"
+      Method: importEadNote
+      Parameters: ["$options = array('note' => $nodeValue, 'noteTypeId' => $titleParallelNoteTypeId)"]
+
+    title_source_notes:
+      XPath:  "odd[@type='titleSource']"
+      Method: importEadNote
+      Parameters: ["$options = array('note' => $nodeValue, 'noteTypeId' => $titleSourceNoteTypeId)"]
+
+    alphanumeric_designation_notes:
+      XPath:  "odd[@type='alphanumericDesignation']"
+      Method: importEadNote
+      Parameters: ["$options = array('note' => $nodeValue, 'noteTypeId' => $alphaNumericaDesignationsNoteTypeId)"]
+
+    edition_note:
+      XPath:  "odd[@type='edition']"
+      Method: importEadNote
+      Parameters: ["$options = array('note' => $nodeValue, 'noteTypeId' => $editionNoteTypeId)"]
+
+    conservation_note:
+      XPath:  "odd[@type='conservation']"
+      Method: importEadNote
+      Parameters: ["$options = array('note' => $nodeValue, 'noteTypeId' => $conservationNoteTypeId)"]
+
+    physical_description_note:
+      XPath:  "odd[@type='physDesc']"
+      Method: importEadNote
+      Parameters: ["$options = array('note' => $nodeValue, 'noteTypeId' => $physDescNoteTypeId)"]
+
+    publisher_series_note:
+      XPath:  "odd[@type='bibSeries']"
+      Method: importEadNote
+      Parameters: ["$options = array('note' => $nodeValue, 'noteTypeId' => $pubSeriesNoteTypeId)"]
+
+    rights_note:
+      XPath:  "odd[@type='rights']"
+      Method: importEadNote
+      Parameters: ["$options = array('note' => $nodeValue, 'noteTypeId' => $rightsNoteTypeId)"]
+
+    material_note:
+      XPath:  "odd[@type='material']"
+      Method: importEadNote
+      Parameters: ["$options = array('note' => $nodeValue, 'noteTypeId' => $materialNoteTypeId)"]
+
+    general_note:
+      XPath:  "odd[@type='general']"
+      Method: importEadNote
+      Parameters: ["$options = array('note' => $nodeValue, 'noteTypeId' => $generalNoteTypeId)"]
+
+    dates:
+      XPath:  "did/unitdate"
+      Method: setDates
+      Parameters: [$nodeValue, "$options = array('normalized_dates' => $importDOM->xpath->query('@normal', $domNode2)->item(0)->nodeValue, 'date_type' => $importDOM->xpath->query('@datechar', $domNode2)->item(0)->nodeValue)"]
+
+    physdesc:
+      XPath:  "did/physdesc"
+      Method: importPhysDescEadData
+      Parameters: ["$domNode2"]
+
+    abstract:
+      XPath:   "did/abstract"
+      Method:  setScopeAndContent
+
+  ##physloc
+    ##if no container is given, save as a 'location' note, otherwise save to the container's location information
+    ##Xpath:  "did/physloc"
+
+    container:
+      XPath:  "did/container"
+      Method: importPhysicalObject
+
+    #container:
+    #  XPath:  "did/container"
+    #  Method:  setPhysicalObjectByName
+    #  Parameters: [$nodeValue, "$options = array('type' => $importDOM->xpath->query('@type', $domNode2)->item(0)->nodeValue)"]
+    #  ## to do: check for @parent and create parentId link for physical object, if present
+
+    repositoryAddress:
+      XPath:   "did/repository/address"
+      Method:  setRepositoryAddress
+
+    ## jjp SITA - Batch import mainframe  
+    batch:
+      XPath:   "did/batch"
+      Method:  setBatch
+      Parameters: [$nodeValue]
+
+    ## jjp SITA - Batch import mainframe  
+    partNo:
+      XPath:   "partno"
+      Method:  setPartNo
+      Parameters: [$nodeValue]
+
+    ## jjp SITA - Batch import mainframe  
+    recordType:
+      XPath:   "recordtype"
+      Method:  setRecordType
+      Parameters: [$nodeValue]
+
+    identifier:
+      XPath:   "did/unitid[not(@type)]"
+      Method:  setIdentifierWithCodes
+      Parameters: [$nodeValue, "$options = array('countrycode' => $importDOM->xpath->query('@countrycode', $domNode2)->item(0)->nodeValue, 'repositorycode' => $importDOM->xpath->query('@repositorycode', $domNode2)->item(0)->nodeValue)"]
+
+    alternative_identifiers:
+      XPath:  "did/unitid[@type!='standard' and @label]"
+      Method:  addProperty
+      Parameters: ["$importDOM->xpath->query('@label', $domNode2)->item(0)->nodeValue", $nodeValue, "$options = array('scope' => 'alternativeIdentifiers')"]
+
+    alternative_identifiers_2:
+      XPath:  "did/unitid[@type!='standard' and not(@label)]"
+      Method:  addProperty
+      Parameters: ["$importDOM->xpath->query('@type', $domNode2)->item(0)->nodeValue", $nodeValue, "$options = array('scope' => 'alternativeIdentifiers')"]
+
+    standard_number:
+      XPath:  "did/unitid[@type='standard']"
+      Method:  addProperty
+      Parameters: ["standardNumber", $nodeValue]
+
+    langusage:
+      XPath:  "../eadheader/profiledesc/langusage"
+      Method: importLangusageEadData
+      Parameters: ["$domNode2"]
+
+    langmaterial:
+      XPath:  "did/langmaterial"
+      Method: importLangmaterialEadData
+      Parameters: ["$domNode2"]
+
+    phystech:
+      XPath:  "(phystech | descgrp/phystech)"
+      Method: setPhysicalCharacteristics
+
+    originalsloc:
+      XPath:  "(originalsloc | descgrp/originalsloc)"
+      Method: setLocationOfOriginals
+
+    #TODO: check for @type attribute and pass it as note type
+    note:
+      XPath:  "(note | descgrp/note | did/note[not(@type='sourcesDescription')])"
+      Method: importEadNote
+      Parameters: ["$options = array('note' => $nodeValue, 'noteTypeId' => QubitTerm::GENERAL_NOTE_ID)"]
+
+    sources:
+      XPath:  "did/note[@type='sourcesDescription']"
+      Method: setSources
+      
+    bioghist:
+      XPath:  "(bioghist | descgrp/bioghist)"
+      Method: importBioghistEadData
+      Parameters: ["$domNode2", "$key"]
+
+    # this will overwrite any values entered for <abstract>
+    scopeandcontent:
+      XPath:   "scopecontent"
+      Method:  setScopeAndContent
+
+    arrangement:
+      XPath:   "(arrangement | descgrp/arrangement)"
+      Method:  setArrangement
+
+    controlaccess_name:
+      XPath:  "(controlaccess/name | controlaccess/controlaccess/name)"
+      Method: setActorByName
+      Parameters: [$nodeValue, "$options = array('relation_type_id' => QubitTerm::NAME_ACCESS_POINT_ID)"]
+
+    controlaccess_corpname:
+      XPath:   "(controlaccess/corpname | controlaccess/controlaccess/corpname)"
+      Method:  setActorByName
+      Parameters: [$nodeValue, "$options = array('relation_type_id' => QubitTerm::NAME_ACCESS_POINT_ID, 'entity_type_id' => QubitTerm::CORPORATE_BODY_ID, 'source' => $importDOM->xpath->query('@source', $domNode2)->item(0)->nodeValue, 'rules' => $importDOM->xpath->query('@rules', $domNode2)->item(0)->nodeValue)"]
+
+    controlaccess_persname:
+      XPath:   "(controlaccess/persname | controlaccess/controlaccess/persname)"
+      Method:  setActorByName
+      Parameters: [$nodeValue, "$options = array('relation_type_id' => QubitTerm::NAME_ACCESS_POINT_ID, 'entity_type_id' => QubitTerm::PERSON_ID, 'source' => $importDOM->xpath->query('@source', $domNode2)->item(0)->nodeValue, 'rules' => $importDOM->xpath->query('@rules', $domNode2)->item(0)->nodeValue)"]
+
+    controlaccess_famname:
+      XPath:   "(controlaccess/famname | controlaccess/controlaccess/famname)"
+      Method:  setActorByName
+      Parameters: [$nodeValue, "$options = array('relation_type_id' => QubitTerm::NAME_ACCESS_POINT_ID, 'entity_type_id' => QubitTerm::FAMILY_ID, 'source' => $importDOM->xpath->query('@source', $domNode2)->item(0)->nodeValue, 'rules' => $importDOM->xpath->query('@rules', $domNode2)->item(0)->nodeValue)"]
+
+    controlaccess_geogname:
+      XPath:   "(controlaccess/geogname | controlaccess/controlaccess/geogname)"
+      Method:  setTermRelationByName
+      Parameters: [$nodeValue, "$options = array('taxonomyId' => QubitTaxonomy::PLACE_ID, 'source' => $importDOM->xpath->query('@source', $domNode2)->item(0)->nodeValue)"]
+
+    controlaccess_subject:
+      XPath:   "(controlaccess/subject | controlaccess/controlaccess/subject)"
+      Method:  setTermRelationByName
+      Parameters: [$nodeValue, "$options = array('taxonomyId' => QubitTaxonomy::SUBJECT_ID, 'source' => $importDOM->xpath->query('@source', $domNode2)->item(0)->nodeValue)"]
+
+    controlaccess_genreform:
+      XPath:   "(controlaccess/genreform | controlaccess/controlaccess/genreform)"
+      Method:  setTermRelationByName
+      Parameters: [$nodeValue, "$options = array('taxonomyId' => QubitTaxonomy::MATERIAL_TYPE_ID, 'source' => $importDOM->xpath->query('@source', $domNode2)->item(0)->nodeValue)"]
+
+    accessrestrict:
+      XPath:   "(accessrestrict | descgrp/accessrestrict)"
+      Method:  setAccessConditions
+
+    accruals:
+      XPath:   "(accruals | descgrp/accruals)"
+      Method:  setAccruals
+
+    rules:
+      XPath:   "../eadheader/profiledesc/descrules"
+      Method:  setRules
+
+    acqinfor:
+      XPath:   "(acqinfo | descgrp/acqinfo)"
+      Method:  setAcquisition
+
+    altformavail:
+      XPath:  "(altformavail | descgrp/altformavail)"
+      Method: setLocationOfCopies
+
+    appraisal:
+      XPath:   "(appraisal | descgrp/appraisal)"
+      Method:  setAppraisal
+
+    custodhist:
+      XPath:   "(custodhist | descgrp/custodhist)"
+      Method:  setArchivalHistory
+
+    prefercite:
+      XPath: "prefercite"
+      Method: importEadNote
+      Parameters: ["$options = array('note' => 'Preferred citation: ' . $nodeValue, 'noteTypeId' => QubitTerm::GENERAL_NOTE_ID)"]
+
+    processinfo:
+      XPath:  "processinfo"
+      Method: importEadNote # Manually parsed, see case 'processinfo' in QubitXmlImport.class.php
+      Parameters: ["$options = array('note' => $nodeValue, 'noteTypeId' => QubitTerm::ARCHIVIST_NOTE_ID)"]
+
+    publicationdate:
+      XPath: "../eadheader/filedesc/publicationstmt/date"
+      Method: setPublicationDate
+
+    archivistnote:
+      XPath:  "../eadheader/filedesc/titlestmt/author[@encodinganalog='creator']"
+      Method: importEadNote
+      Parameters: ["$options = array('note' => $nodeValue, 'noteTypeId' => QubitTerm::ARCHIVIST_NOTE_ID)"]
+
+    revision_history:
+      XPath:  "(processinfo/date | processinfo/p/date | descgrp/processinfo/date | descgrp/processinfo/p/date | ../eadheader/filedesc/publicationstmt/date)"
+      Method:  setRevisionHistory
+
+    userestrict:
+      XPath:   "(userestrict | descgrp/userestrict)"
+      Method:  setReproductionConditions
+
+    relatedunitsofdescription:
+      XPath:   "(relatedmaterial | descgrp/relatedmaterial | separatedmaterial | descgrp/separatedmaterial)"
+      Method:  setRelatedUnitsOfDescription
+
+    otherfindaid:
+      XPath:   "(otherfindaid | descgrp/otherfindaid)"
+      Method:  setFindingAids
+
+    bibliography:
+      XPath:   "(bibliography | descgrp/bibliography)"
+      Method: importEadNote
+      Parameters: ["$options = array('note' => $nodeValue, 'noteTypeId' => QubitTerm::PUBLICATION_NOTE_ID)"]
+
+    odd:
+      XPath:  "odd"
+      Method: importEadNote
+      Parameters: ["$options = array('note' => $nodeValue, 'noteTypeId' => QubitTerm::OTHER_DESCRIPTIVE_DATA_ID)"]

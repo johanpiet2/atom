@@ -51,6 +51,7 @@ class sfIsadPluginEditAction extends InformationObjectEditAction
       'locationOfOriginals',
       'nameAccessPoints',
       'genreAccessPoints',
+      'partNo',		  
       'physicalCharacteristics',
       'placeAccessPoints',
       'relatedUnitsOfDescription',
@@ -67,7 +68,13 @@ class sfIsadPluginEditAction extends InformationObjectEditAction
       'descriptionStatus',
       'displayStandard',
       'displayStandardUpdateDescendants',
-      'title');
+      'title',
+	  'registry',
+	  'volumeNumberIdentifier',
+	  'fileNumberIdentifier',
+	  'partNumberIdentifier',
+	  'itemNumberIdentifier'
+	  );
 
   protected function earlyExecute()
   {
@@ -128,6 +135,23 @@ class sfIsadPluginEditAction extends InformationObjectEditAction
         $this->form->setDefault('creators', $value);
         $this->form->setValidator('creators', new sfValidatorPass);
         $this->form->setWidget('creators', new sfWidgetFormSelect(array('choices' => $choices, 'multiple' => true)));
+
+        break;
+
+      case 'registry':
+ 		$choices = array();
+		foreach (QubitRegistry::getAll() as $item)
+		{
+			$choices[0] = "";
+			if ($item->__toString() != "")
+			{
+				$choices[$item->id] = $item->__toString();
+			}
+		}  
+		
+        $this->form->setDefault('registry', $this->resource['registryId']);
+        $this->form->setValidator('registry', new sfValidatorChoice(array('choices' => array_keys($choices))));
+        $this->form->setWidget('registry', new sfWidgetFormSelect(array('choices' => $choices)));
 
         break;
 
@@ -202,6 +226,13 @@ class sfIsadPluginEditAction extends InformationObjectEditAction
         break;
 
       case 'languageNotes':
+
+        $this->isad['languageNotes'] = $this->form->getValue('languageNotes');
+
+        break;
+
+      case 'registry':
+		  $this->resource->registryId = $this->form->getValue('registry');
 
         $this->isad['languageNotes'] = $this->form->getValue('languageNotes');
 

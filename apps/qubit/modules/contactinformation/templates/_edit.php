@@ -126,6 +126,7 @@ content
 
         <li class="selected"><a href="#contactInformationRelation_Tab1"><em><?php echo __('Main') ?></em></a></li>
         <li><a href="#contactInformationRelation_Tab2"><em><?php echo __('Physical location') ?></em></a></li>
+        <li><a href="#contactInformationRelation_Tab3"><em><?php echo __('Postal details') ?></em></a></li> <!-- jjp SITA 17 Dec 2014 -->
         <li><a href="#contactInformationRelation_Tab3"><em><?php echo __('Other details') ?></em></a></li>
 
       </ul>
@@ -138,9 +139,15 @@ content
             ->label(__('Primary contract'))
             ->renderRow() ?>
 
+		  <!-- jjp SITA -->
+          <?php echo $form->title->renderRow() ?>
+
           <?php echo $form->contactPerson
             ->label(__('Contact person'))
             ->renderRow() ?>
+
+		  <!-- jjp SITA -->
+          <?php echo $form->position->renderRow() ?>
 
           <?php echo $form->telephone
             ->label(__('Phone'))
@@ -150,12 +157,11 @@ content
             ->label(__('Fax'))
             ->renderRow() ?>
 
+		  <!-- jjp SITA -->
+          <?php echo $form->cell->renderRow() ?>
+
           <?php echo $form->email
             ->label(__('Email'))
-            ->renderRow() ?>
-
-          <?php echo $form->website
-            ->label(__('URL'))
             ->renderRow() ?>
 
         </div>
@@ -192,18 +198,38 @@ content
 
         </div>
 
+		<!-- jjp SITA 17 Dec 2014 -->
         <div id="contactInformationRelation_Tab3">
 
-          <?php echo $form->contactType
-            ->label(__('Contact type'))
+          <?php echo $form->postalAddress->renderRow() ?>
+
+          <?php echo $form->postalCity
+            ->label(__('Postal city'))
             ->renderRow() ?>
 
-          <?php echo $form->note
-            ->label(__('Note'))
+          <?php echo $form->postalRegion
+            ->label(__('Postal region/province'))
+            ->renderRow() ?>
+
+          <?php echo $form->postalCountryCode
+            ->label(__('Postal country'))
+            ->renderRow() ?>
+
+          <?php echo $form->postalPostCode
+            ->label(__('Postal post code'))
             ->renderRow() ?>
 
         </div>
 
+		<!-- jjp SITA 17 Dec 2014 Change Tab3 to Tab4-->
+        <div id="contactInformationRelation_Tab4">
+          <?php echo $form->website->label(__('URL'))->renderRow() ?>
+
+          <?php echo $form->contactType->renderRow() ?>
+
+          <?php echo $form->note->renderRow() ?>
+
+        </div>
      </div>
 
   </div>

@@ -38,19 +38,30 @@ class InformationObjectTableMap extends TableMap {
 		// columns
 		$this->addForeignPrimaryKey('ID', 'id', 'INTEGER' , 'object', 'ID', true, null, null);
 		$this->addColumn('IDENTIFIER', 'identifier', 'VARCHAR', false, 1024, null);
+		$this->addColumn('PARTNO', 'partNo', 'VARCHAR', false, 1024, null);			
 		$this->addColumn('OAI_LOCAL_IDENTIFIER', 'oaiLocalIdentifier', 'INTEGER', true, null, null);
 		$this->addForeignKey('LEVEL_OF_DESCRIPTION_ID', 'levelOfDescriptionId', 'INTEGER', 'term', 'ID', false, null, null);
 		$this->addForeignKey('COLLECTION_TYPE_ID', 'collectionTypeId', 'INTEGER', 'term', 'ID', false, null, null);
 		$this->addForeignKey('REPOSITORY_ID', 'repositoryId', 'INTEGER', 'repository', 'ID', false, null, null);
+		$this->addForeignKey('REGISTRY_ID', 'registryId', 'INTEGER', 'registry', 'ID', false, null, null);
 		$this->addForeignKey('PARENT_ID', 'parentId', 'INTEGER', 'information_object', 'ID', false, null, null);
 		$this->addForeignKey('DESCRIPTION_STATUS_ID', 'descriptionStatusId', 'INTEGER', 'term', 'ID', false, null, null);
 		$this->addForeignKey('DESCRIPTION_DETAIL_ID', 'descriptionDetailId', 'INTEGER', 'term', 'ID', false, null, null);
 		$this->addColumn('DESCRIPTION_IDENTIFIER', 'descriptionIdentifier', 'VARCHAR', false, 1024, null);
 		$this->addColumn('SOURCE_STANDARD', 'sourceStandard', 'VARCHAR', false, 1024, null);
 		$this->addForeignKey('DISPLAY_STANDARD_ID', 'displayStandardId', 'INTEGER', 'term', 'ID', false, null, null);
+		$this->addForeignKey('FORMAT_ID', 'formatId', 'INTEGER', 'term', 'ID', false, null, null);
+		$this->addForeignKey('SIZE_ID', 'sizeId', 'INTEGER', 'term', 'ID', false, null, null);
+		$this->addForeignKey('TYP_ID', 'typId', 'INTEGER', 'term', 'ID', false, null, null);	
+		$this->addForeignKey('EQUIPMENT_ID', 'equipmentId', 'INTEGER', 'term', 'ID', false, null, null);		
 		$this->addColumn('LFT', 'lft', 'INTEGER', true, null, null);
 		$this->addColumn('RGT', 'rgt', 'INTEGER', true, null, null);
 		$this->addColumn('SOURCE_CULTURE', 'sourceCulture', 'VARCHAR', true, 7, null);
+		$this->addColumn('SHELF', 'shelf', 'VARCHAR', false, 1024, null);	
+		$this->addColumn('ROW', 'row', 'VARCHAR', false, 1024, null);	
+		$this->addColumn('BIN', 'bin', 'VARCHAR', false, 1024, null);	
+		$this->addColumn('MOVE_PERMANENT', 'movePermanent', 'INTEGER', 'term', 'ID', false, null, null);	
+		$this->addColumn('IMPORT_ID', 'importId', 'VARCHAR', false, 50, null);			
 		// validators
 	} // initialize()
 
@@ -63,6 +74,7 @@ class InformationObjectTableMap extends TableMap {
     $this->addRelation('termRelatedBylevelOfDescriptionId', 'term', RelationMap::MANY_TO_ONE, array('level_of_description_id' => 'id', ), 'SET NULL', null);
     $this->addRelation('termRelatedBycollectionTypeId', 'term', RelationMap::MANY_TO_ONE, array('collection_type_id' => 'id', ), null, null);
     $this->addRelation('repository', 'repository', RelationMap::MANY_TO_ONE, array('repository_id' => 'id', ), null, null);
+    $this->addRelation('registry', 'registry', RelationMap::MANY_TO_ONE, array('registry_id' => 'id', ), null, null);
     $this->addRelation('informationObjectRelatedByparentId', 'informationObject', RelationMap::MANY_TO_ONE, array('parent_id' => 'id', ), null, null);
     $this->addRelation('termRelatedBydescriptionStatusId', 'term', RelationMap::MANY_TO_ONE, array('description_status_id' => 'id', ), 'SET NULL', null);
     $this->addRelation('termRelatedBydescriptionDetailId', 'term', RelationMap::MANY_TO_ONE, array('description_detail_id' => 'id', ), 'SET NULL', null);

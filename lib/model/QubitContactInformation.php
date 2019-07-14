@@ -47,15 +47,29 @@ class QubitContactInformation extends BaseContactInformation
 
   public function getContactInformationString()
   {
-    // TODO: This should be converted into a partial!
-    sfContext::getInstance()->getConfiguration()->loadHelpers('Partial');
-    $cf = array('cultureFallback' => true);
+    $string = ($this->getStreetAddress()) ? $this->getStreetAddress().'<br/>' : '';
+    $string .= ($this->getCity()) ? $this->getCity() : '';
+    $string .= ($this->getRegion()) ? ', '.$this->getRegion() : '';
+    $string .= ($this->getCountryCode()) ? '<br/>'.$this->getCountryCode().'' : '';
+    $string .= ($this->getPostalCode()) ? '   '.$this->getPostalCode(): '';
 
-    $string = ($this->getStreetAddress($cf)) ? esc_specialchars($this->getStreetAddress($cf))."\n" : '';
-    $string .= ($this->getCity($cf)) ? esc_specialchars($this->getCity($cf)) : '';
-    $string .= ($this->getRegion($cf)) ? ', '.esc_specialchars($this->getRegion($cf)) : '';
-    $string .= ($this->getCountryCode($cf)) ? "\n".esc_specialchars($this->getCountryCode($cf)) : '';
-    $string .= ($this->getPostalCode($cf)) ? '   '.esc_specialchars($this->getPostalCode($cf)): '';
+    $string = ($this->getPostalAddress()) ? $this->getPostalAddress().'<br/>' : '';
+    $string .= ($this->getPostalCity()) ? $this->getPostalCity() : '';
+    $string .= ($this->getPostalRegion()) ? ', '.$this->getPostalRegion() : '';
+    $string .= ($this->getPostalCountryCode()) ? '<br/>'.$this->getPostalCountryCode().'' : '';
+    $string .= ($this->getPostalPostCode()) ? '   '.$this->getPostalPostCode(): '';
+
+    if (!isset($options['simple']))
+    {
+      $string .= ($this->getTitle()) ? 'title: '.$this->getTitle().'<br/>' : '';
+      $string .= ($this->getPosition()) ? 'position: '.$this->getPosition().'<br/>' : '';
+      $string .= ($this->getCell()) ? 'cell number: '.$this->getCell().'<br/>' : '';
+      $string .= ($this->getTelephone()) ? '<p>telephone number: '.$this->getTelephone().'<br/>' : '';
+      $string .= ($this->getFax()) ? 'fax number: '.$this->getFax().'<br/>' : '';
+      $string .= ($this->getCell()) ? 'cell number: '.$this->getCell().'<br/>' : '';
+      $string .= ($this->getEmail()) ? 'email: '.$this->getEmail().'<br/>' : '';
+      $string .= ($this->getWebsite()) ? 'website: <a href="'.$this->getWebsite().'">'.$this->getWebsite().'</a>' : '';
+    }
 
     return $string;
   }

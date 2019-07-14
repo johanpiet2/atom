@@ -5,6 +5,10 @@
       <h3>&nbsp;</h3>
       <div class="agent">
         <?php echo render_value_inline($contactInformation->contactPerson) ?>
+        <?php echo render_value($contactInformation->contactPerson) ?>
+		<?php if (!empty($contactInformation->position)): ?>
+        	<?php echo " - " . render_value($contactInformation->position) ?>
+        <?php endif; ?>
         <?php if ($contactInformation->primaryContact): ?>
           <span class="primary-contact">
             <?php echo __('Primary contact') ?>
@@ -62,6 +66,42 @@
         </div>
       </div>
 
+	  <!-- jjp SITA 17 Dec 2014-->
+      <div class="field">
+        <h3><?php echo __('Postal Address') ?></h3>
+        <div class="street-address">
+          <?php echo render_value($contactInformation->postalAddress) ?>
+        </div>
+      </div>
+
+      <div class="field">
+        <h3><?php echo __('Postal Locality') ?></h3>
+        <div class="locality">
+          <?php echo render_value($contactInformation->getPostalCity(array('cultureFallback' => true))) ?>
+        </div>
+      </div>
+
+      <div class="field">
+        <h3><?php echo __('Postal Region') ?></h3>
+        <div class="region">
+          <?php echo render_value($contactInformation->getPostalRegion(array('cultureFallback' => true))) ?>
+        </div>
+      </div>
+
+      <div class="field">
+        <h3><?php echo __('Postal Country name') ?></h3>
+        <div class="country-name">
+          <?php echo format_country($contactInformation->postalCountryCode) ?>
+        </div>
+      </div>
+
+      <div class="field">
+        <h3><?php echo __('Postal Post code') ?></h3>
+        <div class="postal-code">
+          <?php echo render_value($contactInformation->postalPostCode) ?>
+        </div>
+      </div>
+
     </div>
 
   </div>
@@ -77,6 +117,14 @@
     <h3 class="type"><?php echo __('Fax') ?></h3>
     <div class="fax">
       <?php echo render_value_inline($contactInformation->fax) ?>
+    </div>
+  </div>
+
+  <!-- jjp SITA 17 Dec 2014-->
+  <div class="field">
+    <h3 class="type"><?php echo __('Cell') ?></h3>
+    <div class="cell">
+      <?php echo render_value_inline($contactInformation->cell) ?>
     </div>
   </div>
 
@@ -98,6 +146,20 @@
     <h3><?php echo __('Note') ?></h3>
     <div class="note">
       <?php echo render_value_inline($contactInformation->getNote(array('cultureFallback' => true))) ?>
+    </div>
+  </div>
+
+  <div class="field">
+    <h3><?php echo __('Latitude') ?></h3>
+    <div class="url">
+      <?php echo render_value_inline($contactInformation->latitude) ?>
+    </div>
+  </div>
+
+  <div class="field">
+    <h3><?php echo __('Longitude') ?></h3>
+    <div class="url">
+      <?php echo render_value_inline($contactInformation->longitude) ?>
     </div>
   </div>
 

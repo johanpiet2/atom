@@ -310,6 +310,77 @@ QubitMenu:
       vi: 'Người nắm giữ quyền'
       zh: 权利持有者
     path: rightsholder/browse
+  QubitMenu_mainmenu_manage_reports:
+    parent_id: QubitMenu_mainmenu_manage
+    source_culture: en
+    name: reports
+    label:
+      ca: 'Reports'
+      en: 'Reports'
+      es: 'Reports'
+      fr: 'Reports'
+      gl: 'Reports'
+      it: 'Reports'
+      ja: 権利保持者
+      ka: 'Reports'
+      nl: Reports
+      pl: 'Reports'
+      pt: 'Reports'
+      sl: 'Reports'
+      th: เจ้าของสิทธิ
+    path: reports/reportUpdates
+  QubitMenu_mainmenu_manage_publish:
+    parent_id: QubitMenu_mainmenu_manage
+    source_culture: en
+    name: publish
+    label:
+      ca: 'Publish'
+      en: 'Publish'
+      es: 'Publish'
+      fr: 'Publish'
+      gl: 'Publish'
+      it: 'Publish'
+      ja: 権利保持者
+      ka: 'Publish'
+      nl: Publish
+      pl: 'Publish'
+      pt: 'Publish'
+      sl: 'Publish'
+      th: เจ้าของสิทธิ
+    path: publish/browsePublish
+  QubitMenu_mainmenu_manage_researcher:
+    parent_id: QubitMenu_mainmenu_manage
+    source_culture: en
+    name: researcher
+    label:
+      en: 'Researcher'
+    path: researcher/browse
+  QubitMenu_mainmenu_manage_service_provider:
+    parent_id: QubitMenu_mainmenu_manage
+    source_culture: en
+    name: serviceProvider
+    label:
+      en: 'Service Provider'
+    path: serviceProvider/browse
+  QubitMenu_mainmenu_manage_registry:
+    parent_id: QubitMenu_mainmenu_manage
+    source_culture: en
+    name: registry
+    label:
+      ca: 'Registers'
+      en: 'Registers'
+      es: 'Registers'
+      fr: 'Registers'
+      gl: 'Registers'
+      it: 'Registers'
+      ja: 'Registers'
+      ka: 'Registers'
+      nl: 'Registers''
+      pl: 'Registers'
+      pt: 'Registers'
+      sl: 'Registers'
+      th: 'Registers'
+    path: registry/browse
   QubitMenu_mainmenu_manage_taxonomies:
     id: 6
     parent_id: QubitMenu_mainmenu_manage
@@ -944,6 +1015,20 @@ QubitMenu:
       uz: 'Ma''lumotnoma huquqlari'
       vi: 'Cho phép phân loại'
       zh: 分类权限
+  QubitMenu_mainmenu_admin_users_researcherAcl:
+    parent_id: QubitMenu_mainmenu_admin_users
+    name: userResearcherAcl
+    path: 'user/indexResearcherAcl?slug=%currentSlug%'
+    source_culture: en
+    label:
+      en: 'Researcher permissions'
+  QubitMenu_mainmenu_admin_users_serviceProviderAcl:
+    parent_id: QubitMenu_mainmenu_admin_users
+    name: userServiceProviderAcl
+    path: 'user/indexServiceProviderAcl?slug=%currentSlug%'
+    source_culture: en
+    label:
+      en: 'Service provider permissions'
   QubitMenu_mainmenu_admin_groups:
     parent_id: QubitMenu_mainmenu_admin
     source_culture: en
@@ -1147,6 +1232,20 @@ QubitMenu:
       uz: 'Ma''lumotnoma huquqlari'
       vi: 'Cho phép phân loại'
       zh: 分类权限
+  QubitMenu_mainmenu_admin_groups_researcherAcl:
+    parent_id: QubitMenu_mainmenu_admin_groups
+    name: groupResearcherAcl
+    path: 'aclGroup/indexResearcherAcl?id=%currentId%'
+    source_culture: en
+    label:
+      en: 'Researcher permissions'
+  QubitMenu_mainmenu_admin_groups_serviceProviderAcl:
+    parent_id: QubitMenu_mainmenu_admin_groups
+    name: groupServiceProviderAcl
+    path: 'aclGroup/indexServiceProviderAcl?id=%currentId%'
+    source_culture: en
+    label:
+      en: 'Service Provider permissions'
   QubitMenu_mainmenu_admin_staticpages:
     parent_id: QubitMenu_mainmenu_admin
     source_culture: en

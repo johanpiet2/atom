@@ -15,6 +15,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Access to Memory (AtoM).  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Show paginated list of physical storage areas.
+ *
+ * @package    AccesstoMemory
+ * @subpackage physicalobject
+ * @author     Johan Pieterse <johan.pieterse@sita.co.za>
  */
 
 class PhysicalObjectBrowseAction extends sfAction
@@ -36,27 +42,32 @@ class PhysicalObjectBrowseAction extends sfAction
 
     // Do source culture fallback
     $criteria = QubitCultureFallback::addFallbackCriteria($criteria, 'QubitPhysicalObject');
+    $criteria->addJoin(QubitPhysicalObject::ID, QubitPhysicalObjectI18n::ID);
 
     if (isset($request->subquery))
     {
       // Get physical object data for culture
-      $criteria->addJoin(QubitPhysicalObject::ID, QubitPhysicalObjectI18n::ID);
+      //$criteria->addJoin(QubitPhysicalObject::ID, QubitPhysicalObjectI18n::ID);
       $criteria->add(QubitPhysicalObjectI18n::CULTURE, $this->context->user->getCulture());
-
-      // Get physical object's type term data for culture
-      $criteria->addJoin(QubitPhysicalObject::TYPE_ID, QubitTerm::ID);
-      $criteria->addJoin(QubitTerm::ID, QubitTermI18n::ID);
-      $criteria->add(QubitTermI18n::CULTURE, $this->context->user->getCulture());
-
-      // Match search query to either physical object name, location, or type
-      $c1 = $criteria->getNewCriterion(QubitPhysicalObjectI18n::NAME, "%$request->subquery%", Criteria::LIKE);
-      $c2 = $criteria->getNewCriterion(QubitPhysicalObjectI18n::LOCATION, "%$request->subquery%", Criteria::LIKE);
-      $c1->addOr($c2);
-      $c3 = $criteria->getNewCriterion(QubitTermI18n::NAME, "%$request->subquery%", Criteria::LIKE);
-      $c1->addOr($c3);
-
-      $criteria->add($c1);
+      $criteria->add(QubitPhysicalObjectI18n::NAME, "$request->subquery%", Criteria::LIKE);
     }
+
+    // Show only Repositories linked to user - Administrator can see all JJP SITA One Instance
+    // Start
+    if ((!$this->context->user->isAdministrator()) && (QubitSetting::getByName('open_system') == '0')) {
+        $repositories = new QubitUser;
+        if (0 < count($userRepos = $repositories->getRepositoriesById($this->context->user->getAttribute('user_id')))) {
+            // Combined subquery
+            foreach ($userRepos as $userRepo) {
+		      $criteria->addOR(QubitPhysicalObjectI18n::REPOSITORY_ID, $userRepo, Criteria::EQUAL);
+            }
+        } else {
+        	// if not logged in do not show any repositories
+		      $criteria->add(QubitPhysicalObjectI18n::REPOSITORY_ID, '0000', Criteria::EQUAL);
+        }
+    }
+    
+    // End
 
     switch ($request->sort)
     {

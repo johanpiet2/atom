@@ -44,6 +44,7 @@ default:
     # /vendor/chosen/chosen.jquery.js:
     /vendor/URI.js:
     /vendor/meetselva/attrchange:
+    /vendor/datetimepicker.js:
     qubit:
     treeView:
     clipboard:

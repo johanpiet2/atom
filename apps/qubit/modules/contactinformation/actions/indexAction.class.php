@@ -38,9 +38,19 @@ class ContactInformationIndexAction extends sfAction
 
     $value['primaryContact'] = (bool)$this->resource->primaryContact;
 
+    if (isset($this->resource->title))
+    {
+      $value['title'] = $this->resource->title;
+    }
+
     if (isset($this->resource->contactPerson))
     {
       $value['contactPerson'] = $this->resource->contactPerson;
+    }
+
+    if (isset($this->resource->position))
+    {
+      $value['position'] = $this->resource->position;
     }
 
     if (isset($this->resource->streetAddress))
@@ -66,6 +76,11 @@ class ContactInformationIndexAction extends sfAction
     if (isset($this->resource->fax))
     {
       $value['fax'] = $this->resource->fax;
+    }
+
+    if (isset($this->resource->cell))
+    {
+      $value['cell'] = $this->resource->cell;
     }
 
     if (isset($this->resource->postalCode))
@@ -106,6 +121,31 @@ class ContactInformationIndexAction extends sfAction
     if (isset($this->resource->contactType))
     {
       $value['contactType'] = $this->resource->contactType;
+    }
+	//jjp SITA 17 Dec 2014
+    if (isset($this->resource->postalAddress))
+    {
+      $value['postalAddress'] = $this->resource->postalAddress;
+    }
+
+    if (isset($this->resource->postalPostCode))
+    {
+      $value['postalPostCode'] = $this->resource->postalPostCode;
+    }
+
+    if (isset($this->resource->postalCity))
+    {
+      $value['postalCity'] = $this->resource->postalCity;
+    }
+
+    if (isset($this->resource->postalRegion))
+    {
+      $value['postalRegion'] = $this->resource->postalRegion;
+    }
+
+    if (isset($this->resource->postalCountryCode))
+    {
+      $value['postalCountryCode'] = $this->resource->postalCountryCode;
     }
 
     // Add source culture information if necessary

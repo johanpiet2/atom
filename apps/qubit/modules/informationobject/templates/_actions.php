@@ -41,7 +41,16 @@
               <li class="divider"></li>
 
               <?php if (0 < count($resource->digitalObjectsRelatedByobjectId) && QubitDigitalObject::isUploadAllowed()): ?>
-                <li><?php echo link_to(__('Edit %1%', array('%1%' => mb_strtolower(sfConfig::get('app_ui_label_digitalobject')))), array($resource->digitalObjectsRelatedByobjectId[0], 'module' => 'digitalobject', 'action' => 'edit')) ?></li>
+              
+				<?php for ($n = 0; $n < count($resource->digitalObjectsRelatedByobjectId); $n++) 
+					{ ?>
+                		<li><?php echo link_to(__('Edit '.$resource->digitalObjectsRelatedByobjectId[$n] .' %1%', array('%1%' => mb_strtolower(sfConfig::get('app_ui_label_digitalobject')))), array($resource->digitalObjectsRelatedByobjectId[$n], 'module' => 'digitalobject', 'action' => 'edit')) // SITA list of linked digital objects ?></li>
+
+				<?php } 	?>
+		          <?php if (QubitDigitalObject::isUploadAllowed()): ?>
+		            <li><?php echo link_to(__('Link %1%', array('%1%' => mb_strtolower(sfConfig::get('app_ui_label_digitalobject')))), array($resource, 'module' => 'object', 'action' => 'addDigitalObject')) ?></li>
+	              <?php endif; // has digital object ?>
+              
               <?php elseif (QubitDigitalObject::isUploadAllowed()): ?>
                 <li><?php echo link_to(__('Link %1%', array('%1%' => mb_strtolower(sfConfig::get('app_ui_label_digitalobject')))), array($resource, 'module' => 'object', 'action' => 'addDigitalObject')) ?></li>
               <?php endif; // has digital object ?>
@@ -62,6 +71,93 @@
 
                 <li><?php echo link_to(__('View modification history'), array($resource, 'module' => 'informationobject', 'action' => 'modifications')) ?></li>
               <?php endif; ?>
+              <li class="divider"></li>
+
+
+			<?php $bookinRecords && $bookoutRecords == 0 ?>
+			<?php ($bookinRecords = count(get_component('bookinobject', 'contextMenu', array($resource, 'module' => 'informationobject', 'action' => 'editBookinObjects'),array('resource' => $resource)))) ?>
+			<?php ($bookoutRecords = count(get_component('bookoutobject', 'contextMenu', array($resource, 'module' => 'informationobject', 'action' => 'editBookoutObjects'),array('resource' => $resource)))) ?>
+	
+			<?php if ( $bookoutRecords == 0): ?>
+				<?php if (QubitAcl::check($resource, 'bookOut')): ?>
+					<li><?php echo link_to(__('Book Out'), array($resource, 'module' => 'informationobject', 'action' => 'editBookoutObjects')) ?></li>
+				<?php endif; // Display correct button ?>
+			<?php elseif( !$bookoutRecords == 0 && $bookinRecords == 0 ) : ?>
+				<?php  $this->bookoutObjects = array() ?>
+				<?php  foreach (QubitRelation::getRelatedSubjectsByObjectId('QubitBookoutObject', $resource->id, array('requestorId' => QubitTaxonomy::BOOKOUT_TYPE_ID)) as $item): ?>
+			    <?php  $this->bookoutObjects[$item->id] = $item ?>
+					<?php if (QubitAcl::check($resource, 'rebookOut')): ?>
+						<li><?php echo link_to(__('Re-Book Out'), array($item, 'module' => 'bookoutobject', 'action' => 'editBookout')) ?></li>			
+					<?php endif; // Display correct button ?>
+					<?php if (QubitAcl::check($resource, 'rebookOut')): ?>
+						<li><?php echo link_to(__('Book In'), array($item, 'module' => 'informationobject', 'action' => 'editBookinObjects' )) ?></li>
+					<?php endif; // Display correct button ?>
+				<?php endforeach; ?>
+			<?php elseif( !$bookinRecords == 0 ) : ?>
+				<?php if (QubitAcl::check($resource, 'bookOut')): ?>
+	     			<li><?php echo link_to(__('Book Out'), array($resource, 'module' => 'informationobject', 'action' => 'editBookoutObjects' )) ?></li>
+				<?php endif; // Display correct button ?>
+			<?php else: ?>
+     			<li><?php echo link_to(__('last step'), array($resource, 'module' => 'informationobject', 'action' => 'editBookoutObjects' )) ?></li>
+			<?php endif; // Display correct button ?>
+			
+			<?php //Display preservation Add button only if no preservation exist Johan Pieterse SITA 19 June 2014 ?>		
+			<?php $preservationRecords == 0 ?>	
+			<?php //Count to see number of records with preservation ?>
+			<?php $preservationRecords = count(get_component('presevationobject', 'contextMenu', array($resource, 'module' => 'informationobject', 'action' => 'editPresevationObjects'),array('resource' => $resource))) ?>
+
+			<?php if ( $preservationRecords == 0 ): ?>
+				<?php if (QubitAcl::check($resource, 'createPreservation')): ?>
+					<li><?php echo link_to(__('Add Presevation'), array($resource, 'module' => 'informationobject', 'action' => 'editPresevationObjects')) ?></li>
+				<?php endif; // Display correct button ?>
+			<?php else: ?>
+				<?php $this->presevationObjects = array() ?>
+				<?php foreach (QubitRelation::getRelatedSubjectsByObjectId('QubitPresevationObject', $resource->id, array('typeId' => QubitTaxonomy::PRESERVATION_TYPE_ID)) as $item): ?>
+				<?php   $this->presevationObjects[$item->id] = $item ?>
+					<?php if (QubitAcl::check($resource, 'editPreservation')): ?>
+						<li><?php echo link_to(__('Edit Presevation'), array($item, 'module' => 'presevationobject', 'action' => 'editPreservation')) ?></li>
+					<?php endif; // Display correct button ?>
+				<?php endforeach; ?>
+			<?php endif; // Display correct button ?>
+
+			<?php //Display Access Add button only if no access exist Johan Pieterse SITA 19 August 2014 ?>		
+			<?php $accessRecords == 0 ?>	
+			<?php //Count to see number of records with Access ?>
+			<?php $accessRecords = count(get_component('accessobject', 'contextMenu', array($resource, 'module' => 'informationobject', 'action' => 'editAccessObjects'),array('resource' => $resource))) ?>
+
+			<?php if ( $accessRecords == 0 ): ?>
+				<?php if (QubitAcl::check($resource, 'createAccess')): ?>
+					<li><?php echo link_to(__('Add Access'), array($resource, 'module' => 'informationobject', 'action' => 'editAccessObjects')) ?></li>
+				<?php endif; // Display correct button ?>
+			<?php else: ?>
+				<?php $this->accessObjects = array() ?>
+				<?php foreach (QubitRelation::getRelatedSubjectsByObjectId('QubitAccessObject', $resource->id, array('typeId' => QubitTaxonomy::ACCESS_TYPE_ID)) as $item): ?>
+			    <?php   $this->accessObjects[$item->id] = $item ?>
+					<?php if (QubitAcl::check($resource, 'createAccess')): ?>
+						<li><?php echo link_to(__('Edit Access'), array($item, 'module' => 'accessobject', 'action' => 'editAccess')) ?></li>
+					<?php endif; // Display correct button ?>
+				<?php endforeach; ?>
+			<?php endif; // Display correct button ?>
+
+			<?php // Find if it is published
+				foreach ($resource->getAccessObjects() as $item)
+				{ 
+					if (isset($item->published)) 
+					{  
+					 if ($item->published == 1)
+					 {
+			 ?>
+					 	<li><?php echo link_to(__('Unpublish'), array($item, 'module' => 'reports', 'action' => 'browseUnPublish')) ?></li>
+<?php
+					 }
+					}
+				}
+			?>
+			<?php if (QubitAcl::check($resource, 'auditTrail')): ?>
+				<li><?php echo link_to(__('Audit Trail'), array('module' => 'reports', 'action' => 'auditArchivalDescription', 'source' => $resource->id)) ?></li>
+			<?php endif; // Display correct button ?>
+
+
             </ul>
           </div>
         </li>

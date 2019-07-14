@@ -189,4 +189,19 @@ class QubitPhysicalObject extends BasePhysicalObject
       }
     }
   }
+  
+  /**
+   * Only find Physical Object objects, not other actor types
+   *
+   * @param Criteria $criteria current search criteria
+   * @return Criteria modified search critieria
+   */
+  public static function addGetOnlyPhysicalObjectCriteria($criteria)
+  {
+    $criteria->addJoin(QubitPhysicalObject::ID, QubitObject::ID);
+    $criteria->add(QubitObject::CLASS_NAME, 'QubitPhysicalObject');
+
+    return $criteria;
+  }
+
 }

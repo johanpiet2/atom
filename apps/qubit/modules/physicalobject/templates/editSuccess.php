@@ -25,28 +25,34 @@
 
         <legend><?php echo __('Edit %1%', array('%1%' => sfConfig::get('app_ui_label_physicalobject'))) ?></legend>
 
-        <?php echo render_field($form->name, $resource) ?>
-
-        <?php echo render_field($form->location, $resource) ?>
-
-        <?php echo $form->type->renderRow() ?>
+		<?php echo $form->repositoryId->renderRow() ?>
+		<?php echo render_field($form->name, $resource) ?>
+		<?php echo render_field($form->location, $resource) ?>
+		<?php echo render_field($form->uniqueIdentifier, $resource) ?>
+		<?php echo render_field($form->descriptionTitle, $resource) ?>
+		<?php echo render_field($form->periodCovered, $resource) ?>
+		<?php echo render_field($form->extent, $resource) ?>
+		<?php echo render_field($form->accrualSpace, $resource) ?>
+		<?php echo render_field($form->forms, $resource) ?>
+		<?php echo $form->type->renderRow() ?>
 
       </fieldset>
 
     </div>
 
-    <section class="actions">
-      <ul>
-        <?php if (null !== $next = $form->getValue('next')): ?>
-          <li><?php echo link_to(__('Cancel'), $next, array('class' => 'c-btn')) ?></li>
-        <?php elseif (isset($sf_request->getAttribute('sf_route')->resource)): ?>
-          <li><?php echo link_to(__('Cancel'), array($resource, 'module' => 'physicalobject'), array('class' => 'c-btn')) ?></li>
-        <?php else: ?>
-          <li><?php echo link_to(__('Cancel'), array('module' => 'physicalobject', 'action' => 'browse'), array('class' => 'c-btn')) ?></li>
-        <?php endif; ?>
-        <li><input class="c-btn c-btn-submit" type="submit" value="<?php echo __('Save') ?>"/></li>
-      </ul>
-    </section>
+	<section class="actions">
+	  <ul>
+		<?php if (isset($resource->id)): ?>
+		  <li><?php echo link_to(__('Cancel'), array($resource, 'module' => 'physicalobject'), array('class' => 'c-btn')) ?></li>
+		  <li><input class="c-btn c-btn-submit" type="submit" value="<?php echo __('Save') ?>"/></li>
+		<?php else: ?>
+		  <?php if (isset($sf_request->parent)): ?>
+		    <li><?php echo link_to(__('Cancel'), array($resource->parent, 'module' => 'physicalobject', 'action' => 'browse'), array('class' => 'c-btn')) ?></li>
+		  <?php endif; ?>
+		  <li><input class="c-btn c-btn-submit" type="submit" value="<?php echo __('Create') ?>"/></li>
+		<?php endif; ?>
+	  </ul>
+	</section>
 
   </form>
 

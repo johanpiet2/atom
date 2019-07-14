@@ -43,6 +43,7 @@ class ActorTableMap extends TableMap {
 		$this->addForeignKey('DESCRIPTION_DETAIL_ID', 'descriptionDetailId', 'INTEGER', 'term', 'ID', false, null, null);
 		$this->addColumn('DESCRIPTION_IDENTIFIER', 'descriptionIdentifier', 'VARCHAR', false, 1024, null);
 		$this->addColumn('SOURCE_STANDARD', 'sourceStandard', 'VARCHAR', false, 1024, null);
+		$this->addColumn('ACTOR_IMPORT_ID', 'actorImportId', 'VARCHAR', false, 50, null);
 		$this->addForeignKey('PARENT_ID', 'parentId', 'INTEGER', 'actor', 'ID', false, null, null);
 		$this->addColumn('LFT', 'lft', 'INTEGER', true, null, null);
 		$this->addColumn('RGT', 'rgt', 'INTEGER', true, null, null);

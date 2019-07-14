@@ -180,13 +180,13 @@ class InformationObjectBrowseAction extends DefaultBrowseAction
 
       case 'repos':
         // Get list of repositories
-        $criteria = new Criteria;
+//        $criteria = new Criteria;
 
         // Do source culture fallback
-        $criteria = QubitCultureFallback::addFallbackCriteria($criteria, 'QubitActor');
+//        $criteria = QubitCultureFallback::addFallbackCriteria($criteria, 'QubitActor');
 
         // Ignore root repository
-        $criteria->add(QubitActor::ID, QubitRepository::ROOT_ID, Criteria::NOT_EQUAL);
+/*        $criteria->add(QubitActor::ID, QubitRepository::ROOT_ID, Criteria::NOT_EQUAL);
 
         $criteria->addAscendingOrderByColumn('authorized_form_of_name');
 
@@ -206,6 +206,30 @@ class InformationObjectBrowseAction extends DefaultBrowseAction
           }
 
           $cache->set($cacheKey, $choices, 3600);
+        }
+*/
+        //SITA - to fix cache
+        $choices      = array();
+        $choices['0'] = "";
+        // Show only Repositories linked to user - Administrator can see all JJP SITA One Instance
+        if ((!$this->context->user->isAdministrator()) && (QubitSetting::getByName('open_system') == '0')) {
+            $repositories = new QubitUser;
+            foreach (QubitRepository::getAll() as $item) {
+                if ($item->__toString() != "") {
+                    if (0 < count($userRepos = $repositories->getRepositoriesById($this->context->user->getAttribute('user_id')))) {
+                        $key = array_search($item->id, $userRepos);
+                        if (false !== $key) {
+                            $choices[$item->id] = $item->__toString();
+                        }
+                    }
+                }
+            }
+        } else {
+            foreach (QubitRepository::getAll() as $item) {
+                if ($item->__toString() != "") {
+                    $choices[$item->id] = $item->__toString();
+                }
+            }
         }
 
         $this->form->setValidator($name, new sfValidatorChoice(array('choices' => array_keys($choices))));
@@ -359,6 +383,9 @@ class InformationObjectBrowseAction extends DefaultBrowseAction
     // Set search realm, if needed
     if (isset($request->repos) && ctype_digit($request->repos))
     {
+//SITA
+      $this->repos = QubitRepository::getById($request->repos);
+
       // Add repo to the user session as realm
       if (sfConfig::get('app_enable_institutional_scoping'))
       {
@@ -510,6 +537,25 @@ class InformationObjectBrowseAction extends DefaultBrowseAction
 
     $this->setHiddenFields($request);
     $this->setFilterTags($request);
+
+    //SITA - to fix cache
+    $sids      = array();
+    // Show only Repositories linked to user - Administrator can see all JJP SITA One Instance
+    if ((!$this->context->user->isAdministrator()) && (QubitSetting::getByName('open_system') == '0')) {
+        $repositories = new QubitUser;
+        foreach (QubitRepository::getAll() as $item) {
+            if ($item->__toString() != "") {
+                if (0 < count($userRepos = $repositories->getRepositoriesById($this->context->user->getAttribute('user_id')))) {
+                    $key = array_search($item->id, $userRepos);
+                    if (false !== $key) {
+                        $sids[] = $item->id;
+                    }
+                }
+            }
+        }
+		$this->getParameters['repoFilter'] = $sids;
+    }
+
 
     // Add advanced form filter to the query
     $this->search->addAdvancedSearchFilters($this::$NAMES, $this->getParameters, $this->template);

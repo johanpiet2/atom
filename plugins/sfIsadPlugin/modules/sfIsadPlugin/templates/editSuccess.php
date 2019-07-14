@@ -46,6 +46,23 @@
         <?php echo get_partial('informationobject/identifierOptions', array('mask' => $mask)) ?>
         <?php echo get_partial('informationobject/alternativeIdentifiers', $sf_data->getRaw('alternativeIdentifiersComponent')->getVarHolder()->getAll()) ?>
 
+	<!-- SITA One Instance -->
+	    <?php echo render_field($form->volumeNumberIdentifier
+          ->help(__('Provide a Volume in accordance with NARSSA rules'))
+          ->label(__('Volume').' <span class="form-required" title="'.__('').'"></span>'), $resource) ?>
+	  <!-- /#This created a textbox in the form (Volume Number -->			  
+	    <?php echo render_field($form->fileNumberIdentifier
+          ->help(__('Provide a File in accordance with NARSSA rules'))
+          ->label(__('File').' <span class="form-required" title="'.__('').'"></span>'), $resource) ?>
+	  <!-- /#This created a textbox in the form (File Number -->			  
+	    <?php echo render_field($form->partNumberIdentifier
+          ->help(__('Provide a Part in accordance with NARSSA rules'))
+          ->label(__('Part').' <span class="form-required" title="'.__('').'"></span>'), $resource) ?>
+	  <!-- /#This created a textbox in the form (Part Number -->			  
+	    <?php echo render_field($form->itemNumberIdentifier
+          ->help(__('Provide a Item in accordance with NARSSA rules'))
+          ->label(__('Item').' <span class="form-required" title="'.__('').'"></span>'), $resource) ?>
+
         <?php echo render_field($form->title
           ->help(__('Provide either a formal title or a concise supplied title in accordance with the rules of multilevel description and national conventions. (ISAD 3.1.2)'))
           ->label(__('Title').' <span class="form-required" title="'.__('This is a mandatory element.').'">*</span>'), $resource) ?>
@@ -83,11 +100,20 @@
 
         <div class="form-item">
           <?php echo $form->repository->renderLabel() ?>
-          <?php echo $form->repository->render(array('class' => 'form-autocomplete')) ?>
+          <?php echo $form->repository->render() ?> <!--One Instance-->
           <input class="add" type="hidden" data-link-existing="true" value="<?php echo url_for(array('module' => 'repository', 'action' => 'add')) ?> #authorizedFormOfName"/>
           <input class="list" type="hidden" value="<?php echo url_for($sf_data->getRaw('repoAcParams')) ?>"/>
           <?php echo $form->repository
             ->help(__('Record the name of the organization which has custody of the archival material. Search for an existing name in the archival institution records by typing the first few characters of the name. Alternatively, type a new name to create and link to a new archival institution record.'))
+            ->renderHelp(); ?>
+        </div>
+		<!--
+		Registry entry JJP SITA
+		-->
+        <div class="form-item">
+			<?php echo $form->registry->label(__('Register', array('%1%' => sfConfig::get('app_ui_label_registry'))))->renderRow() ?>
+          <?php echo $form->registry
+            ->help(__('Record the name of the register which group this archival material (Audio visual, sound, maniscripts and photographs as an example). Search for an existing name in the registry records by typing the first few characters of the name. Alternatively, request for a new registry entry to be created. NARSSA Act 1996'))
             ->renderHelp(); ?>
         </div>
 

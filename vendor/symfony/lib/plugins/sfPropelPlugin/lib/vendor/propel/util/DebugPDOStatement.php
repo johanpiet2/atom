@@ -1,4 +1,8 @@
 <?php
+
+ini_set("max_execution_time", 300);
+set_time_limit(300);
+
 /*
  *  $Id: DebugPDOStatement.php 1601 2010-03-15 13:06:11Z francois $
  *

@@ -8,16 +8,36 @@ abstract class BasePhysicalObjectI18n implements ArrayAccess
     TABLE_NAME = 'physical_object_i18n',
 
     NAME = 'physical_object_i18n.NAME',
+    REPOSITORY_ID = 'physical_object_i18n.REPOSITORY_ID',
     DESCRIPTION = 'physical_object_i18n.DESCRIPTION',
-    LOCATION = 'physical_object_i18n.LOCATION',
+    LOCATION = 'physical_object_i18n.LOCATION',		
+	UNIQUEIDENTIFIER = 'physical_object_i18n.UNIQUEIDENTIFIER',	
+	DESCRIPTIONTITLE = 'physical_object_i18n.DESCRIPTIONTITLE',
+	PERIODCOVERED = 'physical_object_i18n.PERIODCOVERED',
+	EXTENT = 'physical_object_i18n.EXTENT',		
+	FINDINGAIDS = 'physical_object_i18n.FINDINGAIDS',
+	ACCRUALSPACE = 'physical_object_i18n.ACCRUALSPACE', 
+	SHELF = 'physical_object_i18n.SHELF', 
+	ROWNUMBER = 'physical_object_i18n.ROWNUMBER', 	
+	FORMS = 'physical_object_i18n.FORMS',	
     ID = 'physical_object_i18n.ID',
     CULTURE = 'physical_object_i18n.CULTURE';
 
   public static function addSelectColumns(Criteria $criteria)
   {
     $criteria->addSelectColumn(QubitPhysicalObjectI18n::NAME);
+    $criteria->addSelectColumn(QubitPhysicalObjectI18n::REPOSITORY_ID);
     $criteria->addSelectColumn(QubitPhysicalObjectI18n::DESCRIPTION);
-    $criteria->addSelectColumn(QubitPhysicalObjectI18n::LOCATION);
+    $criteria->addSelectColumn(QubitPhysicalObjectI18n::LOCATION);		
+ 	$criteria->addSelectColumn(QubitPhysicalObjectI18n::UNIQUEIDENTIFIER);		
+	$criteria->addSelectColumn(QubitPhysicalObjectI18n::DESCRIPTIONTITLE);
+	$criteria->addSelectColumn(QubitPhysicalObjectI18n::PERIODCOVERED);
+	$criteria->addSelectColumn(QubitPhysicalObjectI18n::EXTENT);
+	$criteria->addSelectColumn(QubitPhysicalObjectI18n::FINDINGAIDS); 
+	$criteria->addSelectColumn(QubitPhysicalObjectI18n::ACCRUALSPACE); 
+	$criteria->addSelectColumn(QubitPhysicalObjectI18n::SHELF); 
+	$criteria->addSelectColumn(QubitPhysicalObjectI18n::ROWNUMBER); 	
+	$criteria->addSelectColumn(QubitPhysicalObjectI18n::FORMS);		
     $criteria->addSelectColumn(QubitPhysicalObjectI18n::ID);
     $criteria->addSelectColumn(QubitPhysicalObjectI18n::CULTURE);
 
@@ -34,8 +54,8 @@ abstract class BasePhysicalObjectI18n implements ArrayAccess
   public static function getFromRow(array $row)
   {
     $keys = array();
-    $keys['id'] = $row[3];
-    $keys['culture'] = $row[4];
+    $keys['id'] = $row[13];
+    $keys['culture'] = $row[14];
 
     $key = serialize($keys);
     if (!isset(self::$physicalObjectI18ns[$key]))

@@ -57,7 +57,7 @@
         <?php endif; ?>
 
       </fieldset>
-
+	  <!-- SITA contact area -->
       <fieldset class="collapsible collapsed" id="contactArea">
 
         <legend><?php echo __('Contact area') ?></legend>

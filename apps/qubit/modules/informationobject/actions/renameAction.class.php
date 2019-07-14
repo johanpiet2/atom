@@ -123,6 +123,11 @@ class InformationObjectRenameAction extends DefaultEditAction
       }
     }
 
+//to do SITA
+/* rename all filenames if multiple option selected
+	<?php for ($n = 0; $n < count($resource->digitalObjectsRelatedByobjectId); $n++) 
+		{ ?>
+*/
     // Update digital object filename, if filename sent
     if ((null !== $postedFilename) && count($this->resource->digitalObjectsRelatedByobjectId))
     {

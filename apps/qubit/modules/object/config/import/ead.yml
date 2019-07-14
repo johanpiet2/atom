@@ -21,6 +21,7 @@
 # @author MJ Suhonos <mj@suhonos.ca>
 # @author Peter Van Garderen <peter@artefactual.com>
 # @author Mike Cantelon <mike@artefactual.com>
+# @author Johan Pieterse <johan.pieterse@sita.co.za>
 # @version svn: $Id:$
 
 information_object:
@@ -62,7 +63,7 @@ information_object:
       Method: SetLevelOfDescriptionByName
 
     repository:
-      XPath:   "(did/repository[not(*)] | did/repository/corpname | did/repository/name)[1]"
+      XPath:   "(did/repository[not(*)] | did/repository/corpname | did/repository/repocorpname | did/repository/name)[1]"
       Method:  setRepositoryByName
       Filters:
         -
@@ -389,6 +390,126 @@ information_object:
           emph:
             QubitMarkdown: eadTagToMarkdown
 
+    ## jjp SITA - Batch import mainframe  
+    batch:
+      XPath:   "did/batch"
+      Method:  setBatch
+      Parameters: [$nodeValue]
+
+    ## jjp SITA - startDate 
+    startDate:
+      XPath:   "did/startDate"
+      Method:  setStartDate
+      Parameters: [$nodeValue]
+
+    ## jjp SITA - endDate
+    endDate:
+      XPath:   "did/endDate"
+      Method:  setEndDate
+      Parameters: [$nodeValue]
+
+    ## jjp SITA - Batch import mainframe  
+    registryprefix:
+      XPath:   "did/registryprefix"
+      Method:  setRegistryPrefix
+      Parameters: [$nodeValue]
+
+    ## jjp SITA - Batch import mainframe  
+    registry:
+      XPath:   "did/registry"
+      Method:  setRegistry
+      Parameters: [$nodeValue]
+
+    ## jjp SITA - Batch import mainframe  
+    uniquenumber:
+      XPath:   "did/uniquenumber"
+      Method:  setUniqueNumber
+      Parameters: [$nodeValue]
+
+    ## jjp SITA - Batch import mainframe  
+    batch_corpname:
+      XPath:   "bioghist/chronlist/chronitem/eventgrp/event/origination/corpname"
+      Method:  setCorpname
+      Parameters: [$nodeValue]
+
+    ## jjp SITA - Batch import mainframe  
+    sourceNo:
+      XPath:   "source"
+      Method:  setSource
+      Parameters: [$nodeValue]
+
+    ## jjp SITA - Batch import   
+    volNo:
+      XPath:   "volno"
+      Method:  setVolNo
+      Parameters: [$nodeValue]
+
+    ## jjp SITA - Batch import mainframe  
+    partNo:
+      XPath:   "partno"
+      Method:  setPartNo
+      Parameters: [$nodeValue]
+
+    ## jjp SITA - Batch import mainframe  
+    registers:
+      XPath:   "registers"
+      Method:  setRegisters
+      Parameters: [$nodeValue]
+
+    ## jjp SITA - import  
+    mediaSize:
+      XPath:   "mediasize"
+      Method:  setMediaSize
+      Parameters: [$nodeValue]
+
+    ## jjp SITA - import  
+    type:
+      XPath:   "type"
+      Method:  setType
+      Parameters: [$nodeValue]
+
+    ## jjp SITA - import  
+    availabilityId:
+      XPath:   "availabilityId"
+      Method:  setAvailability
+      Parameters: [$nodeValue]
+
+    ## jjp SITA - import  
+    recordType:
+      XPath:   "recordtype"
+      Method:  setRecordType
+      Parameters: [$nodeValue]
+
+    ## jjp SITA - import  
+    accessionNumber:
+      XPath:   "accessionnumber"
+      Method:  setAccessionNumber
+      Parameters: [$nodeValue]
+
+    ## jjp SITA - import  
+    accessionName:
+      XPath:   "accessionname"
+      Method:  setAccessionName
+      Parameters: [$nodeValue]
+
+    ## jjp SITA - Batch import   
+    systemNo:
+      XPath:   "systemno"
+      Method:  setSystemNo
+      Parameters: [$nodeValue]
+
+    ## jjp SITA - Batch import mainframe 
+    refNo:
+      XPath:   "refno"
+      Method:  setRefNo
+      Parameters: [$nodeValue]
+
+    ## jjp SITA - Batch import mainframe  
+    rackNo:
+      XPath:   "rackno"
+      Method:  setRackNo
+      Parameters: [$nodeValue]
+
     identifier:
       XPath:   "did/unitid[not(@type)]"
       Method:  setIdentifierWithCodes
@@ -442,6 +563,26 @@ information_object:
         -
           emph:
             QubitMarkdown: eadTagToMarkdown
+
+    langusagedesclanguage: # desclanguage SITA Import languageOfDescription
+      XPath:  "did/langusage/language"
+      Method: importLanguageEadData
+      Parameters: ["$domNode2"]
+
+    langmaterialdesc: # langmaterial SITA Import languageOfMaterial - language
+      XPath:  "did/langmaterial/language"
+      Method: importLangmaterialDescEadData
+      Parameters: ["$domNode2"]
+
+    langscriptmaterial: # langscriptmaterial SITA import scriptOfMaterial
+      XPath:  "did/langscriptmaterial/language"
+      Method: importLangScriptmaterialEadData
+      Parameters: ["$domNode2"]
+
+    langscriptcode: # langscriptmaterial SITA scriptOfDescription
+      XPath:  "did/langscriptcode/language"
+      Method: importLangScriptCodeEadData
+      Parameters: ["$domNode2"]
 
     phystech:
       XPath:  "(phystech | descgrp/phystech)"

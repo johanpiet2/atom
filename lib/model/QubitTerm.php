@@ -24,12 +24,28 @@
  * @subpackage model
  * @author     Peter Van Garderen <peter@artefactual.com>
  * @author     David Juhasz <david@artefactual.com>
+ * @author     Johan Pieterse <johan.pieterse@sita.co.za>
  */
 class QubitTerm extends BaseTerm
 {
   public $disableNestedSetUpdating = false;
   const
+	 //Preservation id 
+    CONDITIONS_ID = 104,
+    USABILITYS_ID = 105,
+    MEASURES_ID = 106,
+    MEDIUMS_ID = 107,
+    RESTORATIONS_ID = 108,
+    CONSERVATIONS_ID = 109,
+	AVAILABILITYS_ID = 1009,
 
+	// access id
+	SENSITIVITY_ID = 1011,
+	PUBLISH_ID = 1012,
+	CLASSIFICATION_ID = 1013, 
+	RESTRICTION_ID = 1014,
+	REFUSALS_ID = 1016,
+	  
     // ROOT term id
     ROOT_ID = 110,
 
@@ -181,6 +197,18 @@ class QubitTerm extends BaseTerm
   {
     // The following terms cannot be edited by users because their values are used in application logic
     return in_array($id, array(
+	  QubitTerm::USABILITYS_ID,
+	  QubitTerm::MEASURES_ID,
+	  QubitTerm::MEDIUMS_ID,
+	  QubitTerm::AVAILABILITYS_ID,
+	  QubitTerm::REFUSALS_ID,
+	  QubitTerm::RESTORATIONS_ID,
+	  QubitTerm::CONSERVATIONS_ID,
+      //QubitTerm::TYPE_ID,
+	  QubitTerm::SENSITIVITY_ID,
+	  QubitTerm::PUBLISH_ID,
+	  QubitTerm::CLASSIFICATION_ID,
+      QubitTerm::RESTRICTION_ID,
       QubitTerm::ACCESSION_ID,
       QubitTerm::ACCRUAL_ID,
       QubitTerm::ACCUMULATION_ID,
@@ -481,6 +509,28 @@ class QubitTerm extends BaseTerm
     return QubitTaxonomy::getTermsById(QubitTaxonomy::PHYSICAL_OBJECT_TYPE_ID, $options);
   }
 
+ /**
+   * Return a list of all Preservation Object terms
+   *
+   * @param array $options  option array to pass to Qubit Query object
+   * @return QubitQuery array of Preservation Object QubitTerm objects
+   */
+  public static function getPresevationObjectTypes($options = array())
+  {
+    return QubitTaxonomy::getTermsById(QubitTaxonomy::PRESERVATION_OBJECT_TYPE_ID, $options);
+  } 
+
+ /**
+   * Return a list of all Access Object terms
+   *
+   * @param array $options  option array to pass to Qubit Query object
+   * @return QubitQuery array of Access Object QubitTerm objects
+   */
+  public static function getAccessObjectTypes($options = array())
+  {
+    return QubitTaxonomy::getTermsById(QubitTaxonomy::ACCESS_OBJECT_TYPE_ID, $options);
+  } 
+
   /**
    * Return a list of all Relation Type terms
    *
@@ -501,6 +551,39 @@ class QubitTerm extends BaseTerm
   {
     $containerTerm = QubitTerm::getById(QubitTerm::CONTAINER_ID);
     return $containerTerm->getDescendants();
+  }
+
+  /**
+   * Return a list of all Presevation object container types
+   *
+   * @return QubitQuery array of container QubitTerm objects
+   */
+  public static function getPresevationObjectContainerTypes()
+  {
+    $containersTerm = QubitTerm::getById(QubitTerm::CONTAINER_ID);
+    return $containersTerm->getDescendants();
+  }
+
+  /**
+   * Return a list of all Access object container types
+   *
+   * @return QubitQuery array of container QubitTerm objects
+   */
+  public static function getAccessObjectContainerTypes()
+  {
+    $containersTerm = QubitTerm::getById(QubitTerm::CONTAINER_ID);
+    return $containersTerm->getDescendants();
+  }
+
+  /**
+   * Return a list of all Access object Values types
+   *
+   * @return QubitQuery array of container QubitTerm objects Values
+   */
+  public static function getAccessObjectValues($valuesCriteria)
+  {
+    $containersTerm = QubitTerm::getById($valuesCriteria);
+    return $containersTerm->getDescendants();
   }
 
   /**

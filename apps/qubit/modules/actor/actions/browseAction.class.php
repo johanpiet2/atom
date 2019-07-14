@@ -25,6 +25,7 @@
  * @author     Peter Van Garderen <peter@artefactual.com>
  * @author     David Juhasz <david@artefactual.com>
  * @author     Wu Liu <wu.liu@usask.ca>
+ * @author     Johan Pieterse <johan.pieterse@sita.co.za>
  */
 class ActorBrowseAction extends DefaultBrowseAction
 {
@@ -332,6 +333,45 @@ class ActorBrowseAction extends DefaultBrowseAction
       }
     }
 
+    // Show only Repositories linked to user - Administrator can see all JJP SITA One Instance or System can be chosen to be open for 				all to see
+    // Start
+    if ((!$this->context->user->isAdministrator()) && (QubitSetting::getByName('open_system') == '0')) {
+	    $user        = sfContext::getInstance()->user;
+	    $permissions = QubitAcl::getUserPermissionsByAction($user, 'QubitActor', 'read');
+	    // Build access control list
+	    if (0 < count($permissions))
+	      {
+	        $allReposQueryBool = new \Elastica\Query\BoolQuery;
+	        foreach ($permissions as $permission)
+	          {
+	            if (!isset($resourceAccess[$permission->objectId]))
+	              {
+	                $resourceAccess[$permission->objectId] = QubitAcl::isAllowed($user, $permission->objectId, 'read');
+	                $actor                                 = QubitActor::getById($permission->objectId);
+	                if (isset($actor))
+	                  {
+	                    if ($actor->authorizedFormOfName != "" && $actor->authorizedFormOfName != null)
+	                      {
+	                        $allReposQueryBool->addShould(new \Elastica\Query\Term(array(
+	                            '_id' => $permission->objectId
+	                        )));
+	                      }
+	                  }
+	              }
+	          }
+	        $this->search->queryBool->addMust($allReposQueryBool);
+	        
+	      }
+	    else
+	      {
+	        // if not logged in do not show any repositories
+	        $this->search->queryBool->addMust(new \Elastica\Query\Term(array(
+	            '_id' => '0000'
+	        )));
+	      }
+	}        
+	// End
+		
     $this->search->query->setQuery($this->search->queryBool);
 
     return QubitSearch::getInstance()->index->getType('QubitActor')->search($this->search->getQuery(false));

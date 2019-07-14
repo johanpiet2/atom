@@ -16,7 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with Access to Memory (AtoM).  If not, see <http://www.gnu.org/licenses/>.
  */
-
+ /*
+ * Show add/edit storage areas.
+ *
+ * @package    AccesstoMemory
+ * @subpackage user
+ * @author     Johan Pieterse <johan.pieterse@sita.co.za>
+ */
 class UserEditAction extends DefaultEditAction
 {
   // Arrays not allowed in class constants
@@ -30,6 +36,7 @@ class UserEditAction extends DefaultEditAction
       'translate',
       'username',
       'restApiKey',
+      'security',
       'oaiApiKey');
 
   protected function earlyExecute()
@@ -111,6 +118,13 @@ class UserEditAction extends DefaultEditAction
         $this->form->setWidget('confirmPassword', new sfWidgetFormInputPassword);
 
         break;
+
+	  case 'security': //SITA single instance
+		  $this->form->setDefault('security', $this->context->routing->generate(null, array($this->resource->security, 'module' => 'term')));
+          $this->form->setValidator('security', new sfValidatorString(array('required' => true)));
+		  $this->form->setWidget('security', new sfWidgetFormSelect(array('choices' => QubitTerm::getIndentedChildTree(QubitTerm::CLASSIFICATION_ID, '&nbsp;', array('returnObjectInstances' => true)))));
+
+ 	    break;
 
       case 'active':
         if (isset($this->resource->id))
@@ -316,6 +330,13 @@ class UserEditAction extends DefaultEditAction
 
         break;
 
+	case 'security':
+        unset($this->resource->security);
+        $params = $this->context->routing->parse(Qubit::pathInfo($this->form->getValue('security')));
+        $this->resource->security = $params['_sf_route']->resource;
+
+        break;	
+		
       default:
         $this->resource[$name] = $this->form->getValue($name);
     }
@@ -337,7 +358,10 @@ class UserEditAction extends DefaultEditAction
         }
 
         $this->processForm();
-
+        //SITA Super User attache first repository linked to Super User to new user
+	    if ($this->context->user->isSuperUser()) {
+			$this->updateTempRepo($this->resource);
+		}	
         $this->resource->save();
 
         // Allowed languages for translation must be saved after the user is created
@@ -400,4 +424,37 @@ class UserEditAction extends DefaultEditAction
 
     return $values;
   }
+  
+  //Add temp repository to new user to enable super User to add/remove/filter repository access
+  public function updateTempRepo($resource)
+  {
+	$aclPermission = new QubitAclPermission;
+	$aclPermission->action = 'read';
+	$aclPermission->objectId = $this->context->user->getAttribute('user_id');
+	$aclPermission->grantDeny = 1;
+	//$aclPermission->object = $resource;
+
+	$repositories = new QubitUser;
+	foreach (QubitRepository::getAll() as $item)
+	{
+		if ($item->__toString() != "")
+		{
+			if (0 < count($userRepos = $repositories->getRepositoriesById($this->context->user->getAttribute('user_id')))) {
+				$key = array_search($item->id, $userRepos);
+				if (false !== $key) {
+					$uRepository = $item->__toString();
+					echo "cccccccccccccccccccc".$uRepository."<br>";
+					//break;
+				}
+			}
+		} else {
+			$uRepository = "123";
+		}
+	}
+	//set first repository
+	$aclPermission->conditional = '%p[repository] == %k[repository] | a:1:{s:10:"repository";s:23:"'.$uRepository.' '.$this->context->user->getAttribute('user_id').';}';
+	$this->resource->aclPermissions[] = $aclPermission;
+	$this->resource->save();
+  }
+  
 }

@@ -90,8 +90,15 @@ class QubitTaxonomy extends BaseTaxonomy
 
     ACTOR_OCCUPATION_ID = 80,
 
-    USER_ACTION_ID = 81;
+    USER_ACTION_ID = 81,
 
+    // NAAIRS Metadata templates
+	TITLE = 1075,
+	PRESERVATION_TYPE_ID = 1076,
+	ACCESS_TYPE_ID = 1077,
+	BOOKOUT_TYPE_ID = 1078,
+	BOOKIN_TYPE_ID = 1079;
+		  
   public static
     $lockedTaxonomies = array(
       self::QUBIT_SETTING_LABEL_ID,
@@ -106,7 +113,11 @@ class QubitTaxonomy extends BaseTaxonomy
       self::PUBLICATION_STATUS_ID,
       self::ACTOR_NAME_TYPE_ID,
       self::INFORMATION_OBJECT_TEMPLATE_ID,
-      self::JOB_STATUS_ID);
+      self::JOB_STATUS_ID,
+	  // jjp SITA
+      self::PRESERVATION_TYPE_ID,
+      self::ACCESS_TYPE_ID
+      );
 
   public function __toString()
   {

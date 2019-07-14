@@ -71,6 +71,11 @@ class TermTableMap extends TableMap {
     $this->addRelation('informationObjectRelatedBydescriptionStatusId', 'informationObject', RelationMap::ONE_TO_MANY, array('id' => 'description_status_id', ), 'SET NULL', null);
     $this->addRelation('informationObjectRelatedBydescriptionDetailId', 'informationObject', RelationMap::ONE_TO_MANY, array('id' => 'description_detail_id', ), 'SET NULL', null);
     $this->addRelation('informationObjectRelatedBydisplayStandardId', 'informationObject', RelationMap::ONE_TO_MANY, array('id' => 'display_standard_id', ), 'SET NULL', null);
+	$this->addRelation('informationObjectRelatedByformatId', 'informationObject', RelationMap::ONE_TO_MANY, array('id' => 'format_id', ), 'SET NULL', null);
+	$this->addRelation('informationObjectRelatedBysizeId', 'informationObject', RelationMap::ONE_TO_MANY, array('id' => 'size_id', ), 'SET NULL', null);
+	$this->addRelation('informationObjectRelatedBytypId', 'informationObject', RelationMap::ONE_TO_MANY, array('id' => 'typ_id', ), 'SET NULL', null);
+	$this->addRelation('informationObjectRelatedByequipmentId', 'informationObject', RelationMap::ONE_TO_MANY, array('id' => 'equipment_id', ), 'SET NULL', null);	
+	$this->addRelation('informationObjectRelatedBymovePermanent', 'informationObject', RelationMap::ONE_TO_MANY, array('id' => 'move_permanent', ), 'SET NULL', null);	
     $this->addRelation('note', 'note', RelationMap::ONE_TO_MANY, array('id' => 'type_id', ), 'SET NULL', null);
     $this->addRelation('objectTermRelation', 'objectTermRelation', RelationMap::ONE_TO_MANY, array('id' => 'term_id', ), 'CASCADE', null);
     $this->addRelation('otherName', 'otherName', RelationMap::ONE_TO_MANY, array('id' => 'type_id', ), 'SET NULL', null);

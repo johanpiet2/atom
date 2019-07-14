@@ -73,6 +73,18 @@ abstract class BaseAccession extends QubitObject implements ArrayAccess
     }
   }
 
+  // jjp SITA 15 Jan 2015 - Get by Accession Number
+  public static function getByAccessionNumber($accessionNumber, array $options = array())
+  {
+    $criteria = new Criteria;
+    $criteria->add(QubitAccession::IDENTIFIER, $accessionNumber);
+
+    if (1 == count($query = self::getOne($criteria, $options)))
+    {
+      return $query;
+    }
+  }
+
   public function __construct()
   {
     parent::__construct();

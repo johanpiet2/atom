@@ -394,8 +394,31 @@ class QubitAcl
     }
     $c3 = $criteria->getNewCriterion(QubitAclPermission::OBJECT_ID, $newResources, Criteria::IN);
     $c4 = $criteria->getNewCriterion(QubitAclPermission::OBJECT_ID, null, Criteria::ISNULL);
+    //SITA get only for the specific repositiry
+    if ((!$this->_user->isAdministrator()) && (QubitSetting::getByName('open_system') == '0')) {
+		if ($resource instanceof QubitInformationObject)
+		{
+			if (null !== $repository = $resource->getRepository(array('inherit' => true)))
+			{
+				$repositoryFilter = $repository->slug;
+				$repositoryFilter = '%:"'.$repositoryFilter.'";}';
+				$c5 = $criteria->getNewCriterion(QubitAclPermission::CONSTANTS, $repositoryFilter, Criteria::LIKE);
+			}
+			
+		}
+	}
     $c3->addOr($c4);
     $c1->addAnd($c3);
+    //SITA get only for the specific repositiry
+    if ((!$this->_user->isAdministrator()) && (QubitSetting::getByName('open_system') == '0')) {
+		if ($resource instanceof QubitInformationObject)
+		{
+			if (null !== $repository = $resource->getRepository(array('inherit' => true)))
+			{
+				$c1->addAnd($c5);
+			}
+		}
+	}
     $criteria->add($c1);
 
     if (0 < count($permissions = QubitAclPermission::get($criteria)))

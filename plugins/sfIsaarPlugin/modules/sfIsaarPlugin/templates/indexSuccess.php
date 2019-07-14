@@ -108,6 +108,19 @@
   <?php echo render_show(__('Identifiers for corporate bodies'), render_value($resource->corporateBodyIdentifiers)) ?>
 
 </section> <!-- /section#identityArea -->
+<section id="contactAreaArea">
+
+	<div class="section" id="contactArea">
+
+	  <h2><?php echo __('Contact area') ?></h2>
+
+	  <?php foreach ($resource->contactInformations as $contactItem): ?>
+		<?php echo get_partial('contactinformation/contactInformation', array('contactInformation' => $contactItem)) ?>
+	  <?php endforeach; ?>
+
+	</div> <!-- /.section#contactArea -->
+</section> <!-- /section#contactArea -->
+
 
 <section id="descriptionArea">
 

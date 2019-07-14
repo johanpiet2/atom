@@ -37,7 +37,27 @@ class QubitInformationObjectAcl extends QubitAcl
     'publish' => 'Publish',
     'readMaster' => 'Access master',
     'readReference' => 'Access reference',
-    'readThumbnail' => 'Access thumbnail'
+    'readThumbnail' => 'Access thumbnail',
+    'duplicate' => 'Duplicate an archival description',
+    'move' => 'Move a Description',
+    'linkdigitalObjects' => 'Link Digital objects',
+    'editdigitalObjects' => 'Update Digital objects',
+    'importdigitalObjects' => 'Import Digital objects',
+    'linkStorage' => 'Link physical storage',
+    'editStorage' => 'Edit physical storage',
+    'createPreservation' => 'Create preservation of a description',
+    'editPreservation' => 'Edit preservation of a description	Access',
+    'createAccess' => 'Capture access of a description',
+    'editAccess' => 'Edit access of a description',
+    'publishWeb' => 'Publish a description to Web',
+    'bookIn' => 'Book in',
+    'bookOut' => 'Book out',
+    'rebookOut' => 'Re-book out',
+    'auditTrail' => 'Audit Trail',
+    'export' => 'Export',
+    'dublin' => 'Export Dublin Core 1.1 XML',
+    'ead' => 'Export EAD 2002 XML',
+    'mods' => 'Export MODS 3.3 XML',
   );
 
   public static function getParentForIsAllowed($resource, $action)

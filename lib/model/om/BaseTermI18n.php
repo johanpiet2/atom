@@ -27,6 +27,17 @@ abstract class BaseTermI18n implements ArrayAccess
     $keys = array(),
     $row = array();
 
+  public function __toString()
+  {
+    $string = $this->name;
+    if (!isset($string))
+    {
+      $string = $this->getName(array('sourceCulture' => true));
+    }
+
+    return (string) $string;
+  }
+
   public static function getFromRow(array $row)
   {
     $keys = array();
@@ -89,6 +100,47 @@ abstract class BaseTermI18n implements ArrayAccess
       return $query[0];
     }
   }
+
+//jjp SITA
+  public static function getIdByName($name, $taxonomyId, array $options = array())
+  {
+    $criteria = new Criteria;
+    $criteria->addJoin(QubitTermI18n::ID, QubitTerm::ID);
+    $criteria->add(QubitTermI18n::NAME, $name);
+    $criteria->add(QubitTerm::TAXONOMY_ID, $taxonomyId);
+
+    if (1 == count($query = self::getOne($criteria, $options)))
+    {
+      return $query;
+    }
+  }
+
+  public static function getIdByNameOnly($name, array $options = array())
+  {
+    $criteria = new Criteria;
+    $criteria->addJoin(QubitTermI18n::ID, QubitTerm::ID);
+    $criteria->add(QubitTermI18n::NAME, $name);
+
+    if (1 == count($query = self::get($criteria, $options)))
+    {
+      return $query[0]->id;
+    }
+  }
+
+  public static function getNameById($id, $taxonomyId, array $options = array())
+  {
+    $criteria = new Criteria;
+    $criteria->addJoin(QubitTermI18n::ID, QubitTerm::ID);
+    $criteria->add(QubitTermI18n::ID, $id);
+    $criteria->add(QubitTerm::TAXONOMY_ID, $taxonomyId);
+
+    if (1 == count($query = self::getOne($criteria, $options)))
+    {
+      return $query;
+   }
+  }
+
+// end
 
   public static function doDelete(Criteria $criteria, $connection = null)
   {

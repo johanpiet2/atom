@@ -118,9 +118,6 @@ class InformationObjectIndexAction extends sfAction
       $this->getResponse()->addJavascript('treeViewPager', 'last');
       $this->getResponse()->addJavascript('fullWidthTreeView', 'last');
       $this->getResponse()->addJavascript('/vendor/jstree/jstree.min.js', 'last');
-      $this->getResponse()->addJavaScript('/vendor/mediaelement/mediaelement-and-player.min.js', 'last');
-      $this->getResponse()->addJavaScript('mediaelement', 'last');
-      $this->getResponse()->addStyleSheet('/vendor/mediaelement/mediaelementplayer.min.css');
     }
 
     $scopeAndContent = $this->resource->getScopeAndContent(array('cultureFallback' => true));

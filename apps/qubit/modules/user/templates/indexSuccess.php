@@ -21,8 +21,10 @@
     <?php echo render_show(__('User name'), render_value($resource->username.($sf_user->user === $resource ? ' ('.__('you').')' : ''))) ?>
 
     <?php echo render_show(__('Email'), $resource->email) ?>
+	
+    <?php echo render_show(__('Classification'), QubitTerm::getById($resource->securityId)) //SITA single instance ?>
 
-    <?php if (!$sf_user->isAdministrator()): ?>
+    <?php if ((!$sf_user->isAdministrator()) || (!$sf_user->isSuperUser())): ?>
       <div class="field">
         <h3><?php echo __('Password') ?></h3>
         <div><?php echo link_to(__('Reset password'), array($resource, 'module' => 'user', 'action' => 'passwordEdit')) ?></div>

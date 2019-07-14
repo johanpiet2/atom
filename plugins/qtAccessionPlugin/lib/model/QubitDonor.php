@@ -19,4 +19,25 @@
 
 class QubitDonor extends BaseDonor
 {
+  /**
+   * Only find Researcher objects, not other types
+   *
+   * @param Criteria $criteria current search criteria
+   * @return Criteria modified search critieria
+   */
+  public static function addGetOnlyDonorObjectCriteria($criteria)
+  {
+    $criteria->addJoin(QubitDonor::ID, QubitObject::ID);
+    $criteria->add(QubitObject::CLASS_NAME, 'QubitDonor');
+
+    return $criteria;
+  }
+
+  public function __construct()
+  {
+    parent::__construct();
+
+    $this->tables[] = Propel::getDatabaseMap(QubitRegistry::DATABASE_NAME)->getTable(QubitRegistry::TABLE_NAME);
+  }
+
 }

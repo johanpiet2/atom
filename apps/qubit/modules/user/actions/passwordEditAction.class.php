@@ -39,10 +39,10 @@ class UserPasswordEditAction extends DefaultEditAction
       $this->resource = $this->getRoute()->resource;
     }
 
-    // Except for administrators, only allow users to reset their own password
-    if (!$this->context->user->isAdministrator())
+    // Except for administrators or Super Users, only allow users to reset their own password
+    if ((!$this->context->user->isAdministrator()) && (!$this->context->user->isSuperUser()))
     {
-      if ($this->resource->id != $this->context->user->getAttribute('user_id'))
+      if ($this->resource->id != $this->context->user->getAttribute('user_id')) 
       {
         QubitAcl::forwardToSecureAction();
       }

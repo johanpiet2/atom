@@ -142,6 +142,19 @@ class arElasticSearchPluginQuery
    */
   public function addAdvancedSearchFilters($fieldNames, $params, $archivalStandard)
   {
+    foreach ($params as $param => $value)
+    {
+	  	//SITA filter by repository
+		if ($param == 'repoFilter')
+		{	
+			$queryBool = new \Elastica\Query\BoolQuery;
+			foreach ($value as $repId){ 
+				$queryBool->addShould(new \Elastica\Query\Term(array('repository.id' => $repId)));
+			} 
+			$this->queryBool->addMust($queryBool);
+		}
+	}
+
     // Build query with the boolean criteria
     if (null !== $criteria = $this->parseQuery($params, $archivalStandard))
     {

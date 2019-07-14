@@ -1,5 +1,5 @@
 <?php
-
+ini_set('memory_limit', -1); // or you could use 1G
 /*
  * This file is part of the Access to Memory (AtoM) software.
  *

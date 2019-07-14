@@ -196,6 +196,65 @@ QubitAclGroup:
       uz: tarjimon
       vi: 'Người phiên dịch'
       zh: 翻译员
+  QubitAclGroup_superuser:
+    id: 104
+    parent_id: QubitAclGroup_authenticated
+    name:
+      ca: super user
+      ca@valencia: super user
+      cy: super user
+      de: super user
+      de-CH: super user
+      el: super user
+      en: super user
+      es: super user
+      eu: super user
+      fr: super user
+      gl: super user
+      hu: super user
+      id: super user
+      is: super user
+      it: super user
+      ja: super user
+      ka: super user
+      ko: super user
+      pl: super user
+      pt: super user
+      pt-BR: super user
+      pt_BR: super user
+      ru: super user
+      sl: super user
+      sr: super user
+      sv: super user
+      th: super user
+      uz: super user
+      vi: super user
+      zh: super user
+  QubitAclGroup_researcher:
+    id: 105
+    parent_id: QubitAclGroup_authenticated
+    name:
+      en: researcher
+  QubitAclGroup_serviceprovider:
+    id: 106
+    parent_id: QubitAclGroup_authenticated
+    name:
+      en: serviceprovider
+  QubitAclGroup_physicalstorage:
+    id: 107
+    parent_id: QubitAclGroup_authenticated
+    name:
+      en: physicalstorage
+  QubitAclGroup_registry:
+    id: 108
+    parent_id: QubitAclGroup_authenticated
+    name:
+      en: registry
+  QubitAclGroup_reporting:
+    id: 109
+    parent_id: QubitAclGroup_authenticated
+    name:
+      en: reporting
 QubitAclPermission:
   QubitAclPermission_anonymous_read:
     group_id: QubitAclGroup_anonymous

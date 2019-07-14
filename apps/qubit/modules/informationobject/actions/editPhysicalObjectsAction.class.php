@@ -30,7 +30,17 @@ class InformationObjectEditPhysicalObjectsAction extends DefaultEditAction
     $NAMES = array(
       'containers',
       'location',
-      'name',
+      'name', 
+      'uniqueIdentifier',
+      'descriptionTitle',
+      'periodCovered',
+      'extent',
+      'findingAids',
+      'accrualSpace',
+      'shelf',
+      'rowNumber',	  
+      'bin',	  
+      'forms',
       'type');
 
   protected function earlyExecute()
@@ -61,8 +71,21 @@ class InformationObjectEditPhysicalObjectsAction extends DefaultEditAction
         $this->form->setWidget('containers', new sfWidgetFormSelect(array('choices' => array(), 'multiple' => true)));
 
         break;
-
-      case 'location':
+		
+	  case 'location':	  
+	  case 'uniqueIdentifier':
+	  case 'descriptionTitle':
+	  case 'periodCovered': 
+	  case 'extent':
+	  case 'findingAids': 	  
+	  case 'accrualSpace': 
+	  case 'shelf': 
+	  	$this->form->setDefault('shelf',"");
+	  case 'rowNumber': 	  
+	  	$this->form->setDefault('rowNumber',"");
+	  case 'bin': 
+	  	$this->form->setDefault('bin',"");
+	  case 'forms': 
       case 'name':
         $this->form->setValidator($name, new sfValidatorString);
         $this->form->setWidget($name, new sfWidgetFormInput);
@@ -125,8 +148,16 @@ class InformationObjectEditPhysicalObjectsAction extends DefaultEditAction
       if ($this->form->isValid())
       {
         $this->processForm();
+	//Save Shelf, Row and Bin to database JJP SITA 27 July 2014
+	$informationObject = QubitInformationObject::getById($this->resource->id);
 
+	$this->resource->name = $informationObj->title;
         $this->resource->save();
+
+	$informationObject->shelf = $this->form->getValue('shelf');
+	$informationObject->row = $this->form->getValue('rowNumber');
+	$informationObject->bin = $this->form->getValue('bin');
+	$informationObject->save();
 
         $this->redirect(array($this->resource, 'module' => 'informationobject'));
       }

@@ -1,12 +1,12 @@
 browse:
-  credentials: administrator
+  credentials: [[ administrator, physicalstorage ]]
 
 delete:
   credentials: [[ contributor, editor, administrator ]]
   is_secure: true
 
 edit:
-  credentials: [[ contributor, editor, administrator, translator ]]
+  credentials: [[ contributor, editor, administrator, translator, physicalstorage ]]
   is_secure: true
 
 all:

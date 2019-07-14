@@ -77,6 +77,21 @@ class BasePeer
 	 */
 	const TYPE_NUM = 'num';
 
+    /**
+	 * Runs the PHP function htmlspecialchars on the value passed.
+	 *
+	 * @param string $value the value to escape
+	 * @return string the escaped value
+	 */
+
+    public static function esc_specialchars($value)
+    {
+        // Numbers and boolean values get turned into strings which can cause problems
+        // with type comparisons (e.g. === or is_int() etc).
+        return is_string($value) ? htmlentities($value, ENT_QUOTES, sfConfig::get('sf_charset')) :
+        $value;
+    }
+
 	static public function getFieldnames ($classname, $type = self::TYPE_PHPNAME) {
 
 		// TODO we should take care of including the peer class here
@@ -158,6 +173,56 @@ class BasePeer
 				$sql = "DELETE FROM " . $tableName . " WHERE " .  implode(" AND ", $whereClause);
 				$stmt = $con->prepare($sql);
 				self::populateStmtValues($stmt, $selectParams, $dbMap, $db);
+
+				//Audit Trail Start SITA JJP
+				$columnName_Audit_Build = "";
+				$value_Audit_Build = "";
+				$columnName_Audit = "";
+				$value_Audit = "";
+				$tableName_Audit = "";
+
+				$params_Audit = $selectParams;
+				$tableName_Audit = $params_Audit[0]['table'];
+				for($i=0; $i<count($params_Audit); $i++)
+				{
+		  			
+					$columnName_Audit_Build = $params_Audit[$i]['column'];
+					$value_Audit_Build = $params_Audit[$i]['value'];
+					
+					if ($columnName_Audit_Build == "CREATED_AT")
+					{
+						$value_Audit_Build = $value_Audit_Build->format('Y-m-d H:i:s');
+					}
+					elseif ($columnName_Audit_Build == "UPDATED_AT")
+					{
+						$value_Audit_Build = $value_Audit_Build->format('Y-m-d H:i:s');
+					}
+					elseif ($columnName_Audit_Build == "ACCESS_DATE")
+					{
+						$value_Audit_Build = $value_Audit_Build->format('Y-m-d H:i:s');
+					}
+					else
+					{	
+						if ($value_Audit_Build instanceof DateTime) 
+						{
+							$value_Audit_Build = $value_Audit_Build->format('Y-m-d H:i:s');
+						}
+					}
+					if ($columnName_Audit == "")
+					{
+						$columnName_Audit .= $columnName_Audit_Build;
+						$value_Audit .= $value_Audit_Build;
+					}
+					else
+					{
+						$columnName_Audit .= "~!~" . $columnName_Audit_Build;
+						$value_Audit .= "~!~" . $value_Audit_Build;
+					}
+				}
+
+				self::doAudit("delete", $tableName_Audit, $con, $columnName_Audit ."~~~".  $value_Audit);
+				//Audit Trail End SITA JJP
+
 				$stmt->execute();
 				$affectedRows = $stmt->rowCount();
 			} catch (Exception $e) {
@@ -195,6 +260,9 @@ class BasePeer
 			$sql = "DELETE FROM " . $tableName;
 			$stmt = $con->prepare($sql);
 			$stmt->execute();
+
+			self::doAudit("delete", "Table", $con, $con->getLastExecutedQuery()); //SITA JJP 23 July 2014
+
 			return $stmt->rowCount();
 		} catch (Exception $e) {
 			Propel::log($e->getMessage(), Propel::LOG_ERR);
@@ -292,7 +360,76 @@ class BasePeer
 
 			$stmt = $con->prepare($sql);
 			self::populateStmtValues($stmt, self::buildParams($qualifiedCols, $criteria), $dbMap, $db);
-			$stmt->execute();
+			
+			//Audit Trail Start SITA JJP
+			$params_Audit = array();
+			foreach ($qualifiedCols as $key) 
+			{
+				if ($criteria->containsKey($key)) 
+				{
+					$crit = $criteria->getCriterion($key);
+					$params_Audit[] = array('column' => $crit->getColumn(), 'table' => $crit->getTable(), 'value' => $crit->getValue());
+				}
+			}
+
+			$columnName_Audit_Build = "";
+			$value_Audit_Build = "";
+			$columnName_Audit = "";
+			$value_Audit = "";
+			$tableName_Audit = "";
+
+			$tableName_Audit = $params_Audit[0]['table'];
+			for($i=0; $i<count($params_Audit); $i++)
+			{
+	  			
+				$columnName_Audit_Build = $params_Audit[$i]['column'];
+				$value_Audit_Build = $params_Audit[$i]['value'];
+					
+				if ($columnName_Audit_Build == "CREATED_AT")
+				{
+					$value_Audit_Build = $value_Audit_Build->format('Y-m-d H:i:s');
+				}
+				elseif ($columnName_Audit_Build == "UPDATED_AT")
+				{
+					$value_Audit_Build = $value_Audit_Build->format('Y-m-d H:i:s');
+				}
+				elseif ($columnName_Audit_Build == "ACCESS_DATE")
+				{
+					$value_Audit_Build = $value_Audit_Build->format('Y-m-d H:i:s');
+				}
+				else
+				{	
+					if ($value_Audit_Build instanceof DateTime) 
+					{
+						$value_Audit_Build = $value_Audit_Build->format('Y-m-d H:i:s');
+					}
+				}
+				if ($columnName_Audit == "")
+				{
+					$columnName_Audit .= $columnName_Audit_Build;
+					$value_Audit .= $value_Audit_Build;
+				}
+				else
+				{
+					$columnName_Audit .= "~!~" . $columnName_Audit_Build;
+					$value_Audit .= "~!~" . $value_Audit_Build;
+				}
+			}
+
+			//Audit Trail End SITA JJP
+		    self::doAudit("insert", $tableName_Audit, $con, $columnName_Audit ."~~~".  $value_Audit);
+
+			try
+			{
+				$stmt->execute();
+				// Do query, etc.
+				$retries = 0;
+			}
+			catch (PDOException $e)
+			{
+				QubitXMLImport::addLog($e, "Deadlock Something went wrong, retrying...", $e, true);
+				// Should probably check $e is a connection error, could be a query error!
+			}
 
 		} catch (Exception $e) {
 			Propel::log($e->getMessage(), Propel::LOG_ERR);
@@ -407,6 +544,56 @@ class BasePeer
 
 				// Replace ':p?' with the actual values
 				self::populateStmtValues($stmt, $params, $dbMap, $db);
+
+				//Audit Trail Start SITA JJP
+				
+				$columnName_Audit_Build = "";
+				$value_Audit_Build = "";
+				$columnName_Audit = "";
+				$value_Audit = "";
+				$tableName_Audit = "";
+
+				$params_Audit = $params;
+				$tableName_Audit = $params_Audit[0]['table'];
+				for($i=0; $i<count($params_Audit); $i++)
+				{
+		  			
+					$columnName_Audit_Build = $params_Audit[$i]['column'];
+					$value_Audit_Build = $params_Audit[$i]['value'];
+					
+					if ($columnName_Audit_Build == "CREATED_AT")
+					{
+						$value_Audit_Build = $value_Audit_Build->format('Y-m-d H:i:s');
+					}
+					elseif ($columnName_Audit_Build == "UPDATED_AT")
+					{
+						$value_Audit_Build = $value_Audit_Build->format('Y-m-d H:i:s');
+					}
+					elseif ($columnName_Audit_Build == "ACCESS_DATE")
+					{
+						$value_Audit_Build = $value_Audit_Build->format('Y-m-d H:i:s');
+					}
+					else
+					{	
+						if ($value_Audit_Build instanceof DateTime) 
+						{
+							$value_Audit_Build = $value_Audit_Build->format('Y-m-d H:i:s');
+						}
+					}
+					if ($columnName_Audit == "")
+					{
+						$columnName_Audit .= $columnName_Audit_Build;
+						$value_Audit .= $value_Audit_Build;
+					}
+					else
+					{
+						$columnName_Audit .= "~!~" . $columnName_Audit_Build;
+						$value_Audit .= "~!~" . $value_Audit_Build;
+					}
+				}
+
+				//Audit Trail End SITA JJP
+				self::doAudit("update", $tableName_Audit, $con, $columnName_Audit ."~~~".  $value_Audit);
 
 				$stmt->execute();
 
@@ -761,6 +948,8 @@ class BasePeer
 		$ignoreCase = $criteria->isIgnoreCase();
 		$select = $criteria->getSelectColumns();
 		$aliases = $criteria->getAsColumns();
+		// SITA JJP Force Index
+		$forceIndex = $criteria->getForceIndex();
 
 		// simple copy
 		$selectModifiers = $criteria->getSelectModifiers();
@@ -1002,21 +1191,68 @@ class BasePeer
 		
 		$from .= $joinClause ? ' ' . implode(' ', $joinClause) : '';
 
-		// Build the SQL from the arrays we compiled
-		$sql =  "SELECT "
-		.($selectModifiers ? implode(" ", $selectModifiers) . " " : "")
-		.implode(", ", $selectClause)
-		." FROM "  . $from
-		.($whereClause ? " WHERE ".implode(" AND ", $whereClause) : "")
-		.($groupByClause ? " GROUP BY ".implode(",", $groupByClause) : "")
-		.($havingString ? " HAVING ".$havingString : "")
-		.($orderByClause ? " ORDER BY ".implode(",", $orderByClause) : "");
+		//SITA JJP Hack to fix slow response on retrieval/edit of Information object 
+		if ($forceIndex != null)
+		{
+			$lft = "";
+			$rgt = "";
+			foreach ($criteria->keys() as $key) {
+				$crit = $criteria->getCriterion($key);
+				if ($crit->getColumn() == "LFT")
+				{
+					$lft = $crit->getValue();
+				}
+				if ($crit->getColumn() == "RGT")
+				{
+					$rgt = $crit->getValue();
+				}
+			}
 
-		// APPLY OFFSET & LIMIT to the query.
-		if ($criteria->getLimit() || $criteria->getOffset()) {
-			$db->applyLimit($sql, $criteria->getOffset(), $criteria->getLimit());
+			$sql =  "SELECT "
+			.($selectModifiers ? implode(" ", $selectModifiers) . " " : "")
+			.implode(", ", $selectClause)
+			." FROM "  . $from
+			.($whereClause ? " WHERE ".implode(" AND ", $whereClause) : "")
+			.($groupByClause ? " GROUP BY ".implode(",", $groupByClause) : "")
+			.($havingString ? " HAVING ".$havingString : "")
+			.($orderByClause ? " ORDER BY ".implode(",", $orderByClause) : "");
+
+			// APPLY OFFSET & LIMIT to the query.
+			if ($criteria->getLimit() || $criteria->getOffset()) {
+				$db->applyLimit($sql, $criteria->getOffset(), $criteria->getLimit());
+			}
+			if (strpos($sql,"SELECT COUNT") == false)
+			{
+				//$sql  = ' SELECT object.CLASS_NAME,object.CREATED_AT,object.UPDATED_AT,object.ID,object.SERIAL_NUMBER,information_object.ID,information_object.IDENTIFIER, information_object.PARTNO,information_object.OAI_LOCAL_IDENTIFIER,information_object.LEVEL_OF_DESCRIPTION_ID,information_object.COLLECTION_TYPE_ID, information_object.REPOSITORY_ID, information_object.REGISTRY_ID, information_object.PARENT_ID, information_object.DESCRIPTION_STATUS_ID, information_object.DESCRIPTION_DETAIL_ID,information_object.DESCRIPTION_IDENTIFIER,information_object.SOURCE_STANDARD,information_object.DISPLAY_STANDARD_ID, information_object.FORMAT_ID, information_object.SIZE_ID,information_object.TYP_ID,information_object.EQUIPMENT_ID,information_object.LFT, information_object.RGT,information_object.SOURCE_CULTURE,information_object.SHELF,information_object.ROW,information_object.BIN,information_object.MOVE_PERMANENT, information_object.IMPORT_ID FROM `object`, `information_object` FORCE INDEX (information_object_FI_18) WHERE information_object.LFT<:p1 AND information_object.RGT>:p2 AND information_object.ID=object.ID ORDER BY information_object.LFT ASC,information_object.LFT ASC;';
+
+				$sql  = ' SELECT object.CLASS_NAME,object.CREATED_AT,object.UPDATED_AT,object.ID,object.SERIAL_NUMBER,information_object.ID,information_object.IDENTIFIER, information_object.PARTNO,information_object.OAI_LOCAL_IDENTIFIER,information_object.LEVEL_OF_DESCRIPTION_ID,information_object.COLLECTION_TYPE_ID, information_object.REPOSITORY_ID, information_object.REGISTRY_ID, information_object.PARENT_ID, information_object.DESCRIPTION_STATUS_ID, information_object.DESCRIPTION_DETAIL_ID,information_object.DESCRIPTION_IDENTIFIER,information_object.SOURCE_STANDARD,information_object.DISPLAY_STANDARD_ID, information_object.FORMAT_ID, information_object.SIZE_ID,information_object.TYP_ID,information_object.EQUIPMENT_ID,information_object.LFT, information_object.RGT,information_object.SOURCE_CULTURE,information_object.SHELF,information_object.ROW,information_object.BIN,information_object.MOVE_PERMANENT, information_object.IMPORT_ID
+FROM object INNER JOIN information_object ON information_object.ID = object.ID 
+WHERE information_object.LFT<:p1 AND information_object.RGT>:p2
+ORDER BY information_object.LFT ASC,information_object.LFT ASC';
+
+				// APPLY OFFSET & LIMIT to the query.
+				if ($criteria->getLimit() || $criteria->getOffset()) {
+					$db->applyLimit($sql, $criteria->getOffset(), $criteria->getLimit());
+				}
+			}
 		}
+		else
+		{  
+			// Build the SQL from the arrays we compiled
+			$sql =  "SELECT "
+			.($selectModifiers ? implode(" ", $selectModifiers) . " " : "")
+			.implode(", ", $selectClause)
+			." FROM "  . $from
+			.($whereClause ? " WHERE ".implode(" AND ", $whereClause) : "")
+			.($groupByClause ? " GROUP BY ".implode(",", $groupByClause) : "")
+			.($havingString ? " HAVING ".$havingString : "")
+			.($orderByClause ? " ORDER BY ".implode(",", $orderByClause) : "");
 
+			// APPLY OFFSET & LIMIT to the query.
+			if ($criteria->getLimit() || $criteria->getOffset()) {
+				$db->applyLimit($sql, $criteria->getOffset(), $criteria->getLimit());
+			}
+		}
 		return $sql;
 	}
 
@@ -1058,6 +1294,141 @@ class BasePeer
 			return $v;
 		} catch (Exception $e) {
 			Propel::log("BasePeer::getValidator(): failed trying to instantiate " . $classname . ": ".$e->getMessage(), Propel::LOG_ERR);
+		}
+	}
+
+	/**
+	 * Write every sql query to the audit trail table.
+	 * @param      
+	 * @param      
+	 * @return     
+	 */
+	public static function doAudit($action, $tablenameAudit, PropelPDO $conAudit, $theQuery)
+	{
+		// Get the User ID
+		$userID =  sfContext::getInstance()->getUser()->user;
+	    	// Get Date and Time
+		$theDateTime = date("Y-m-d H:i:s");
+
+		// Set up a list of required tables (one Insert statement will
+		// be executed per table)
+
+		$affectedRows = 0; // initialize this in case the next loop has no iterations.
+
+		if (empty($theQuery)) {
+			throw new PropelException("Audit from Query $theQuery with empty clause.");
+		}
+
+		// Execute the statement.
+		try 
+		{
+			$cID = 0;
+		    $keyValue = '';
+		    $tFields = "";
+			$tValues = "";
+			$tQuery = "";
+				
+			$sSpace = stripos($theQuery, "~~~");
+			$tFields = substr($theQuery,0,$sSpace);
+			//fields to get
+			$tFields = str_replace ("`,`", "~!~",$tFields);
+			$tFields = str_replace ("&#039;", "~",$tFields); 
+			$tFields = str_replace ("`)", "",$tFields);
+			$fields = explode("~!~", $tFields);
+			
+			//values to get
+	    	$sSpace = stripos($theQuery, "~~~");
+			$tValues = substr($theQuery,$sSpace+3);
+			$tValues = str_replace ("','", "~!~",$tValues);
+			$values = explode("~!~", $tValues);
+
+    		if ((trim($tablenameAudit)) == "access_log" || (trim($tablenameAudit) == "access_object_i18n") || (trim($tablenameAudit) == "bookout_object_i18n") || (trim($tablenameAudit) == "bookin_object_i18n") || (trim($tablenameAudit) == "presevation_object") || (trim($tablenameAudit) == "relation") || (trim($tablenameAudit) == "status") || (trim($tablenameAudit) == "other_name") || (trim($tablenameAudit) == "property") || (trim($tablenameAudit) == "note"))
+			{
+				$keyValue = "OBJECT_ID";
+				$cID = self::doGetFieldValue($keyValue, $fields, $values);
+				if ($cID == "") {
+					$keyValue = "ID";
+					$cID = self::doGetFieldValue($keyValue, $fields, $values);
+				}
+			}
+    		else if ((trim($tablenameAudit)) == "acl_user_group")
+			{
+				$keyValue = "USER_ID";
+				$cID = self::doGetFieldValue($keyValue, $fields, $values);
+				if ($cID == "") {
+					$keyValue = "ID";
+					$cID = self::doGetFieldValue($keyValue, $fields, $values);
+				}
+			}
+    		else if ((trim($tablenameAudit)) == "contact_information")
+			{
+				$keyValue = "ACTOR_ID";
+				$cID = self::doGetFieldValue($keyValue, $fields, $values);
+				if ($cID == "") {
+					$keyValue = "ID";
+					$cID = self::doGetFieldValue($keyValue, $fields, $values);
+				}
+			}
+			else
+			{
+				$keyValue = "ID";
+				$cID = self::doGetFieldValue($keyValue, $fields, $values);
+			}
+
+			if ($sChar = stripos($keyValue, "',") != 0)
+			{
+				$keyValue = substr($keyValue,0 ,$sChar - 1);
+			}
+			$tQuery = self::esc_specialchars($tFields . "~~~" . $tValues);
+
+			$tQuery = str_replace ("'", " ",$theQuery);
+			$tQuery = str_replace ("`", " ",$theQuery);
+			$tQuery = str_replace ("&quot;", "",$tQuery);
+			$tQuery = str_replace (";", "<br>",$tQuery);
+			$tQuery = str_replace (",", "<br>",$tQuery);
+			$tQuery = self::esc_specialchars($tQuery);
+
+			$cID = self::esc_specialchars($cID);
+
+			$sqlAudit = "INSERT INTO audit (field_key,record_id,user_action,db_table,db_query,user,action_date_time) VALUES ('" . $keyValue . "','" . $cID . "','" . $action . "','" . $tablenameAudit . "','" . $tQuery . "','" . $userID . "','" . $theDateTime . "')";
+			$stmtAudit = $conAudit->prepare($sqlAudit);
+
+			if ($tQuery != "FORMAT_ID~~~" || $tQuery != "SIZE_ID~~~" || $tQuery != "TYP_ID~~~" || $tQuery != "EQUIPMENT_ID~~~")
+			{
+				$stmtAudit->execute();
+			}
+		} 
+		catch (Exception $e) 
+		{
+			Propel::log($e->getMessage(), Propel::LOG_ERR);
+			throw new PropelException("Unable to execute AUDIT statement.",$e);
+		}
+
+		return $cID;
+	}
+	/**
+	 * Method fill fields with field_key and record_id.
+	 *
+	 * @return     string	field_key
+	 * @throws     PropelException - wrapping SQLException caught from statement execution.
+	 */
+	public static function doGetFieldValue($keyValue, $fields, $values)
+	{
+		try 
+		{
+			for ($i=0; $i < count($fields); $i++) 
+			{
+				if ($keyValue == $fields[$i])
+				{
+					$cID = trim($values[$i]);
+					return $cID;
+				}
+			}
+
+			return;
+		} catch (Exception $e) {
+			Propel::log($e->getMessage(), Propel::LOG_ERR);
+			throw new PropelException("Unable to perform get filed value.", $e);
 		}
 	}
 

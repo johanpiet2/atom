@@ -67,6 +67,20 @@ abstract class BaseRelation extends QubitObject implements ArrayAccess
     }
   }
 
+	// get by get By Subject And Object And Type jjp SITA
+  public static function getBySubjectAndObjectAndType($subjectId, $objectId, $typeId, array $options = array())
+  {
+    $criteria = new Criteria;
+    $criteria->add(QubitRelation::SUBJECT_ID, $subjectId);
+    $criteria->add(QubitRelation::OBJECT_ID, $objectId);
+    $criteria->add(QubitRelation::TYPE_ID, $typeId);
+
+    if (1 == count($query = self::getOne($criteria, $options)))
+    {
+      return $query;
+    }
+  }
+
   public function __construct()
   {
     parent::__construct();

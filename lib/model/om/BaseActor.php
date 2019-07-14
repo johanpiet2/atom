@@ -14,6 +14,7 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
     DESCRIPTION_DETAIL_ID = 'actor.DESCRIPTION_DETAIL_ID',
     DESCRIPTION_IDENTIFIER = 'actor.DESCRIPTION_IDENTIFIER',
     SOURCE_STANDARD = 'actor.SOURCE_STANDARD',
+    ACTOR_IMPORT_ID = 'actor.ACTOR_IMPORT_ID',
     PARENT_ID = 'actor.PARENT_ID',
     LFT = 'actor.LFT',
     RGT = 'actor.RGT',
@@ -32,6 +33,7 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
     $criteria->addSelectColumn(QubitActor::DESCRIPTION_DETAIL_ID);
     $criteria->addSelectColumn(QubitActor::DESCRIPTION_IDENTIFIER);
     $criteria->addSelectColumn(QubitActor::SOURCE_STANDARD);
+    $criteria->addSelectColumn(QubitActor::ACTOR_IMPORT_ID);
     $criteria->addSelectColumn(QubitActor::PARENT_ID);
     $criteria->addSelectColumn(QubitActor::LFT);
     $criteria->addSelectColumn(QubitActor::RGT);
@@ -72,6 +74,17 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
     if (1 == count($query = self::get($criteria, $options)))
     {
       return $query[0];
+    }
+  }
+
+	// jjp SITA 07 Jan 2015 - Search per import id
+  public static function getByImportId($id, array $options = array())
+  {
+    $criteria = new Criteria;
+    $criteria->add(QubitActor::ACTOR_IMPORT_ID, $id);
+    if (1 == count($query = self::getOne($criteria, $options)))
+    {
+      return $query;
     }
   }
 

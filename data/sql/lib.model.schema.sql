@@ -40,6 +40,7 @@ CREATE TABLE `actor`
 	`description_detail_id` INTEGER,
 	`description_identifier` VARCHAR(1024),
 	`source_standard` VARCHAR(1024),
+	`actor_import_id` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
 	`parent_id` INTEGER,
 	`lft` INTEGER  NOT NULL,
 	`rgt` INTEGER  NOT NULL,
@@ -67,7 +68,8 @@ CREATE TABLE `actor`
 	INDEX `actor_FI_5` (`parent_id`),
 	CONSTRAINT `actor_FK_5`
 		FOREIGN KEY (`parent_id`)
-		REFERENCES `actor` (`id`)
+		REFERENCES `actor` (`id`),
+	INDEX `actor_FI_6` (`actor_import_id`)
 )Engine=InnoDB;
 
 #-----------------------------------------------------------------------------
@@ -169,6 +171,147 @@ CREATE TABLE `audit_log`
 )Engine=InnoDB;
 
 #-----------------------------------------------------------------------------
+#-- audit
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `audit`;
+
+CREATE TABLE IF NOT EXISTS `audit` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `field_key` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `record_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `user_action` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `db_table` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `db_query` longtext COLLATE utf8_unicode_ci NOT NULL,
+  `user` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `action_date_time` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+	INDEX `audit_object_FI_1` (`record_id`),
+	INDEX `audit_object_FI_2` (`action_date_time`)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+#-----------------------------------------------------------------------------
+#-- bookout_object
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `bookout_object`;
+
+
+CREATE TABLE `bookout_object`
+(
+	`id` INTEGER  NOT NULL,
+	`requestor_id` VARCHAR(50),
+	`dispatcher_id` VARCHAR(50),
+	`parent_id` VARCHAR(50),
+	`lft` INTEGER  NOT NULL,
+	`rgt` INTEGER  NOT NULL,
+	`source_culture` VARCHAR(14)  NOT NULL,
+	PRIMARY KEY (`id`),
+	CONSTRAINT `bookout_object_FK_1`
+		FOREIGN KEY (`id`)
+		REFERENCES `object` (`id`)
+		ON DELETE CASCADE
+)Engine=InnoDB;
+
+#-----------------------------------------------------------------------------
+#-- bookout_object_i18n
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `bookout_object_i18n`;
+
+
+CREATE TABLE `bookout_object_i18n`
+(
+	`name` VARCHAR(1024),
+	`time_period` TEXT,
+	`remarks` TEXT,
+	`unique_identifier` TEXT,
+	`strong_room` TEXT,
+	`shelf` TEXT,
+	`row` TEXT,
+	`location` TEXT,
+	`availability` TEXT,
+	`record_condition` TEXT,
+	`id` INTEGER  NOT NULL,
+	`service_provider` INTEGER,
+	`object_id` TEXT,
+	`culture` VARCHAR(14)  NOT NULL,
+	`requestor_type` CHAR(1),
+	PRIMARY KEY (`id`,`culture`),
+	CONSTRAINT `bookout_object_i18n_FK_1`
+		FOREIGN KEY (`id`)
+		REFERENCES `bookout_object` (`id`)
+		ON DELETE CASCADE,
+	INDEX `bookout_FI_1` (`service_provider`),
+	CONSTRAINT `bookout_object_i18n_FK_2`
+		FOREIGN KEY (`service_provider`)
+		REFERENCES `actor` (`id`)
+		ON DELETE CASCADE
+)Engine=InnoDB;
+
+#-----------------------------------------------------------------------------
+#-- bookin_object
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `bookin_object`;
+
+
+CREATE TABLE `bookin_object`
+(
+	`id` INTEGER  NOT NULL,
+	`requestor_id` VARCHAR(50),
+	`receiver_id` VARCHAR(50),
+	`parent_id` VARCHAR(50),
+	`lft` INTEGER  NOT NULL,
+	`rgt` INTEGER  NOT NULL,
+	`source_culture` VARCHAR(14)  NOT NULL,
+	PRIMARY KEY (`id`),
+	CONSTRAINT `bookin_object_FK_1`
+		FOREIGN KEY (`id`)
+		REFERENCES `object` (`id`)
+		ON DELETE CASCADE
+
+)Engine=InnoDB;
+
+#-----------------------------------------------------------------------------
+#-- bookin_object_i18n
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `bookin_object_i18n`;
+
+
+CREATE TABLE `bookin_object_i18n`
+(
+	`name` VARCHAR(1024),
+	`time_period` TEXT,
+	`remarks` TEXT,
+	`unique_identifier` TEXT,
+	`strong_room` TEXT,
+	`shelf` TEXT,
+	`row` TEXT,
+	`location` TEXT,
+	`record_condition` TEXT,
+	`return_date` TEXT,
+	`id` INTEGER  NOT NULL,
+	`service_provider` INTEGER,
+	`object_id` TEXT,
+	`culture` VARCHAR(14)  NOT NULL,
+	`requestor_type` CHAR(1),
+	PRIMARY KEY (`id`,`culture`),
+	CONSTRAINT `bookin_object_i18n_FK_1`
+		FOREIGN KEY (`id`)
+		REFERENCES `bookin_object` (`id`)
+		ON DELETE CASCADE,
+	INDEX `bookin_FI_1` (`service_provider`),
+	CONSTRAINT `bookin_object_i18n_FK_2`
+		FOREIGN KEY (`service_provider`)
+		REFERENCES `actor` (`id`)
+		ON DELETE CASCADE
+)Engine=InnoDB;
+
+
+#-----------------------------------------------------------------------------
 #-- job
 #-----------------------------------------------------------------------------
 
@@ -260,14 +403,20 @@ CREATE TABLE `contact_information`
 (
 	`actor_id` INTEGER  NOT NULL,
 	`primary_contact` TINYINT,
+	`title` VARCHAR(255),
 	`contact_person` VARCHAR(1024),
+	`position` VARCHAR(255),
 	`street_address` TEXT,
 	`website` VARCHAR(1024),
 	`email` VARCHAR(255),
 	`telephone` VARCHAR(255),
 	`fax` VARCHAR(255),
+	`cell` VARCHAR(255),
 	`postal_code` VARCHAR(255),
 	`country_code` VARCHAR(255),
+	`postal_address` TEXT,
+	`postal_post_code` VARCHAR(255),
+	`postal_country_code` VARCHAR(255),
 	`longitude` FLOAT,
 	`latitude` FLOAT,
 	`created_at` DATETIME  NOT NULL,
@@ -294,7 +443,9 @@ CREATE TABLE `contact_information_i18n`
 (
 	`contact_type` VARCHAR(1024),
 	`city` VARCHAR(1024),
+	`postal_city` VARCHAR(1024),
 	`region` VARCHAR(1024),
+	`postal_region` VARCHAR(1024),
 	`note` TEXT,
 	`id` INTEGER  NOT NULL,
 	`culture` VARCHAR(16)  NOT NULL,
@@ -494,16 +645,27 @@ CREATE TABLE `information_object`
 (
 	`id` INTEGER  NOT NULL,
 	`identifier` VARCHAR(1024),
+	`partNo` VARCHAR(1024),	
 	`oai_local_identifier` INTEGER  NOT NULL AUTO_INCREMENT,
 	`level_of_description_id` INTEGER,
 	`collection_type_id` INTEGER,
 	`repository_id` INTEGER,
+	`registry_id` INTEGER,
 	`parent_id` INTEGER,
 	`description_status_id` INTEGER,
 	`description_detail_id` INTEGER,
 	`description_identifier` VARCHAR(1024),
 	`source_standard` VARCHAR(1024),
 	`display_standard_id` INTEGER,
+	`format_id` INTEGER,
+	`size_id` INTEGER,
+	`typ_id` INTEGER,
+	`equipment_id` INTEGER,	
+	`shelf` VARCHAR(50),
+	`row` VARCHAR(50),
+	`bin` VARCHAR(50),
+	`move_permanent` INTEGER,
+	`import_id` VARCHAR(1024),
 	`lft` INTEGER  NOT NULL,
 	`rgt` INTEGER  NOT NULL,
 	`source_culture` VARCHAR(16)  NOT NULL,
@@ -546,7 +708,33 @@ CREATE TABLE `information_object`
 	CONSTRAINT `information_object_FK_8`
 		FOREIGN KEY (`display_standard_id`)
 		REFERENCES `term` (`id`)
-		ON DELETE SET NULL
+		ON DELETE SET NULL,
+    INDEX `information_object_FI_9` (`format_id`),
+	CONSTRAINT `information_object_FK_9`
+		FOREIGN KEY (`format_id`)
+		REFERENCES `term` (`id`)
+		ON DELETE SET NULL,
+    INDEX `information_object_FI_10` (`size_id`),
+	CONSTRAINT `information_object_FK_10`
+		FOREIGN KEY (`size_id`)
+		REFERENCES `term` (`id`)
+		ON DELETE SET NULL,
+    INDEX `information_object_FI_11` (`typ_id`),
+	CONSTRAINT `information_object_FK_11`
+		FOREIGN KEY (`typ_id`)
+		REFERENCES `term` (`id`)
+		ON DELETE SET NULL,
+    INDEX `information_object_FI_12` (`equipment_id`),
+	CONSTRAINT `information_object_FK_12`
+		FOREIGN KEY (`equipment_id`)
+		REFERENCES `term` (`id`)
+		ON DELETE SET NULL,		
+    INDEX `information_object_FI_13` (`import_id`),
+    INDEX `information_object_FI_14` (`lft`),
+    INDEX `information_object_FI_15` (`rgt`),
+    INDEX `information_object_FI_16` (`identifier`),
+    INDEX `information_object_FI_17` (`parent_id`, `lft`, `rgt`),
+    INDEX `information_object_FI_19` (`id`, `lft`, `rgt`)
 )Engine=InnoDB;
 
 #-----------------------------------------------------------------------------
@@ -580,7 +768,11 @@ CREATE TABLE `information_object_i18n`
 	`sources` TEXT,
 	`revision_history` TEXT,
 	`id` INTEGER  NOT NULL,
-	`culture` VARCHAR(16)  NOT NULL,
+	`culture` VARCHAR(14)  NOT NULL,
+	`volume_number_identifier` VARCHAR(50),	
+	`file_number_identifier` VARCHAR(50),	
+	`part_number_identifier` VARCHAR(50),	
+	`item_number_identifier` VARCHAR(50),	
 	PRIMARY KEY (`id`,`culture`),
 	CONSTRAINT `information_object_i18n_FK_1`
 		FOREIGN KEY (`id`)
@@ -891,8 +1083,18 @@ DROP TABLE IF EXISTS `physical_object_i18n`;
 CREATE TABLE `physical_object_i18n`
 (
 	`name` VARCHAR(1024),
+	`repository_id` INTEGER NOT NULL,
 	`description` TEXT,
 	`location` TEXT,
+	`uniqueIdentifier` TEXT,
+	`extent` TEXT,	
+	`descriptionTitle` TEXT,
+	`periodCovered` TEXT,
+	`findingAids` TEXT,
+	`accrualSpace` TEXT, 
+	`shelf` TEXT, 
+	`rowNumber` TEXT, 	
+	`forms` TEXT, 
 	`id` INTEGER  NOT NULL,
 	`culture` VARCHAR(16)  NOT NULL,
 	PRIMARY KEY (`id`,`culture`),
@@ -929,6 +1131,218 @@ CREATE TABLE `premis_object`
 		FOREIGN KEY (`information_object_id`)
 		REFERENCES `information_object` (`id`)
 )Engine=InnoDB;
+
+#-----------------------------------------------------------------------------
+#-- presevation_object
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `presevation_object`;
+
+
+CREATE TABLE `presevation_object`
+(
+	`id` INTEGER  NOT NULL,
+	`condition_id` INTEGER,
+	`usability_id` INTEGER,
+	`measure_id` INTEGER,
+	`availability_id` INTEGER,
+	`hard_id` INTEGER,
+	`hard_reason` TEXT,
+	`digital_id` INTEGER,
+	`digital_reason` TEXT,
+	`refusal_id` INTEGER,
+	`medium_id` INTEGER,
+	`restoration_id` INTEGER,
+	`conservation_id` INTEGER,
+	`type_id` INTEGER,
+	`sensitivity_id` INTEGER,
+	`publish_id` INTEGER,
+	`classification_id` INTEGER,
+	`restriction_id` INTEGER,
+	`parent_id` INTEGER,
+	`object_id` VARCHAR(20)  NOT NULL,
+	`info_id` INTEGER,
+	`lft` INTEGER  NOT NULL,
+	`rgt` INTEGER  NOT NULL,
+	`source_culture` VARCHAR(14)  NOT NULL,
+	PRIMARY KEY (`id`),
+	CONSTRAINT `presevation_object_FK_1`
+		FOREIGN KEY (`id`)
+		REFERENCES `object` (`id`)
+		ON DELETE CASCADE,
+	INDEX `presevation_object_FI_3` (`condition_id`),
+	CONSTRAINT `presevation_object_FK_3`
+		FOREIGN KEY (`condition_id`)
+		REFERENCES `term` (`id`)
+		ON DELETE SET NULL,
+	INDEX `presevation_object_FI_4` (`usability_id`),
+	CONSTRAINT `presevation_object_FK_4`
+		FOREIGN KEY (`usability_id`)
+		REFERENCES `term` (`id`)
+		ON DELETE SET NULL,
+	INDEX `presevation_object_FI_5` (`measure_id`),
+	CONSTRAINT `presevation_object_FK_5`
+		FOREIGN KEY (`measure_id`)
+		REFERENCES `term` (`id`)
+		ON DELETE SET NULL,
+	INDEX `presevation_object_FI_6` (`medium_id`),
+	CONSTRAINT `presevation_object_FK_6`
+		FOREIGN KEY (`medium_id`)
+		REFERENCES `term` (`id`)
+		ON DELETE SET NULL,
+	INDEX `presevation_object_FI_7` (`availability_id`),
+	CONSTRAINT `presevation_object_FK_7`
+		FOREIGN KEY (`availability_id`)
+		REFERENCES `term` (`id`)
+		ON DELETE SET NULL,
+	INDEX `presevation_object_FI_8` (`hard_id`),
+	CONSTRAINT `presevation_object_FK_8`
+		FOREIGN KEY (`hard_id`)
+		REFERENCES `term` (`id`)
+		ON DELETE SET NULL,
+	INDEX `presevation_object_FI_9` (`digital_id`),
+	CONSTRAINT `presevation_object_FK_9`
+		FOREIGN KEY (`digital_id`)
+		REFERENCES `term` (`id`)
+		ON DELETE SET NULL,
+	INDEX `presevation_object_FI_09` (`refusal_id`),
+	CONSTRAINT `presevation_object_FK_09`
+		FOREIGN KEY (`refusal_id`)
+		REFERENCES `term` (`id`)
+		ON DELETE SET NULL,
+	INDEX `presevation_object_FI_10` (`restoration_id`),
+	CONSTRAINT `presevation_object_FK_08`
+		FOREIGN KEY (`restoration_id`)
+		REFERENCES `term` (`id`)
+		ON DELETE SET NULL,
+	INDEX `presevation_object_FI_07` (`conservation_id`),
+	CONSTRAINT `presevation_object_FK_07`
+		FOREIGN KEY (`conservation_id`)
+		REFERENCES `term` (`id`)
+		ON DELETE SET NULL,
+	INDEX `presevation_object_FI_2` (`type_id`),
+	CONSTRAINT `presevation_object_FK_2`
+		FOREIGN KEY (`type_id`)
+		REFERENCES `term` (`id`)
+		ON DELETE SET NULL,
+	INDEX `presevation_object_FI_11` (`sensitivity_id`),
+	CONSTRAINT `presevation_object_FK_02`
+		FOREIGN KEY (`sensitivity_id`)
+		REFERENCES `term` (`id`)
+		ON DELETE SET NULL,
+	INDEX `presevation_object_FI_04` (`publish_id`),
+	CONSTRAINT `presevation_object_FK_04`
+		FOREIGN KEY (`publish_id`)
+		REFERENCES `term` (`id`)
+		ON DELETE SET NULL,
+	INDEX `presevation_object_FI_03` (`classification_id`),
+	CONSTRAINT `presevation_object_FK_03`
+		FOREIGN KEY (`classification_id`)
+		REFERENCES `term` (`id`)
+		ON DELETE SET NULL,
+	INDEX `presevation_object_FI_05` (`restriction_id`),
+	CONSTRAINT `presevation_object_FK_05`
+		FOREIGN KEY (`restriction_id`)
+		REFERENCES `term` (`id`)
+		ON DELETE SET NULL,
+	INDEX `presevation_object_FI_007` (`parent_id`)
+	
+)Engine=InnoDB;
+
+#-----------------------------------------------------------------------------
+#-- presevation_object_i18n
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `presevation_object_i18n`;
+
+
+CREATE TABLE `presevation_object_i18n`
+(
+	`name` VARCHAR(1024),
+	`id` INTEGER  NOT NULL,
+	`culture` VARCHAR(14)  NOT NULL,
+	PRIMARY KEY (`id`,`culture`),
+	CONSTRAINT `presevation_object_i18n_FK_1`
+		FOREIGN KEY (`id`)
+		REFERENCES `presevation_object` (`id`)
+		ON DELETE CASCADE
+)Engine=InnoDB;
+
+#-----------------------------------------------------------------------------
+#-- access_object
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `access_object`;
+
+
+CREATE TABLE `access_object`
+(
+	`id` INTEGER  NOT NULL,
+	`parent_id` INTEGER,
+	`lft` INTEGER  NOT NULL,
+	`rgt` INTEGER  NOT NULL,
+	`source_culture` VARCHAR(14)  NOT NULL,
+	PRIMARY KEY (`id`),
+	CONSTRAINT `access_object_FK_1`
+		FOREIGN KEY (`id`)
+		REFERENCES `object` (`id`)
+		ON DELETE CASCADE,
+	INDEX `access_object_FI_007` (`parent_id`)
+	
+)Engine=InnoDB;
+
+#-----------------------------------------------------------------------------
+#-- access_object_i18n
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `access_object_i18n`;
+
+
+CREATE TABLE `access_object_i18n`
+(
+	`name` VARCHAR(1024),
+	`id` INTEGER  NOT NULL,
+	`refusal_id` INTEGER,
+	`sensitivity_id` INTEGER,
+	`publish_id` INTEGER,
+	`classification_id` INTEGER,
+	`restriction_id` INTEGER,
+	`restriction_condition` VARCHAR(20),
+	`published` TINYINT default 0,
+	`object_id` VARCHAR(20),
+	`culture` VARCHAR(14)  NOT NULL,
+	INDEX `access_object_FI_09` (`refusal_id`),
+	CONSTRAINT `access_object_FK_09`
+		FOREIGN KEY (`refusal_id`)
+		REFERENCES `term` (`id`)
+		ON DELETE SET NULL,
+	INDEX `access_object_FI_11` (`sensitivity_id`),
+	CONSTRAINT `access_object_FK_02`
+		FOREIGN KEY (`sensitivity_id`)
+		REFERENCES `term` (`id`)
+		ON DELETE SET NULL,
+	INDEX `access_object_FI_04` (`publish_id`),
+	CONSTRAINT `access_object_FK_04`
+		FOREIGN KEY (`publish_id`)
+		REFERENCES `term` (`id`)
+		ON DELETE SET NULL,
+	INDEX `access_object_FI_03` (`classification_id`),
+	CONSTRAINT `access_object_FK_03`
+		FOREIGN KEY (`classification_id`)
+		REFERENCES `term` (`id`)
+		ON DELETE SET NULL,
+	INDEX `access_object_FI_05` (`restriction_id`),
+	CONSTRAINT `access_object_FK_05`
+		FOREIGN KEY (`restriction_id`)
+		REFERENCES `term` (`id`)
+		ON DELETE SET NULL,
+	PRIMARY KEY (`id`,`culture`),
+	CONSTRAINT `access_object_i18n_FK_1`
+		FOREIGN KEY (`id`)
+		REFERENCES `access_object` (`id`)
+		ON DELETE CASCADE
+)Engine=InnoDB;
+
 
 #-----------------------------------------------------------------------------
 #-- property
@@ -1457,6 +1871,7 @@ CREATE TABLE `user`
 	`sha1_password` VARCHAR(255),
 	`salt` VARCHAR(255),
 	`active` TINYINT default 1,
+	`security_id` INTEGER  NOT NULL,
 	PRIMARY KEY (`id`),
 	CONSTRAINT `user_FK_1`
 		FOREIGN KEY (`id`)
@@ -1466,3 +1881,56 @@ CREATE TABLE `user`
 
 # This restores the fkey checks, after having unset them earlier
 SET FOREIGN_KEY_CHECKS = 1;
+
+#-----------------------------------------------------------------------------
+#-- service_provider
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `service_provider`;
+
+
+CREATE TABLE `service_provider` 
+(
+	`id` INTEGER  NOT NULL,
+	PRIMARY KEY (`id`),	
+	`repository_id` INTEGER
+)Engine=InnoDB;
+
+# This restores the fkey checks, after having unset them earlier
+SET FOREIGN_KEY_CHECKS = 1;
+
+#-----------------------------------------------------------------------------
+#-- registry
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `registry`;
+
+CREATE TABLE `registry` 
+(
+	`id` INTEGER  NOT NULL,
+	PRIMARY KEY (`id`),	
+	CONSTRAINT `registry_FK_1` 
+	FOREIGN KEY (`id`)		
+	REFERENCES `actor` (`id`)	
+	ON DELETE CASCADE
+)Engine=InnoDB;
+
+# This restores the fkey checks, after having unset them earlier
+SET FOREIGN_KEY_CHECKS = 1;
+
+#-----------------------------------------------------------------------------
+#-- Researcher
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `researcher`;
+
+CREATE TABLE `researcher` 
+(
+	`id` INTEGER  NOT NULL,PRIMARY KEY (`id`),	
+	`repository_id` INTEGER
+)Engine=InnoDB;
+
+# This restores the fkey checks, after having unset them earlier
+SET FOREIGN_KEY_CHECKS = 1;
+
+

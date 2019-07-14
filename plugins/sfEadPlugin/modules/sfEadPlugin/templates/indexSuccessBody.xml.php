@@ -19,33 +19,75 @@
         <publisher encodinganalog="<?php echo $ead->getMetadataParameter('publisher') ?>"><?php echo escape_dc(esc_specialchars($value->__toString())) ?></publisher>
         <?php if ($address = $value->getPrimaryContact()): ?>
           <address>
-            <?php if (0 < strlen($addressline = $address->getStreetAddress())): ?>
-              <addressline><?php echo escape_dc(esc_specialchars($addressline)) ?></addressline>
-            <?php endif; ?>
-            <?php if (0 < strlen($addressline = $address->getCity())): ?>
-              <addressline><?php echo escape_dc(esc_specialchars($addressline)) ?></addressline>
-            <?php endif; ?>
-            <?php if (0 < strlen($addressline = $address->getRegion())): ?>
-              <addressline><?php echo escape_dc(esc_specialchars($addressline)) ?></addressline>
-            <?php endif; ?>
-            <?php if (0 < strlen($addressline = $resource->getRepositoryCountry())): ?>
-              <addressline><?php echo escape_dc(esc_specialchars($addressline)) ?></addressline>
-            <?php endif; ?>
-            <?php if (0 < strlen($addressline = $address->getPostalCode())): ?>
-              <addressline><?php echo escape_dc(esc_specialchars($addressline)) ?></addressline>
-            <?php endif; ?>
-            <?php if (0 < strlen($addressline = $address->getTelephone())): ?>
-              <addressline><?php echo __('Telephone: ').escape_dc(esc_specialchars($addressline)) ?></addressline>
-            <?php endif; ?>
-            <?php if (0 < strlen($addressline = $address->getFax())): ?>
-              <addressline><?php echo __('Fax: ').escape_dc(esc_specialchars($addressline)) ?></addressline>
-            <?php endif; ?>
-            <?php if (0 < strlen($addressline = $address->getEmail())): ?>
-              <addressline><?php echo __('Email: ').escape_dc(esc_specialchars($addressline)) ?></addressline>
-            <?php endif; ?>
-            <?php if (0 < strlen($addressline = $address->getWebsite())): ?>
-              <addressline><?php echo escape_dc(esc_specialchars($addressline)) ?></addressline>
-            <?php endif; ?>
+		      <?php if (0 < strlen($primarycontact = $address->getPrimaryContact())): ?>
+		        <primarycontact><?php echo escape_dc(esc_specialchars($primarycontact)) ?></primarycontact>
+		      <?php endif; ?>
+		      <?php if (0 < strlen($title = $address->getTitle())): ?>
+		        <title><?php echo escape_dc(esc_specialchars(QubitTerm::getById($title))) ?></title>
+		      <?php endif; ?>
+		      <?php if (0 < strlen($contactperson = $address->getContactPerson())): ?>
+		        <contactperson><?php echo escape_dc(esc_specialchars($contactperson)) ?></contactperson>
+		      <?php endif; ?>
+		      <?php if (0 < strlen($position = $address->getPosition())): ?>
+		        <position><?php echo escape_dc(esc_specialchars($position)) ?></position>
+		      <?php endif; ?>
+		      <?php if (0 < strlen($contacttype = $address->getContactType())): ?>
+		        <contacttype><?php echo escape_dc(esc_specialchars($contacttype)) ?></contacttype>
+		      <?php endif; ?>
+		      <?php if (0 < strlen($streetaddress = $address->getStreetAddress())): ?>
+		        <streetaddress><?php echo escape_dc(esc_specialchars($streetaddress)) ?></streetaddress>
+		      <?php endif; ?>
+		      <?php if (0 < strlen($city = $address->getCity())): ?>
+		        <city><?php echo escape_dc(esc_specialchars($city)) ?></city>
+		      <?php endif; ?>
+		      <?php if (0 < strlen($region = $address->getRegion())): ?>
+		        <region><?php echo escape_dc(esc_specialchars($region)) ?></region>
+		      <?php endif; ?>
+		      <?php if (0 < strlen($country = $resource->getRepositoryCountry())): ?>
+		        <countrycode><?php echo escape_dc(esc_specialchars($country)) ?></countrycode>
+		      <?php endif; ?>
+		      <?php if (0 < strlen($postalcode = $address->getPostalCode())): ?>
+		        <postalcode><?php echo escape_dc(esc_specialchars($postalcode)) ?></postalcode>
+		      <?php endif; ?>
+		      <?php if (0 < strlen($postaladdress = $address->getPostalAddress())): ?>
+		        <postaladdress><?php echo escape_dc(esc_specialchars($postaladdress)) ?></postaladdress>
+		      <?php endif; ?>
+		      <?php if (0 < strlen($postalcity = $address->getPostalCity())): ?>
+		        <postalcity><?php echo escape_dc(esc_specialchars($postalcity)) ?></postalcity>
+		      <?php endif; ?>
+		      <?php if (0 < strlen($postalregion = $address->getPostalRegion())): ?>
+		        <postalregion><?php echo escape_dc(esc_specialchars($postalregion)) ?></postalregion>
+		      <?php endif; ?>
+		      <?php if (0 < strlen($postalcountrycode = $address->getPostalCountryCode())): ?>
+		        <postalcountrycode><?php echo escape_dc(esc_specialchars($postalcountrycode)) ?></postalcountrycode>
+		      <?php endif; ?>
+		      <?php if (0 < strlen($postalpostcode = $address->getPostalPostCode())): ?>
+		        <postalpostcode><?php echo escape_dc(esc_specialchars($postalpostcode)) ?></postalpostcode>
+		      <?php endif; ?>
+		      <?php if (0 < strlen($latitude = $address->getLatitude())): ?>
+		        <latitude><?php echo escape_dc(esc_specialchars($latitude)) ?></latitude>
+		      <?php endif; ?>
+		      <?php if (0 < strlen($longitude = $address->getLongitude())): ?>
+		        <longitude><?php echo escape_dc(esc_specialchars($longitude)) ?></longitude>
+		      <?php endif; ?>
+		      <?php if (0 < strlen($note = $address->getNote())): ?>
+		        <note><?php echo escape_dc(esc_specialchars($note)) ?></note>
+		      <?php endif; ?>
+		      <?php if (0 < strlen($telephone = $address->getTelephone())): ?>
+		        <telephone><?php echo escape_dc(esc_specialchars($telephone)) ?></telephone>
+		      <?php endif; ?>
+		      <?php if (0 < strlen($fax = $address->getFax())): ?>
+		        <fax><?php echo escape_dc(esc_specialchars($fax)) ?></fax>
+		      <?php endif; ?>
+		      <?php if (0 < strlen($cell = $address->getCell())): ?>
+		        <cell><?php echo escape_dc(esc_specialchars($cell)) ?></cell>
+		      <?php endif; ?>
+		      <?php if (0 < strlen($email = $address->getEmail())): ?>
+		        <email><?php echo escape_dc(esc_specialchars($email)) ?></email>
+		      <?php endif; ?>
+		      <?php if (0 < strlen($website = $address->getWebsite())): ?>
+		        <website><?php echo escape_dc(esc_specialchars($website)) ?></website>
+		      <?php endif; ?>
           </address>
         <?php endif; ?>
         <date normal="<?php echo $ead->getPublicationDate() ?>" encodinganalog="<?php echo $ead->getMetadataParameter('date') ?>"><?php echo escape_dc(esc_specialchars($ead->getPublicationDate())) ?></date>
@@ -80,6 +122,11 @@
 </eadheader>
 
 <archdesc <?php echo $ead->renderLOD($resource, $eadLevels) ?> relatedencoding="<?php echo $ead->getMetadataParameter('relatedencoding') ?>">
+  <!-- JJP SITA Mandates/sources of authority for page 3 -->
+  <?php if (0 < strlen($repomandates = $value->mandates)): ?>
+	 <repomandates><?php echo escape_dc(esc_specialchars($repomandates)) ?></repomandates>
+  <?php endif; ?>
+
   <?php
 
   $resourceVar = 'resource';

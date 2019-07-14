@@ -17,33 +17,70 @@
  * along with Access to Memory (AtoM).  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class SettingsDipUploadAction extends SettingsEditAction
+/**
+ * DIP Upload settings
+ *
+ * @package    AccesstoMemory
+ * @subpackage settings
+ */
+
+class SettingsDipUploadAction extends sfAction
 {
-  // Arrays not allowed in class constants
-  public static
-    $NAMES = array(
-      'stripExtensions');
-
-  public function earlyExecute()
+  public function execute($request)
   {
-    parent::earlyExecute();
+    $this->dipUploadForm = new SettingsDipUploadForm;
 
-    $this->updateMessage = $this->i18n->__('DIP upload settings saved.');
+    // Handle POST data (form submit)
+    if ($request->isMethod('post'))
+    {
+      QubitCache::getInstance()->removePattern('settings:i18n:*');
 
-    $this->settingDefaults = array(
-      'stripExtensions' => '0'
-    );
+      // Handle DIP Upload form submission
+      if (null !== $request->dip_upload)
+      {
+        $this->dipUploadForm->bind($request->dip_upload);
+        if ($this->dipUploadForm->isValid())
+        {
+          // Do update and redirect to avoid repeat submit wackiness
+          $this->updateDipUploadSettings();
+
+          $notice = sfContext::getInstance()->i18n->__('DIP upload settings saved.');
+          $this->getUser()->setFlash('notice', $notice);
+
+          $this->redirect('settings/dipUpload');
+        }
+      }
+    }
+
+    $this->populateDipUploadForm();
   }
 
-  protected function addField($name)
+  /**
+   * Populate the DIP Upload form
+   */
+  protected function populateDipUploadForm()
   {
-    switch ($name)
-    {
-      case 'stripExtensions':
-        $this->form->setWidget($name, new sfWidgetFormSelectRadio(array('choices' => array(1 => 'yes', 0 => 'no')), array('class' => 'radio')));
-        $this->form->setValidator($name, new sfValidatorInteger(array('required' => false)));
+    $stripExtensions = QubitSetting::getByName('stripExtensions');
 
-        break;
+    $this->dipUploadForm->setDefaults(array(
+      'strip_extensions' => (isset($stripExtensions)) ? $stripExtensions->getValue(array('sourceCulture'=>true)) : 1
+    ));
+  }
+
+  /**
+   * Update the DIP upload settings
+   */
+  protected function updateDipUploadSettings()
+  {
+    $thisForm = $this->dipUploadForm;
+
+    if (null !== $stripExtensions = $thisForm->getValue('strip_extensions'))
+    {
+      $setting = QubitSetting::getByName('stripExtensions');
+      $setting->setValue($stripExtensions, array('sourceCulture' => true));
+      $setting->save();
     }
+
+    return $this;
   }
 }

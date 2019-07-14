@@ -2893,7 +2893,7 @@
     Repository
                                                                            -->
 <!ELEMENT repository
-   (#PCDATA | %m.phrase.basic; | address | corpname | name |
+   (#PCDATA | %m.phrase.basic; | address | corpname | name | repocorpname |
     subarea)*
                                                                              >
 <!ATTLIST repository

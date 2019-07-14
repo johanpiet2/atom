@@ -43,12 +43,11 @@ class DigitalObjectShowVideoComponent extends sfComponent
       $this->representation = $parent->getRepresentationByUsage($this->usageType);
     }
 
-    // Set up display of video in mediaelement
+    // Set up display of video in flowplayer
     if ($this->representation)
     {
-      $this->response->addJavaScript('/vendor/mediaelement/mediaelement-and-player.min.js', 'last');
-      $this->response->addJavaScript('mediaelement', 'last');
-      $this->response->addStyleSheet('/vendor/mediaelement/mediaelementplayer.min.css');
+      $this->response->addJavaScript('/vendor/flowplayer/example/flowplayer-3.1.4.min.js');
+      $this->response->addJavaScript('flowplayer');
 
       // If this is a reference movie, get the thumbnail representation for the
       // place holder image

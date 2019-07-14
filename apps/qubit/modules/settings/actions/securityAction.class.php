@@ -27,54 +27,86 @@
  * @author     David Juhasz <david@artefactual.com>
  */
 
-class SettingsSecurityAction extends SettingsEditAction
+class SettingsSecurityAction extends sfAction
 {
-  // Arrays not allowed in class constants
-  public static
-    $NAMES = array(
-      'limit_admin_ip',
-      'require_ssl_admin',
-      'require_strong_passwords');
-
-  public function earlyExecute()
+  public function execute($request)
   {
-    parent::earlyExecute();
+    $this->securityForm = new SettingsSecurityForm;
 
-    $this->updateMessage = $this->i18n->__('Security settings saved.');
+    // Handle POST data (form submit)
+    if ($request->isMethod('post'))
+    {
+      QubitCache::getInstance()->removePattern('settings:i18n:*');
 
-    // Set form decorator
-    $decorator = new QubitWidgetFormSchemaFormatterList($this->form->getWidgetSchema());
-    $this->form->getWidgetSchema()->addFormFormatter('list', $decorator);
-    $this->form->getWidgetSchema()->setFormFormatterName('list');
+      // Handle security form submission
+      if (null !== $request->security)
+      {
+        $this->securityForm->bind($request->security);
+        if ($this->securityForm->isValid())
+        {
+          // Do update and redirect to avoid repeat submit wackiness
+          $this->updateSecuritySettings($this->securityForm);
+
+          $notice = sfContext::getInstance()->i18n->__('Security settings saved.');
+          $this->getUser()->setFlash('notice', $notice);
+
+          $this->redirect('settings/security');
+        }
+      }
+    }
+
+    $this->populateSecurityForm($this->securityForm);
   }
 
-  protected function addField($name)
+  /**
+   * Populate the security form
+   */
+  protected function populateSecurityForm()
   {
-    switch ($name)
+    $limitAdminIp = QubitSetting::getByName('limit_admin_ip');
+    $requireSslAdmin = QubitSetting::getByName('require_ssl_admin');
+    $requireStrongPasswords = QubitSetting::getByName('require_strong_passwords');
+
+    $this->securityForm->setDefaults(array(
+      'limit_admin_ip' => (isset($limitAdminIp)) ? $limitAdminIp->getValue(array('sourceCulture'=>true)) : null,
+      'require_ssl_admin' => (isset($requireSslAdmin)) ? intval($requireSslAdmin->getValue(array('sourceCulture'=>true))) : 1,
+      'require_strong_passwords' => (isset($requireStrongPasswords)) ? intval($requireStrongPasswords->getValue(array('sourceCulture'=>true))) : 1
+    ));
+  }
+
+  /**
+   * Update the security settings
+   */
+  protected function updateSecuritySettings()
+  {
+    $thisForm = $this->securityForm;
+
+    // Limit admin IP
+    $setting = QubitSetting::getByName('limit_admin_ip');
+    // Force sourceCulture update to prevent discrepency in settings between cultures
+    $setting->setValue($thisForm->getValue('limit_admin_ip'), array('sourceCulture' => true));
+    $setting->save();
+
+    // Require SSL for admin funcionality
+    if (null !== $requireSslAdmin = $thisForm->getValue('require_ssl_admin'))
     {
-      case 'limit_admin_ip':
-        $this->form->setWidget($name, new sfWidgetFormInput);
-        $this->form->setValidator($name, new sfValidatorString(array('required' => false)));
-        $labelText = $this->i18n->__('Limit administrator functionality to one or more IP addresses, separated by semicolons.');
-        $this->form->getWidgetSchema()->$name->setLabel($labelText);
+      $setting = QubitSetting::getByName('require_ssl_admin');
 
-        break;
-
-      case 'require_ssl_admin':
-        $this->form->setWidget($name, new sfWidgetFormSelectRadio(array('choices' => array(1 => 'yes', 0 => 'no')), array('class' => 'radio')));
-        $this->form->setValidator($name, new sfValidatorInteger(array('required' => false)));
-        $labelText = $this->i18n->__('Require SSL for all administrator functionality');
-        $this->form->getWidgetSchema()->$name->setLabel($labelText);
-
-        break;
-
-      case 'require_strong_passwords':
-        $this->form->setWidget($name, new sfWidgetFormSelectRadio(array('choices' => array(1 => 'yes', 0 => 'no')), array('class' => 'radio')));
-        $this->form->setValidator($name, new sfValidatorInteger(array('required' => false)));
-        $labelText = $this->i18n->__('Require strong passwords');
-        $this->form->getWidgetSchema()->$name->setLabel($labelText);
-
-        break;
+      // Force sourceCulture update to prevent discrepency in settings between cultures
+      $setting->setValue($requireSslAdmin, array('sourceCulture' => true));
+      $setting->save();
     }
+
+    // Require strong passwords
+    if (null !== $requireStrongPasswords = $thisForm->getValue('require_strong_passwords'))
+    {
+      $setting = QubitSetting::getByName('require_strong_passwords');
+
+      // Force sourceCulture update to prevent discrepency in settings between cultures
+      $setting->setValue($requireStrongPasswords, array('sourceCulture' => true));
+      $setting->save();
+    }
+
+    return $this;
   }
 }

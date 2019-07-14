@@ -70,6 +70,9 @@ EOF
           <?php echo $form->confirmPassword->render(array('class' => 'password-confirm')) ?>
         </div>
 
+		<!-- SITA One Instance -->
+        <?php echo $form->security->label(__('Classification'))->renderRow() ?>
+
         <?php if ($sf_user->user != $resource): ?>
           <?php echo $form->active
             ->label(__('Active'))

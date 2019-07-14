@@ -134,6 +134,21 @@ class sfRadPluginEditAction extends InformationObjectEditAction
   {
     switch ($name)
     {
+	  case 'format'://SITA
+         $this->form->setDefault('format', $this->resource->formatId);
+         $this->form->setValidator('format', new sfValidatorString);
+
+         $choices = array();
+         $choices[null] = null;
+         foreach (QubitTaxonomy::getTermsById(QubitTaxonomy::FORMATS) as $item)
+         {
+           $choices[$item->id] = $item;
+         }
+
+        $this->form->setWidget('format', new sfWidgetFormSelect(array('choices' => $choices)));
+
+       break;
+
       case 'alternateTitle':
       case 'edition':
         $this->form->setDefault($name, $this->resource[$name]);
@@ -192,6 +207,38 @@ class sfRadPluginEditAction extends InformationObjectEditAction
         }
 
         $this->form->setWidget('type', new sfWidgetFormSelect(array('choices' => $choices, 'multiple' => true)));
+
+        break;
+
+      case 'repository':
+	 	$choices = array();
+	    // Show only Repositories linked to user - Administrator can see all JJP SITA One Instance
+	    if ((!$this->context->user->isAdministrator()) && (QubitSetting::getByName('open_system') == '0')) {
+			$repositories = new QubitUser;
+			foreach (QubitRepository::getAll() as $item)
+			{
+				if ($item->__toString() != "")
+				{
+					if (0 < count($userRepos = $repositories->getRepositoriesById($this->context->user->getAttribute('user_id')))) {
+						$key = array_search($item->id, $userRepos);
+						if (false !== $key) {
+							$choices[$item->id] = $item->__toString();
+						}
+					}
+				}
+			}
+		} else {
+			foreach (QubitRepository::getAll() as $item)
+			{
+				if ($item->__toString() != "")
+				{
+					$choices[$item->id] = $item->__toString();
+				}
+			}
+		} 				
+		$this->form->setDefault('repository', $this->resource->repositoryId);
+	    $this->form->setValidator('repository', new sfValidatorChoice(array('choices' => array_keys($choices), 'required' => true)));
+		$this->form->setWidget('repository', new sfWidgetFormSelect(array('choices' => $choices)));
 
         break;
 
@@ -256,7 +303,77 @@ class sfRadPluginEditAction extends InformationObjectEditAction
 
         break;
 
-      default:
+ 	  case 'format'://SITA
+        $selectCriteria = new Criteria;
+        $selectCriteria->add(QubitInformationObject::ID, $this->resource->id);
+
+        $updateCriteria = new Criteria;
+        $updateCriteria->add(QubitInformationObject::FORMAT_ID, $this->form->getValue('format'));
+
+        BasePeer::doUpdate(
+          $selectCriteria,
+          $updateCriteria,
+          Propel::getConnection(QubitObject::DATABASE_NAME));
+
+        break;
+
+      case 'size'://SITA
+        $selectCriteria = new Criteria;
+        $selectCriteria->add(QubitInformationObject::ID, $this->resource->id);
+
+        $updateCriteria = new Criteria;
+        $updateCriteria->add(QubitInformationObject::SIZE_ID, $this->form->getValue('size'));
+
+        BasePeer::doUpdate(
+          $selectCriteria,
+          $updateCriteria,
+          Propel::getConnection(QubitObject::DATABASE_NAME));
+
+        break;		
+
+      case 'typ'://SITA
+        $selectCriteria = new Criteria;
+        $selectCriteria->add(QubitInformationObject::ID, $this->resource->id);
+
+        $updateCriteria = new Criteria;
+        $updateCriteria->add(QubitInformationObject::TYP_ID, $this->form->getValue('typ'));
+
+        BasePeer::doUpdate(
+          $selectCriteria,
+          $updateCriteria,
+          Propel::getConnection(QubitObject::DATABASE_NAME));
+
+        break;		
+
+      case 'equipment'://SITA
+        $selectCriteria = new Criteria;
+        $selectCriteria->add(QubitInformationObject::ID, $this->resource->id);
+
+        $updateCriteria = new Criteria;
+        $updateCriteria->add(QubitInformationObject::EQUIPMENT_ID, $this->form->getValue('equipment'));
+
+        BasePeer::doUpdate(
+          $selectCriteria,
+          $updateCriteria,
+          Propel::getConnection(QubitObject::DATABASE_NAME));
+
+        break;		
+
+	case 'movepermanent': //SITA
+        $selectCriteria = new Criteria;
+        $selectCriteria->add(QubitInformationObject::ID, $this->resource->id);
+
+        $updateCriteria = new Criteria;
+        $updateCriteria->add(QubitInformationObject::MOVE_PERMANENT, $this->form->getValue('movepermanent'));
+
+        BasePeer::doUpdate(
+          $selectCriteria,
+          $updateCriteria,
+          Propel::getConnection(QubitObject::DATABASE_NAME));
+
+        break;	
+
+     default:
 
         return parent::processField($field);
     }

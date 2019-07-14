@@ -92,9 +92,10 @@ class SettingsMenuComponent extends sfComponent
         'label' => $i18n->__('Privacy Notification'),
         'action' => 'privacyNotification'
       ),
+      //SITA JJP
       array(
-        'label' => $i18n->__('Clipboard'),
-        'action' => 'clipboard'
+        'label' => $i18n->__('Paths'),
+        'action' => 'paths'
       )
     );
 

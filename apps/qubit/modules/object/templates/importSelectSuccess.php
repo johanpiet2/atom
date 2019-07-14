@@ -46,6 +46,14 @@
           <div class="form-item">
             <label><?php echo __('Type') ?></label>
             <select name="objectType">
+              <option value="accession"><?php echo sfConfig::get('app_ui_label_accession', __('Accession')) ?></option>
+              <option value="informationObject"><?php echo sfConfig::get('app_ui_label_informationobject', __('Archival Description')) ?></option>
+              <option value="authorityRecord"><?php echo sfConfig::get('app_ui_label_actor', __('Authority Record')) ?></option>
+              <!--option value="event"><?php echo sfConfig::get('app_ui_label_event', __('Event')) ?></option -->
+              <option value="donor"><?php echo sfConfig::get('app_ui_label_donor', __('Donor')) ?></option>
+              <option value="repository"><?php echo sfConfig::get('app_ui_label_donor', __('Repository')) ?></option>
+              <option value="researcher"><?php echo sfConfig::get('app_ui_label_researcher', __('Researcher')) ?></option>
+              <option value="user"><?php echo sfConfig::get('app_ui_label_user', __('User')) ?></option>
               <option value="ead"><?php echo __('EAD 2002') ?></option>
               <option value="eac-cpf"><?php echo __('EAC CPF') ?></option>
               <option value="mods"><?php echo __('MODS') ?></option>

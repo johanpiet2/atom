@@ -17,41 +17,64 @@
 <?php end_slot() ?>
 
 <?php slot('content') ?>
-  <table class="table table-bordered sticky-enabled">
-    <thead>
-      <tr>
-        <th class="sortable">
-          <?php echo link_to(__('Name'), array('sort' => ('nameUp' == $sf_request->sort) ? 'nameDown' : 'nameUp') + $sf_data->getRaw('sf_request')->getParameterHolder()->getAll(), array('title' => __('Sort'), 'class' => 'sortable')) ?>
-          <?php if ('nameUp' == $sf_request->sort): ?>
-            <?php echo image_tag('up.gif', array('alt' => __('Sort ascending'))) ?>
-          <?php elseif ('nameDown' == $sf_request->sort): ?>
-            <?php echo image_tag('down.gif', array('alt' => __('Sort descending'))) ?>
-          <?php endif; ?>
-        </th><th class="sortable">
-          <?php echo link_to(__('Location'), array('sort' => ('locationUp' == $sf_request->sort) ? 'locationDown' : 'locationUp') + $sf_data->getRaw('sf_request')->getParameterHolder()->getAll(), array('title' => __('Sort'), 'class' => 'sortable')) ?>
-          <?php if ('locationUp' == $sf_request->sort): ?>
-            <?php echo image_tag('up.gif', array('alt' => __('Sort ascending'))) ?>
-          <?php elseif ('locationDown' == $sf_request->sort): ?>
-            <?php echo image_tag('down.gif', array('alt' => __('Sort descending'))) ?>
-          <?php endif; ?>
-        </th><th>
-          <?php echo __('Type') ?>
-        </th>
-      </tr>
-    </thead><tbody>
-      <?php foreach ($pager->getResults() as $item): ?>
-        <tr class="<?php echo 0 == @++$row % 2 ? 'even' : 'odd' ?>">
-          <td>
-            <?php echo link_to(render_title($item), array($item, 'module' => 'physicalobject')) ?>
-          </td>
-          <td>
-            <?php echo render_value_inline($item->location) ?>
-          </td>
-          <td>
-            <?php echo render_value_inline($item->type) ?>
-          </td>
-        </tr>
-      <?php endforeach; ?>
+	<table class="table table-bordered sticky-enabled">
+	  <thead>
+		<tr>
+		  <th class="sortable">
+		    <?php echo link_to(__('Name'), array('sort' => ('nameUp' == $sf_request->sort) ? 'nameDown' : 'nameUp') + $sf_data->getRaw('sf_request')->getParameterHolder()->getAll(), array('title' => __('Sort'), 'class' => 'sortable')) ?>
+		    <?php if ('nameUp' == $sf_request->sort): ?>
+		      <?php echo image_tag('up.gif') ?>
+		    <?php elseif ('nameDown' == $sf_request->sort): ?>
+		      <?php echo image_tag('down.gif') ?>
+		    <?php endif; ?>
+		  </th><th class="sortable">
+		    <?php echo link_to(__('Location'), array('sort' => ('locationUp' == $sf_request->sort) ? 'locationDown' : 'locationUp') + $sf_data->getRaw('sf_request')->getParameterHolder()->getAll(), array('title' => __('Sort'), 'class' => 'sortable')) ?>
+		    <?php if ('locationUp' == $sf_request->sort): ?>
+		      <?php echo image_tag('up.gif') ?>
+		    <?php elseif ('locationDown' == $sf_request->sort): ?>
+		      <?php echo image_tag('down.gif') ?>
+		    <?php endif; ?>
+		  </th><th>
+		    <?php echo __('Unique Identifier') ?>
+		  </th><th>
+		    <?php echo __('Description/Title') ?>
+		  </th><th>
+		    <?php echo __('Period Covered') ?>
+		  </th><th>
+		    <?php echo __('Extent') ?>
+		  </th><th>
+		    <?php echo __('Forms') ?>
+		  </th><th>
+		    <?php echo __('Type') ?>
+		  </th><th>
+		    <?php echo __('Repository') ?>
+		  </th>
+		</tr>
+	  </thead><tbody>    
+
+		<?php foreach ($pager->getResults() as $item): ?>
+		  <tr class="<?php echo 0 == @++$row % 2 ? 'even' : 'odd' ?>">
+		    <td>
+		      <?php echo link_to(render_title($item), array($item, 'module' => 'physicalobject')) ?>
+		    </td><td>
+		      <?php echo $item->location ?>
+		    </td><td>
+		      <?php echo $item->uniqueIdentifier ?>		  
+		    </td><td>
+		      <?php echo $item->descriptionTitle ?>
+		    </td><td>
+		      <?php echo $item->periodCovered ?>
+		    </td><td>
+		      <?php echo $item->extent ?>
+		    </td><td>
+		      <?php echo $item->forms ?>
+		    </td><td>
+		      <?php echo $item->type ?>
+		    </td><td>
+				<?php echo render_value(QubitRepository::getById($item->getRepositoryId(array('cultureFallback' => true)))) ?> 
+		    </td>
+		  </tr>
+		<?php endforeach; ?>
     </tbody>
   </table>
 <?php end_slot() ?>
@@ -59,7 +82,7 @@
 <?php slot('after-content') ?>
   <?php echo get_partial('default/pager', array('pager' => $pager)) ?>
 
-  <?php if ($sf_user->hasCredential(array('contributor', 'editor', 'administrator'), false)): ?>
+  <?php if ($sf_user->hasCredential(array('contributor', 'editor', 'administrator', 'physicalstorage'), false)): ?>
     <section class="actions">
       <ul>
         <li><?php echo link_to(__('Add new'), array('module' => 'physicalobject', 'action' => 'add'), array('class' => 'c-btn')) ?></li>

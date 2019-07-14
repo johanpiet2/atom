@@ -70,6 +70,12 @@ class ActorEditAction extends DefaultEditAction
     $this->form->setDefault('next', $this->request->getReferer());
     $this->form->setValidator('next', new sfValidatorString);
     $this->form->setWidget('next', new sfWidgetFormInputHidden);
+
+	//SITA contact details
+    $this->contactInformationEditComponent = new ContactInformationEditComponent($this->context, 'contactinformation', 'editContactInformation');
+    $this->contactInformationEditComponent->resource = $this->resource;
+    $this->contactInformationEditComponent->execute($this->request);
+
   }
 
   protected function addField($name)
@@ -271,6 +277,8 @@ class ActorEditAction extends DefaultEditAction
       $this->form->bind($request->getPostParameters());
       if ($this->form->isValid())
       {
+		// Contact details insert SITA
+		$this->contactInformationEditComponent->processForm();
         $this->processForm();
 
         $this->resource->save();

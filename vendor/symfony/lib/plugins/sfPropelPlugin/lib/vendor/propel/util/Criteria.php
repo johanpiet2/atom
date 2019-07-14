@@ -134,6 +134,7 @@ class Criteria implements IteratorAggregate {
 	private $orderByColumns = array();
 	private $groupByColumns = array();
 	private $having = null;
+	private $forceIndex = null;
 	private $asColumns = array();
 	private $joins = array();
 
@@ -219,6 +220,8 @@ class Criteria implements IteratorAggregate {
 		$this->orderByColumns = array();
 		$this->groupByColumns = array();
 		$this->having = null;
+		//SITA JJP
+		$this->forceIndex = null;
 		$this->asColumns = array();
 		$this->joins = array();
 		$this->dbName = $this->originalDbName;
@@ -965,6 +968,18 @@ class Criteria implements IteratorAggregate {
 		return $this->having;
 	}
 
+	// SITA JJP To add Force index to $criteria
+	/**
+	/**
+	 * Get forceIndex Criterion.
+	 *
+	 * @return     Criterion A Criterion object that is the forceIndex clause.
+	 */
+	public function getForceIndex()
+	{
+		return $this->forceIndex;
+	}
+
 	/**
 	 * Remove an object from the criteria.
 	 *
@@ -1089,6 +1104,25 @@ class Criteria implements IteratorAggregate {
 		$this->having = $having;
 		return $this;
 	}
+
+	// SITA JJP To add Force index to $criteria
+	/**
+	 * This method adds a prepared Criterion object to the Criteria as a forceIndex clause.
+	 * Force Index Criterion.
+	 * <p>
+	 * <code>
+	 * $crit = new Criteria();
+	 * $crit->addForceIndex($c);
+	 * </code>
+	 *
+	 * @return     Criterion A Criterion object that is the Force Index clause.
+	 */
+	public function addForceIndex($forceIndex)
+	{
+		$this->forceIndex = $forceIndex;
+		return $this;
+	}
+
 
 	/**
 	 * This method adds a new criterion to the list of criterias.

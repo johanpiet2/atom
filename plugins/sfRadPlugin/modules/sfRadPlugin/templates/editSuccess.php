@@ -69,7 +69,8 @@
 
         <div class="form-item">
           <?php echo $form->repository->renderLabel() ?>
-          <?php echo $form->repository->render(array('class' => 'form-autocomplete')) ?>
+          <?php echo $form->repository->render() ?> <!--One Instance-->
+          <!--?php echo $form->repository->render(array('class' => 'form-autocomplete')) ?-->
           <input class="add" type="hidden" data-link-existing="true" value="<?php echo url_for(array('module' => 'repository', 'action' => 'add')) ?> #authorizedFormOfName"/>
           <input class="list" type="hidden" value="<?php echo url_for($sf_data->getRaw('repoAcParams')) ?>"/>
           <?php echo $form->repository

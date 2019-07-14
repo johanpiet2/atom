@@ -22,6 +22,7 @@
  * @subpackage repository
  * @author     Peter Van Garderen <peter@artefactual.com>
  * @author     Wu Liu <wu.liu@usask.ca>
+ * @author     Johan Pieterse <johan.pueterse@sita.co.za>
  */
 class RepositoryBrowseAction extends DefaultBrowseAction
 {
@@ -169,6 +170,26 @@ class RepositoryBrowseAction extends DefaultBrowseAction
         $this->search->query->setSort(array('updatedAt' => $request->sortDir));
     }
 
+    // Show only Repositories linked to user - Administrator can see all JJP SITA One Instance
+    // Start
+    if ((!$this->context->user->isAdministrator()) && (QubitSetting::getByName('open_system') == '0')) {
+        $repositories = new QubitUser;
+        if (0 < count($userRepos = $repositories->getRepositoriesById($this->context->user->getAttribute('user_id')))) {
+            // Combined subquery
+            $allReposQueryBool = new \Elastica\Query\BoolQuery;
+            foreach ($userRepos as $userRepo) {
+                $allReposQueryBool->addShould(new \Elastica\Query\Term(array(
+                    '_id' => $userRepo
+                )));
+            }
+	        $this->search->queryBool->addMust($allReposQueryBool);
+        } else {
+        	// if not logged in do not show any repositories
+	        $this->search->queryBool->addMust(new \Elastica\Query\Term(array('_id' => '0000')));
+        }
+    }
+    // End
+    
     $this->search->query->setQuery($this->search->queryBool);
 
     $resultSet = QubitSearch::getInstance()->index->getType('QubitRepository')->search($this->search->query);

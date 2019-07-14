@@ -56,6 +56,14 @@
 
       </fieldset>
 
+      <fieldset class="collapsible collapsed" id="contactArea">
+
+        <legend><?php echo __('Contact area') ?></legend>
+
+        <?php echo get_partial('contactinformation/edit', $sf_data->getRaw('contactInformationEditComponent')->getVarHolder()->getAll()) ?>
+
+      </fieldset>
+
       <fieldset class="collapsible collapsed" id="descriptionArea">
 
         <legend><?php echo __('Description area') ?></legend>
@@ -215,6 +223,26 @@
           <li><input class="c-btn c-btn-submit" type="submit" value="<?php echo __('Create') ?>"/></li>
         <?php endif; ?>
       </ul>
+ <?php
+	$pageContentInc = "../phpspellcheck_root/include.php"; 
+	if(file_exists($pageContentInc)){
+	   // echo;
+		require "../phpspellcheck_root/include.php";	//   "phpspellcheck/include.php" // Full file path to the include.php file in the phpspellcheck Folder
+
+		$mySpell = new SpellCheckButton();
+		$mySpell->InstallationPath = "/phpspellcheck_root/";	  // "/phpspellcheck/" //  Relative URL of phpspellcheck within your site
+		$mySpell->Fields =  "authorizedFormOfName,parallelName,standardizedName,otherName,corporateBodyIdentifiers,datesOfExistence,history,places,legalStatus, functions,mandates,internalStructures,generalContext,descriptionIdentifier,institutionResponsibleIdentifier,rules,descriptionStatus,descriptionDetail, revisionHistory,sources,maintenanceNotes";	  // id or 'ALL' or 'EDITORS' or "TEXTAREA" or 'TEXTINPUTS'
+		echo $mySpell->SpellImageButton();	  // Render
+		
+		$mySpell = new SpellAsYouType();
+		$mySpell->InstallationPath = "/phpspellcheck_root/"; 	  
+		$mySpell->Fields = "authorizedFormOfName,parallelName,standardizedName,otherName,corporateBodyIdentifiers,datesOfExistence,history,places,legalStatus, functions,mandates,internalStructures,generalContext,descriptionIdentifier,institutionResponsibleIdentifier,rules,descriptionStatus,descriptionDetail, revisionHistory,sources,maintenanceNotes";
+		echo $mySpell->Activate();
+	}else
+	{
+		echo "Include Not Found Error!!!!!!";
+	}  
+?>
     </section>
 
   </form>

@@ -57,9 +57,7 @@
 
 <section id="identityArea">
 
-  <?php if (check_field_visibility('app_element_visibility_dacs_identity_area')): ?>
-    <?php echo link_to_if(SecurityPrivileges::editCredentials($sf_user, 'informationObject'), '<h2>'.__('Identity elements').'</h2>', array($resource, 'module' => 'informationobject', 'action' => 'edit'), array('anchor' => 'identityArea', 'title' => __('Edit identity elements'))) ?>
-  <?php endif; ?>
+  <?php echo link_to_if(SecurityPrivileges::editCredentials($sf_user, 'informationObject'), '<h2>'.__('Identity elements').'</h2>', array($resource, 'module' => 'informationobject', 'action' => 'edit'), array('anchor' => 'identityArea', 'title' => __('Edit identity elements'))) ?>
 
   <?php echo render_show(__('Reference code'), render_value($dacs->referenceCode)) ?>
 
@@ -101,9 +99,7 @@
 
 <section id="contentAndStructureArea">
 
-  <?php if (check_field_visibility('app_element_visibility_dacs_content_area')): ?>
-    <?php echo link_to_if(SecurityPrivileges::editCredentials($sf_user, 'informationObject'), '<h2>'.__('Content and structure elements').'</h2>', array($resource, 'module' => 'informationobject', 'action' => 'edit'), array('anchor' => 'contentAndStructureArea', 'title' => __('Edit context and structure elements'))) ?>
-  <?php endif; ?>
+  <?php echo link_to_if(SecurityPrivileges::editCredentials($sf_user, 'informationObject'), '<h2>'.__('Content and structure elements').'</h2>', array($resource, 'module' => 'informationobject', 'action' => 'edit'), array('anchor' => 'contentAndStructureArea', 'title' => __('Edit context and structure elements'))) ?>
 
   <?php echo render_show(__('Scope and content'), render_value($resource->getScopeAndContent(array('cultureFallback' => true)))) ?>
 
@@ -113,13 +109,11 @@
 
 <section id="conditionsOfAccessAndUseArea">
 
-  <?php if (check_field_visibility('app_element_visibility_dacs_conditions_of_access_area')): ?>
-    <?php echo link_to_if(SecurityPrivileges::editCredentials($sf_user, 'informationObject'), '<h2>'.__('Conditions of access and use elements').'</h2>', array($resource, 'module' => 'informationobject', 'action' => 'edit'), array('anchor' => 'conditionsOfAccessAndUseArea', 'title' => __('Edit conditions of access and use elements'))) ?>
-  <?php endif; ?>
+  <?php echo link_to_if(SecurityPrivileges::editCredentials($sf_user, 'informationObject'), '<h2>'.__('Conditions of access and use elements').'</h2>', array($resource, 'module' => 'informationobject', 'action' => 'edit'), array('anchor' => 'conditionsOfAccessAndUseArea', 'title' => __('Edit conditions of access and use elements'))) ?>
 
   <?php echo render_show(__('Conditions governing access'), render_value($resource->getAccessConditions(array('cultureFallback' => true)))) ?>
 
-  <?php if (check_field_visibility('app_element_visibility_dacs_physical_access')): ?>
+  <?php if (check_field_visibility('app_element_visibility_isad_physical_condition')): ?>
     <?php echo render_show(__('Physical access'), render_value($resource->getPhysicalCharacteristics(array('cultureFallback' => true)))) ?>
   <?php endif; ?>
 
@@ -159,9 +153,7 @@
 
 <section id="acquisitionAndAppraisalArea">
 
-  <?php if (check_field_visibility('app_element_visibility_dacs_acquisition_area')): ?>
-    <?php echo link_to_if(SecurityPrivileges::editCredentials($sf_user, 'informationObject'), '<h2>'.__('Acquisition and appraisal elements').'</h2>', array($resource, 'module' => 'informationobject', 'action' => 'edit'), array('anchor' => 'acquisitionAndAppraisalArea', 'title' => __('Edit acquisition and appraisal elements'))) ?>
-  <?php endif; ?>
+  <?php echo link_to_if(SecurityPrivileges::editCredentials($sf_user, 'informationObject'), '<h2>'.__('Acquisition and appraisal elements').'</h2>', array($resource, 'module' => 'informationobject', 'action' => 'edit'), array('anchor' => 'acquisitionAndAppraisalArea', 'title' => __('Edit acquisition and appraisal elements'))) ?>
 
   <?php echo render_show(__('Custodial history'), render_value($resource->getArchivalHistory(array('cultureFallback' => true)))) ?>
 
@@ -179,9 +171,7 @@
 
 <section id="alliedMaterialsArea">
 
-  <?php if (check_field_visibility('app_element_visibility_dacs_materials_area')): ?>
-    <?php echo link_to_if(SecurityPrivileges::editCredentials($sf_user, 'informationObject'), '<h2>'.__('Related materials elements').'</h2>', array($resource, 'module' => 'informationobject', 'action' => 'edit'), array('anchor' => 'alliedMaterialsArea', 'title' => __('Edit related materials elements'))) ?>
-  <?php endif; ?>
+  <?php echo link_to_if(SecurityPrivileges::editCredentials($sf_user, 'informationObject'), '<h2>'.__('Related materials elements').'</h2>', array($resource, 'module' => 'informationobject', 'action' => 'edit'), array('anchor' => 'alliedMaterialsArea', 'title' => __('Edit related materials elements'))) ?>
 
   <?php echo render_show(__('Existence and location of originals'), render_value($resource->getLocationOfOriginals(array('cultureFallback' => true)))) ?>
 
@@ -199,9 +189,7 @@
 
 <section id="notesArea">
 
-  <?php if (check_field_visibility('app_element_visibility_dacs_notes_area')): ?>
-    <?php echo link_to_if(SecurityPrivileges::editCredentials($sf_user, 'informationObject'), '<h2>'.__('Notes element').'</h2>', array($resource, 'module' => 'informationobject', 'action' => 'edit'), array('anchor' => 'notesArea', 'title' => __('Edit notes element'))) ?>
-  <?php endif; ?>
+  <?php echo link_to_if(SecurityPrivileges::editCredentials($sf_user, 'informationObject'), '<h2>'.__('Notes element').'</h2>', array($resource, 'module' => 'informationobject', 'action' => 'edit'), array('anchor' => 'notesArea', 'title' => __('Edit notes element'))) ?>
 
   <?php if (check_field_visibility('app_element_visibility_isad_notes')): ?>
 
@@ -228,9 +216,7 @@
 
 <section id="descriptionControlArea">
 
-  <?php if (check_field_visibility('app_element_visibility_dacs_control_area')): ?>
-    <?php echo link_to_if(SecurityPrivileges::editCredentials($sf_user, 'informationObject'), '<h2>'.__('Description control element').'</h2>', array($resource, 'module' => 'informationobject', 'action' => 'edit'), array('anchor' => 'descriptionControlArea', 'title' => __('Edit description control element'))) ?>
-  <?php endif; ?>
+  <?php echo link_to_if(SecurityPrivileges::editCredentials($sf_user, 'informationObject'), '<h2>'.__('Description control element').'</h2>', array($resource, 'module' => 'informationobject', 'action' => 'edit'), array('anchor' => 'descriptionControlArea', 'title' => __('Edit description control element'))) ?>
 
   <?php if (check_field_visibility('app_element_visibility_isad_control_rules_conventions')): ?>
     <?php echo render_show(__('Rules or conventions'), render_value($resource->getRules(array('cultureFallback' => true)))) ?>
@@ -252,9 +238,7 @@
 
 <section id="accessPointsArea">
 
-  <?php if (check_field_visibility('app_element_visibility_dacs_access_points_area')): ?>
-    <?php echo link_to_if(SecurityPrivileges::editCredentials($sf_user, 'informationObject'), '<h2>'.__('Access points').'</h2>', array($resource, 'module' => 'informationobject', 'action' => 'edit'), array('anchor' => 'accessPointsArea', 'title' => __('Edit access points'))) ?>
-  <?php endif; ?>
+  <?php echo link_to_if(SecurityPrivileges::editCredentials($sf_user, 'informationObject'), '<h2>'.__('Access points').'</h2>', array($resource, 'module' => 'informationobject', 'action' => 'edit'), array('anchor' => 'accessPointsArea', 'title' => __('Edit access points'))) ?>
 
   <?php echo get_partial('object/subjectAccessPoints', array('resource' => $resource)) ?>
 

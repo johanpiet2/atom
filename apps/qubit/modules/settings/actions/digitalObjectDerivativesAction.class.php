@@ -17,46 +17,103 @@
  * along with Access to Memory (AtoM).  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class SettingsDigitalObjectDerivativesAction extends SettingsEditAction
+class SettingsDigitalObjectDerivativesAction extends DefaultEditAction
 {
   // Arrays not allowed in class constants
   public static
     $NAMES = array(
-      'digital_object_derivatives_pdf_page_number',
-      'reference_image_maxwidth');
+      'pdfPageNumber',
+      'refImageMaxWidth');
 
   protected static $refImageMaxWidthMin = 100;
   protected static $refImageMaxWidthMax = 2000;
 
-  public function earlyExecute()
+  protected function earlyExecute()
   {
-    parent::earlyExecute();
-
-    $this->updateMessage = $this->i18n->__('Digital object derivative settings saved.');
-
-    // Relay info to template
-    $this->pdfinfoAvailable = sfImageMagickAdapter::pdfinfoToolAvailable();
+    $this->i18n = sfContext::getInstance()->i18n;
   }
 
   protected function addField($name)
   {
     switch ($name)
     {
-      case 'digital_object_derivatives_pdf_page_number':
-        $this->form->setValidator($name, new sfValidatorInteger(array('min' => 1)));
-        $this->form->setWidget($name, new sfWidgetFormInput);
+      case 'pdfPageNumber':
+        $default = 1;
+        if (null !== $this->settingPdfPageNumber = QubitSetting::getByName('digital_object_derivatives_pdf_page_number'))
+        {
+          $default = $this->settingPdfPageNumber->getValue(array('sourceCulture' => true));
+        }
+        $this->form->setDefault('pdfPageNumber', $default);
+        $this->form->setValidator('pdfPageNumber', new sfValidatorInteger(array('min' => 1)));
+        $this->form->setWidget('pdfPageNumber', new sfWidgetFormInput);
 
         break;
 
-      case 'reference_image_maxwidth':
-
-        $this->form->setValidator($name, new sfValidatorInteger(
+      case 'refImageMaxWidth':
+        $default = null;
+        if (null !== $this->settingRefImageMaxWidth = QubitSetting::getByName('reference_image_maxwidth'))
+        {
+          $default = $this->settingRefImageMaxWidth->getValue(array('sourceCulture' => true));
+        }
+        $this->form->setDefault('refImageMaxWidth', $default);
+        $this->form->setValidator('refImageMaxWidth', new sfValidatorInteger(
           array('min' => self::$refImageMaxWidthMin, 'max' => self::$refImageMaxWidthMax),
           array('min' => $this->i18n->__('This value must be at least %min% pixels'), 'max' => $this->i18n->__('This value can not be greater than %max% pixels'))
         ));
-        $this->form->setWidget($name, new sfWidgetFormInput);
+        $this->form->setWidget('refImageMaxWidth', new sfWidgetFormInput);
 
         break;
+    }
+  }
+
+  protected function processField($field)
+  {
+    switch ($field->getName())
+    {
+      case 'pdfPageNumber':
+        if (null === $this->settingPdfPageNumber)
+        {
+          $this->settingPdfPageNumber = new QubitSetting;
+          $this->settingPdfPageNumber->name = 'digital_object_derivatives_pdf_page_number';
+        }
+        $this->settingPdfPageNumber->setValue($field->getValue(), array('culture' => 'en'));
+        $this->settingPdfPageNumber->save();
+        break;
+
+      case 'refImageMaxWidth':
+        if (null === $this->settingRefImageMaxWidth)
+        {
+          $this->settingRefImageMaxWidth = new QubitSetting;
+          $this->settingRefImageMaxWidth->name = 'reference_image_maxwidth';
+        }
+
+
+        $this->settingRefImageMaxWidth->setValue($field->getValue(), array('culture' => 'en'));
+        $this->settingRefImageMaxWidth->save();
+        break;
+    }
+  }
+
+  public function execute($request)
+  {
+    parent::execute($request);
+
+    $this->pdfinfoAvailable = sfImageMagickAdapter::pdfinfoToolAvailable();
+
+    if ($request->isMethod('post'))
+    {
+      $this->form->bind($request->getPostParameters());
+
+      if ($this->form->isValid())
+      {
+        $this->processForm();
+
+        QubitCache::getInstance()->removePattern('settings:i18n:*');
+
+        $this->getUser()->setFlash('notice', $this->i18n->__('Digital object derivative settings saved.'));
+
+        $this->redirect(array('module' => 'settings', 'action' => 'digitalObjectDerivatives'));
+      }
     }
   }
 }

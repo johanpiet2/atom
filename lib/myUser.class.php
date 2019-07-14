@@ -16,6 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with Access to Memory (AtoM).  If not, see <http://www.gnu.org/licenses/>.
  */
+/**
+ * myuser
+ *
+ * @package    AccesstoMemory
+ * @subpackage 
+ * @author     
+ * @author     Johan Pieterse <johan.pieterse@sita.co.za>
+ */
 
 class myUser extends sfBasicSecurityUser implements Zend_Acl_Role_Interface
 {
@@ -292,6 +300,18 @@ class myUser extends sfBasicSecurityUser implements Zend_Acl_Role_Interface
     }
 
     return parent::isAuthenticated();
+  }
+
+  /**
+   * Using $sf_user->hasGroup() since it relies on database,
+   * $sf_user->hasCredential('superuser') relies on session storage
+   * See 4214.
+   *
+   * @return Boolean
+   */
+  public function isSuperUser()
+  {
+    return $this->hasGroup(QubitAclGroup::SUPER_ID);
   }
 
   public function getClipboard()
