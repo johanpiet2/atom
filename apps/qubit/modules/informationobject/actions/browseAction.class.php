@@ -180,34 +180,6 @@ class InformationObjectBrowseAction extends DefaultBrowseAction
 
       case 'repos':
         // Get list of repositories
-//        $criteria = new Criteria;
-
-        // Do source culture fallback
-//        $criteria = QubitCultureFallback::addFallbackCriteria($criteria, 'QubitActor');
-
-        // Ignore root repository
-/*        $criteria->add(QubitActor::ID, QubitRepository::ROOT_ID, Criteria::NOT_EQUAL);
-
-        $criteria->addAscendingOrderByColumn('authorized_form_of_name');
-
-        $cache = QubitCache::getInstance();
-        $cacheKey = 'search:list-of-repositories:'.$this->context->user->getCulture();
-        if ($cache->has($cacheKey))
-        {
-          $choices = $cache->get($cacheKey);
-        }
-        else
-        {
-          $choices = array();
-          $choices[null] = null;
-          foreach (QubitRepository::get($criteria) as $repository)
-          {
-            $choices[$repository->id] = $repository->__toString();
-          }
-
-          $cache->set($cacheKey, $choices, 3600);
-        }
-*/
         //SITA - to fix cache
         $choices      = array();
         $choices['0'] = "";

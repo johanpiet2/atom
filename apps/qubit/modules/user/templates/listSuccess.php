@@ -32,6 +32,7 @@
     <?php foreach ($users as $item): ?>
 <?php    
 	// Super User - Show only Users linked to Super User's Repositories - Administrator can see all JJP SITA One Instance
+	// super user cannot change their own permissions
 	// Start
 	if ((!$this->context->user->isAdministrator()) && ($this->context->user->isSuperUser())) {
 		$userRepositories = new QubitUser;
@@ -46,27 +47,29 @@
 					unset($userRepos[$key]);
 				}
 				if (count(array_intersect($superRepos, $userRepos)) != 0) { ?>
-				  <tr>
-					<td>
-					  <?php echo link_to($item->username, array($item, 'module' => 'user')) ?>
-					  <?php if (!$item->active): ?>
-						(<?php echo __('inactive') ?>)
-					  <?php endif; ?>
-					  <?php if ($sf_user->user === $item): ?>
-						(<?php echo __('you') ?>)
-					  <?php endif; ?>
-					</td><td>
-					  <?php echo $item->email ?>
-					</td><td>
-					  <?php echo QubitTerm::getById($item->securityId) //SITA security classification ?>
-					</td><td>
-					  <ul>
-						<?php foreach ($item->getAclGroups() as $group): ?>
-						  <li><?php echo render_title($group) ?></li>
-						<?php endforeach; ?>
-					  </ul>
-					</td>
-				  </tr>
+				  <?php if ($sf_user->user !== $item): // super user cannot change their own permissions?>
+					  <tr>
+						<td>
+						  <?php echo link_to($item->username, array($item, 'module' => 'user')) ?>
+						  <?php if (!$item->active): ?>
+							(<?php echo __('inactive') ?>)
+						  <?php endif; ?>
+						  <?php if ($sf_user->user === $item): ?>
+							(<?php echo __('you') ?>)
+						  <?php endif; ?>
+						</td><td>
+						  <?php echo $item->email ?>
+						</td><td>
+						  <?php echo QubitTerm::getById($item->securityId) //SITA security classification ?>
+						</td><td>
+						  <ul>
+							<?php foreach ($item->getAclGroups() as $group): ?>
+							  <li><?php echo render_title($group) ?></li>
+							<?php endforeach; ?>
+						  </ul>
+						</td>
+					  </tr>
+				  <?php endif; ?>
 			<?php	  
 				}
 			}			

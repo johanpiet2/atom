@@ -29,11 +29,11 @@ class UserIndexRepositoryAclAction extends sfAction
     }
 
     // Except for administrators, only allow users to see their own profile
-    if (!$this->context->user->isAdministrator())
+    if (!$this->context->user->isAdministrator() && $this->context->user->isSuperUser())
     {
       if ($this->resource->id != $this->context->user->getAttribute('user_id'))
       {
-        $this->redirect('admin/secure');
+       // $this->redirect('admin/secure'); to fix SITA
       }
     }
 

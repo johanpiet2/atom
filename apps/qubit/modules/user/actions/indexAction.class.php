@@ -44,7 +44,7 @@ class UserIndexAction extends sfAction
     {
       if ($this->resource->id != $this->context->user->getAttribute('user_id'))
       {
-       // $this->redirect('admin/secure');
+       // $this->redirect('admin/secure');  to fix SITA
       }
     }
   }

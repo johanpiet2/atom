@@ -16,6 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with Access to Memory (AtoM).  If not, see <http://www.gnu.org/licenses/>.
  */
+/**
+ * @package    AccesstoMemory
+ * @subpackage repository
+ * @author     
+ * @author     Johan Pieterse <johan.pieterse@sita.co.za>
+ */
 
 class RepositoryAutocompleteAction extends sfAction
 {
@@ -78,6 +84,10 @@ class RepositoryAutocompleteAction extends sfAction
       }
     }
 
-    $this->repositories = QubitRepository::get($criteria);
+   // $this->repositories = QubitRepository::get($criteria);
+    // to do - one instance SITA extemd top code to filter
+    $this->repositories = QubitRepository::filteredUserRepos($this->context->user->getAttribute('user_id'), $this->context->user->isAdministrator());
+    
+    
   }
 }

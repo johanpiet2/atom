@@ -41,7 +41,7 @@ editInformationObjectAcl:
   is_secure: true
 
 editRepositoryAcl:
-  credentials: administrator
+  credentials: [[ administrator, superuser ]]
   is_secure: true
 
 editTermAcl:

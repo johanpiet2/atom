@@ -150,7 +150,7 @@ content
           <?php echo $form->position->renderRow() ?>
 
           <?php echo $form->telephone
-            ->label(__('Phone'))
+            ->label(__('Telephone'))
             ->renderRow() ?>
 
           <?php echo $form->fax

@@ -156,7 +156,24 @@ class UserEditAction extends DefaultEditAction
         $criteria->add(QubitAclGroup::ID, 99, Criteria::GREATER_THAN);
         foreach (QubitAclGroup::get($criteria) as $item)
         {
-          $choices[$item->id] = $item->getName(array('cultureFallback' => true));
+			if ($item->getName(array('cultureFallback' => true)) == 'superuser') { //only allow administrator to add superuser
+				if ($this->context->user->isAdministrator()) {
+					$choices[$item->id] = $item->getName(array('cultureFallback' => true));
+				}
+			}
+			else if ($item->getName(array('cultureFallback' => true)) == 'administrator') { //only allow administrator to add administrator
+				if ($this->context->user->isAdministrator()) {
+					$choices[$item->id] = $item->getName(array('cultureFallback' => true));
+				}
+  			} 
+			else if ($item->getName(array('cultureFallback' => true)) == 'editor') { //only allow administrator to add editor (to many rights for normal user)
+				if ($this->context->user->isAdministrator()) {
+					$choices[$item->id] = $item->getName(array('cultureFallback' => true));
+				}
+  			} 
+  			else {
+  				$choices[$item->id] = $item->getName(array('cultureFallback' => true));
+  			}
         }
 
         $this->form->setDefault('groups', $values);
@@ -430,11 +447,11 @@ class UserEditAction extends DefaultEditAction
   {
 	$aclPermission = new QubitAclPermission;
 	$aclPermission->action = 'read';
-	$aclPermission->objectId = $this->context->user->getAttribute('user_id');
 	$aclPermission->grantDeny = 1;
 	//$aclPermission->object = $resource;
 
 	$repositories = new QubitUser;
+	
 	foreach (QubitRepository::getAll() as $item)
 	{
 		if ($item->__toString() != "")
@@ -443,16 +460,15 @@ class UserEditAction extends DefaultEditAction
 				$key = array_search($item->id, $userRepos);
 				if (false !== $key) {
 					$uRepository = $item->__toString();
-					echo "cccccccccccccccccccc".$uRepository."<br>";
-					//break;
+					$uObjectId = $item->id;
+					break;
 				}
 			}
-		} else {
-			$uRepository = "123";
 		}
 	}
 	//set first repository
-	$aclPermission->conditional = '%p[repository] == %k[repository] | a:1:{s:10:"repository";s:23:"'.$uRepository.' '.$this->context->user->getAttribute('user_id').';}';
+	$aclPermission->objectId = $uObjectId;
+	$aclPermission->conditional = '%p[repository] == %k[repository] | a:1:{s:10:"repository";s:23:"'.$uRepository.';}';
 	$this->resource->aclPermissions[] = $aclPermission;
 	$this->resource->save();
   }
