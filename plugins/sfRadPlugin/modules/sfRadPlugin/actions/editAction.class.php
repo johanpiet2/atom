@@ -211,31 +211,10 @@ class sfRadPluginEditAction extends InformationObjectEditAction
         break;
 
       case 'repository':
+	    // Show only Repositories linked to user - Administrator can see all
 	 	$choices = array();
-	    // Show only Repositories linked to user - Administrator can see all JJP SITA One Instance
-	    if ((!$this->context->user->isAdministrator()) && (QubitSetting::getByName('open_system') == '0')) {
-			$repositories = new QubitUser;
-			foreach (QubitRepository::getAll() as $item)
-			{
-				if ($item->__toString() != "")
-				{
-					if (0 < count($userRepos = $repositories->getRepositoriesById($this->context->user->getAttribute('user_id')))) {
-						$key = array_search($item->id, $userRepos);
-						if (false !== $key) {
-							$choices[$item->id] = $item->__toString();
-						}
-					}
-				}
-			}
-		} else {
-			foreach (QubitRepository::getAll() as $item)
-			{
-				if ($item->__toString() != "")
-				{
-					$choices[$item->id] = $item->__toString();
-				}
-			}
-		} 				
+	    $choices = QubitRepository::filteredUser($this->context->user->getAttribute('user_id'), $this->context->user->isAdministrator());
+
 		$this->form->setDefault('repository', $this->resource->repositoryId);
 	    $this->form->setValidator('repository', new sfValidatorChoice(array('choices' => array_keys($choices), 'required' => true)));
 		$this->form->setWidget('repository', new sfWidgetFormSelect(array('choices' => $choices)));
