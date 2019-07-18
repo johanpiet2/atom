@@ -47,7 +47,7 @@
 			<td><?php echo $result['RECORD_ID'] ?></td>
 			<td><?php echo $result['USER'] ?></td>
 			<td><?php echo $result['ACTION_DATE_TIME'] ?></td>
-			<td><?php echo $result['USER_ACTION'] ?></td>
+			<td><?php echo $result['ACTION'] ?></td>
 			<td><?php echo $result['DB_TABLE'] ?></td>
 			<td><?php echo $result['DB_QUERY'] ?></td>
         </tr>

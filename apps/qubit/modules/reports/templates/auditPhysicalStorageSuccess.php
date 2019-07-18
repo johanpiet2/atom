@@ -35,14 +35,14 @@
 				<td>Name</td><td colspan=2><?php echo $item[8] . " - " . $item[9] ?></td> 
 			</tr>
 			
-			<?php if ($item["USER_ACTION"] == "insert"): ?> 
+			<?php if ($item["ACTION"] == "insert"): ?> 
 				<?php $dAction = "Inserted into " ?> 
-			<?php elseif ($item["USER_ACTION"] == "update"): ?>
+			<?php elseif ($item["ACTION"] == "update"): ?>
 				<?php $dAction = "Updated " ?> 
-			<?php elseif ($item["USER_ACTION"] == "delete"): ?>
+			<?php elseif ($item["ACTION"] == "delete"): ?>
 				<?php $dAction = "Deleted from" ?> 
 			<?php else: ?>
-				<?php $dAction = $item["USER_ACTION"] ?> 
+				<?php $dAction = $item["ACTION"] ?> 
 			<?php endif; ?>
  
 			<?php if ($item["DB_TABLE"] == "physical_object"): ?> 

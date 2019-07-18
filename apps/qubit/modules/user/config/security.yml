@@ -37,7 +37,7 @@ editActorAcl:
   is_secure: true
 
 editInformationObjectAcl:
-  credentials: administrator
+  credentials: [[ administrator, superuser ]]
   is_secure: true
 
 editRepositoryAcl:

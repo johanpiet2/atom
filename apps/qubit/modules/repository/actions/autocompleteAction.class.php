@@ -19,75 +19,64 @@
 /**
  * @package    AccesstoMemory
  * @subpackage repository
- * @author     
+ * @author     artefactual
  * @author     Johan Pieterse <johan.pieterse@sita.co.za>
  */
 
 class RepositoryAutocompleteAction extends sfAction
 {
-  public function execute($request)
-  {
-    $criteria = new Criteria;
-    $criteria->addJoin(QubitActor::ID, QubitActorI18n::ID);
-    $criteria->add(QubitActor::PARENT_ID, QubitRepository::ROOT_ID);
-
-    if (sfConfig::get('app_markdown_enabled', true))
+    public function execute($request)
     {
-      $criteria->add(QubitActorI18n::AUTHORIZED_FORM_OF_NAME, "%$request->query%", Criteria::LIKE);
-    }
-    else
-    {
-      $criteria->add(QubitActorI18n::AUTHORIZED_FORM_OF_NAME, "$request->query%", Criteria::LIKE);
-    }
-
-    $criteria->addAscendingOrderByColumn('authorized_form_of_name');
-    $criteria->setDistinct();
-    $criteria->setLimit(sfConfig::get('app_hits_per_page', 10));
-
-    $criteria = QubitCultureFallback::addFallbackCriteria($criteria, 'QubitActor');
-
-    // Filter "denied" repositories if list for repository autocomplete on
-    // information object form
-    if (isset($request->aclAction))
-    {
-      $repositoryList = array();
-      $repositoryAccess = QubitAcl::getRepositoryAccess($request->aclAction);
-
-      // If all repositories are denied, no response
-      if (1 == count($repositoryAccess) && QubitAcl::DENY == $repositoryAccess[0]['access'])
-      {
-        return sfView::NONE;
-      }
-      else
-      {
-        while ($repo = array_shift($repositoryAccess))
-        {
-          if ('*' != $repo['id'])
-          {
-            $repositoryList[] = $repo['id'];
-          }
-          else
-          {
-            if (QubitAcl::DENY == $repo['access'])
-            {
-              // Require repositories to be specifically allowed (all others
-              // prohibited)
-              $criteria->add(QubitRepository::ID, $repositoryList + array('null'), Criteria::IN);
-            }
-            else
-            {
-              // Prohibit specified repositories (all others allowed)
-              $criteria->add(QubitRepository::ID, $repositoryList, Criteria::NOT_IN);
-            }
-          }
+        $criteria = new Criteria;
+        $criteria->addJoin(QubitActor::ID, QubitActorI18n::ID);
+        $criteria->add(QubitActor::PARENT_ID, QubitRepository::ROOT_ID);
+        
+        if (sfConfig::get('app_markdown_enabled', true)) {
+            $criteria->add(QubitActorI18n::AUTHORIZED_FORM_OF_NAME, "%$request->query%", Criteria::LIKE);
+        } else {
+            $criteria->add(QubitActorI18n::AUTHORIZED_FORM_OF_NAME, "$request->query%", Criteria::LIKE);
         }
-      }
+        
+        $criteria->addAscendingOrderByColumn('authorized_form_of_name');
+        $criteria->setDistinct();
+        $criteria->setLimit(sfConfig::get('app_hits_per_page', 10));
+        
+        $criteria = QubitCultureFallback::addFallbackCriteria($criteria, 'QubitActor');
+        
+        // Filter "denied" repositories if list for repository autocomplete on
+        // information object form
+        if (isset($request->aclAction)) {
+            $repositoryList   = array();
+            $repositoryAccess = QubitAcl::getRepositoryAccess($request->aclAction);
+            
+            // If all repositories are denied, no response
+            if (1 == count($repositoryAccess) && QubitAcl::DENY == $repositoryAccess[0]['access']) {
+                return sfView::NONE;
+            } else {
+                while ($repo = array_shift($repositoryAccess)) {
+                    if ('*' != $repo['id']) {
+                        $repositoryList[] = $repo['id'];
+                    } else {
+                        if (QubitAcl::DENY == $repo['access']) {
+                            // Require repositories to be specifically allowed (all others
+                            // prohibited)
+                            $criteria->add(QubitRepository::ID, $repositoryList + array(
+                                'null'
+                            ), Criteria::IN);
+                        } else {
+                            // Prohibit specified repositories (all others allowed)
+                            $criteria->add(QubitRepository::ID, $repositoryList, Criteria::NOT_IN);
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (QubitSetting::getByName('open_system') == '1') {
+            $this->repositories = QubitRepository::get($criteria);
+        } else {
+            // to do - one instance SITA extend top code to filter
+            $this->repositories = QubitRepository::filteredUserRepositories($this->context->user->getAttribute('user_id'), $this->context->user->isAdministrator());
+        }
     }
-
-   // $this->repositories = QubitRepository::get($criteria);
-    // to do - one instance SITA extemd top code to filter
-    $this->repositories = QubitRepository::filteredUserRepos($this->context->user->getAttribute('user_id'), $this->context->user->isAdministrator());
-    
-    
-  }
 }

@@ -113,7 +113,8 @@ class reportsAuditRepositoryAction extends sfAction
     // Page results
     $this->pager = new QubitPagerAudit("QubitAuditObject");
     $this->pager->setCriteria($criteria);
-    $this->pager->setMaxPerPage($this->form->getValue('limit'));
+//    $this->pager->setMaxPerPage($this->form->getValue('limit'));
+    $this->pager->setMaxPerPage(10);
     $this->pager->setPage($request->page);
 
     $this->auditObjects = $this->pager->getResults();

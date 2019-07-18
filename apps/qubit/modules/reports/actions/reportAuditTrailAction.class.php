@@ -162,7 +162,7 @@ class reportsReportAuditTrailAction extends sfAction
             $criteria->addAnd($c2);
 		}
         if ($this->form->getValue('userAction') != '0') {
-            $c3 = $criteria->getNewCriterion(QubitAuditObject::USER_ACTION, $this->form->getValue('userAction'), Criteria::EQUAL);
+            $c3 = $criteria->getNewCriterion(QubitAuditObject::ACTION, $this->form->getValue('userAction'), Criteria::EQUAL);
             $criteria->addAnd($c3);
 		}
 	    $criteria->addDescendingOrderByColumn(QubitAuditObject::ACTION_DATE_TIME);

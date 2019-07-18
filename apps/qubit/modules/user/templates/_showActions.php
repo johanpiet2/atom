@@ -1,13 +1,16 @@
 <section class="actions">
 
   <ul>
-
-    <?php if (QubitAcl::check($resource, 'update') || ($this->context->user->isSuperUser())): ?>
-      <li><?php echo link_to (__('Edit'), array($resource, 'module' => 'user', 'action' => str_replace('index', 'edit', $sf_context->getActionName())), array('class' => 'c-btn')) ?></li>
+    <?php if (QubitAcl::check($resource, 'update') || ($this->context->user->isSuperUser())):
+			  if ($resource->id != $this->context->user->getAttribute('user_id')): ?>
+				  <li><?php echo link_to (__('Edit'), array($resource, 'module' => 'user', 'action' => str_replace('index', 'edit', $sf_context->getActionName())), array('class' => 'c-btn')) ?></li>
+			<?php endif; ?>
     <?php endif; ?>
 
-    <?php if ($sf_user->user != $resource && 0 == count($resource->notes) && QubitAcl::check($resource, 'delete') || ($this->context->user->isSuperUser())): ?>
-      <li><?php echo link_to (__('Delete'), array($resource, 'module' => 'user', 'action' => 'delete'), array('class' => 'c-btn c-btn-delete')) ?></li>
+    <?php if ($sf_user->user != $resource && 0 == count($resource->notes) && QubitAcl::check($resource, 'delete') || ($this->context->user->isSuperUser())):
+			  if ($resource->id != $this->context->user->getAttribute('user_id')): ?>
+			      <li><?php echo link_to (__('Delete'), array($resource, 'module' => 'user', 'action' => 'delete'), array('class' => 'c-btn c-btn-delete')) ?></li>
+			<?php endif; ?>
     <?php endif; ?>
 
     <?php if (QubitAcl::check($resource, 'create') || ($this->context->user->isSuperUser())): ?>
