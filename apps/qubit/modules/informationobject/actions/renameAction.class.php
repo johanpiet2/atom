@@ -24,7 +24,12 @@ class InformationObjectRenameAction extends DefaultEditAction
     $NAMES = array(
       'title',
       'slug',
-      'filename');
+      'filename0',
+      'filename1',
+      'filename2',
+      'filename3',
+      'filename4'
+      );
 
   protected function earlyExecute()
   {
@@ -41,9 +46,25 @@ class InformationObjectRenameAction extends DefaultEditAction
   {
     if (in_array($name, InformationObjectRenameAction::$NAMES))
     {
-      if ($name == 'filename')
+      if ($name == 'filename0')
       {
         $this->form->setDefault($name, $this->resource->digitalObjectsRelatedByobjectId[0]->name);
+      }
+      else if ($name == 'filename1')
+      {
+        $this->form->setDefault($name, $this->resource->digitalObjectsRelatedByobjectId[1]->name);
+      }
+      else if ($name == 'filename2')
+      {
+        $this->form->setDefault($name, $this->resource->digitalObjectsRelatedByobjectId[2]->name);
+      }
+      else if ($name == 'filename3')
+      {
+        $this->form->setDefault($name, $this->resource->digitalObjectsRelatedByobjectId[3]->name);
+      }
+      else if ($name == 'filename4')
+      {
+        $this->form->setDefault($name, $this->resource->digitalObjectsRelatedByobjectId[4]->name);
       }
       else
       {
@@ -93,7 +114,11 @@ class InformationObjectRenameAction extends DefaultEditAction
   {
     $postedTitle = $this->form->getValue('title');
     $postedSlug = $this->form->getValue('slug');
-    $postedFilename = $this->form->getValue('filename');
+    $postedFilename0 = $this->form->getValue('filename0');
+    $postedFilename1 = $this->form->getValue('filename1');
+    $postedFilename2 = $this->form->getValue('filename2');
+    $postedFilename3 = $this->form->getValue('filename3');
+    $postedFilename4 = $this->form->getValue('filename4');
 
     // Update title, if title sent
     if (null !== $postedTitle)
@@ -123,35 +148,45 @@ class InformationObjectRenameAction extends DefaultEditAction
       }
     }
 
-//to do SITA
-/* rename all filenames if multiple option selected
-	<?php for ($n = 0; $n < count($resource->digitalObjectsRelatedByobjectId); $n++) 
-		{ ?>
-*/
-    // Update digital object filename, if filename sent
-    if ((null !== $postedFilename) && count($this->resource->digitalObjectsRelatedByobjectId))
+	//multiple digital objects SITA
+    if (count($this->resource->digitalObjectsRelatedByobjectId))
     {
-      // Parse filename so special characters can be removed
-      $fileParts = pathinfo($postedFilename);
-      $filename = QubitSlug::slugify($fileParts['filename']) .'.'. QubitSlug::slugify($fileParts['extension']);
+		for ($n = 0; $n < count($this->resource->digitalObjectsRelatedByobjectId); $n++) {
+			// Parse filename so special characters can be removed
+			 $postedFilename = null;
+			if ($n == 0) {
+			    $postedFilename = $this->form->getValue('filename0');
+			} else if ($n == 1) {
+			    $postedFilename = $this->form->getValue('filename1');
+			} else if ($n == 2) {
+			    $postedFilename = $this->form->getValue('filename2');
+			} else if ($n == 3) {
+			    $postedFilename = $this->form->getValue('filename3');
+			} else if ($n == 4) {
+			    $postedFilename = $this->form->getValue('filename4');
+			}
+			if (null !== $postedFilename) {
+				$fileParts = pathinfo($postedFilename);
+				$filename = QubitSlug::slugify($fileParts['filename']) .'.'. QubitSlug::slugify($fileParts['extension']);
 
-      $digitalObject = $this->resource->digitalObjectsRelatedByobjectId[0];
+				$digitalObject = $this->resource->digitalObjectsRelatedByobjectId[$n];
 
-      // Rename master file
-      $basePath = sfConfig::get('sf_web_dir') . $digitalObject->path;
-      $oldFilePath = $basePath . DIRECTORY_SEPARATOR . $digitalObject->name;
-      $newFilePath = $basePath . DIRECTORY_SEPARATOR . $filename;
-      rename($oldFilePath, $newFilePath);
-      chmod($newFilePath, 0644);
+				// Rename master file
+				$basePath = sfConfig::get('sf_web_dir') . $digitalObject->path;
+				$oldFilePath = $basePath . DIRECTORY_SEPARATOR . $digitalObject->name;
+				$newFilePath = $basePath . DIRECTORY_SEPARATOR . $filename;
+				rename($oldFilePath, $newFilePath);
+				chmod($newFilePath, 0644);
 
-      // Change name in database
-      $digitalObject->name = $filename;
-      $digitalObject->save();
+				// Change name in database
+				$digitalObject->name = $filename;
+				$digitalObject->save();
 
-      // Regenerate derivatives
-      digitalObjectRegenDerivativesTask::regenerateDerivatives($digitalObject, array('keepTranscript' => true));
-    }
-
+				// Regenerate derivatives
+				digitalObjectRegenDerivativesTask::regenerateDerivatives($digitalObject, array('keepTranscript' => true));
+			}
+		}
+	}
     $this->resource->save();
     $this->resource->updateXmlExports();
   }

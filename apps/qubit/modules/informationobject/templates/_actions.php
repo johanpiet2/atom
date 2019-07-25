@@ -48,11 +48,15 @@
 
 				<?php } 	?>
 		          <?php if (QubitDigitalObject::isUploadAllowed()): ?>
-		            <li><?php echo link_to(__('Link %1%', array('%1%' => mb_strtolower(sfConfig::get('app_ui_label_digitalobject')))), array($resource, 'module' => 'object', 'action' => 'addDigitalObject')) ?></li>
+			          <?php if (5 > count($resource->digitalObjectsRelatedByobjectId)): //only allow max 5 digital objects ?>
+			            <li><?php echo link_to(__('Link %1%', array('%1%' => mb_strtolower(sfConfig::get('app_ui_label_digitalobject')))), array($resource, 'module' => 'object', 'action' => 'addDigitalObject')) ?></li>
+			          <?php endif; // has digital object ?>
 	              <?php endif; // has digital object ?>
               
               <?php elseif (QubitDigitalObject::isUploadAllowed()): ?>
-                <li><?php echo link_to(__('Link %1%', array('%1%' => mb_strtolower(sfConfig::get('app_ui_label_digitalobject')))), array($resource, 'module' => 'object', 'action' => 'addDigitalObject')) ?></li>
+	              <?php if (5 > count($resource->digitalObjectsRelatedByobjectId)): //only allow max 5 digital objects ?>
+	                <li><?php echo link_to(__('Link %1%', array('%1%' => mb_strtolower(sfConfig::get('app_ui_label_digitalobject')))), array($resource, 'module' => 'object', 'action' => 'addDigitalObject')) ?></li>
+	              <?php endif; // has digital object ?>
               <?php endif; // has digital object ?>
 
               <?php if ((null === $resource->repository || 0 != $resource->repository->uploadLimit) && QubitDigitalObject::isUploadAllowed()): ?>
@@ -72,7 +76,6 @@
                 <li><?php echo link_to(__('View modification history'), array($resource, 'module' => 'informationobject', 'action' => 'modifications')) ?></li>
               <?php endif; ?>
               <li class="divider"></li>
-
 
 			<?php $bookinRecords && $bookoutRecords == 0 ?>
 			<?php ($bookinRecords = count(get_component('bookinobject', 'contextMenu', array($resource, 'module' => 'informationobject', 'action' => 'editBookinObjects'),array('resource' => $resource)))) ?>
