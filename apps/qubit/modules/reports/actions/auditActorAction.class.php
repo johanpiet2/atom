@@ -90,6 +90,9 @@ class reportsAuditActorAction extends sfAction
     $c6 = new Criteria;
     $c7 = new Criteria;
     $c8 = new Criteria;
+    $c9 = new Criteria;
+    $c10 = new Criteria;
+    $c11 = new Criteria;
     BaseAuditObject::addSelectColumns($criteria);
     $criteria->addSelectColumn(QubitActor::CORPORATE_BODY_IDENTIFIERS);
     BaseActorI18n::addSelectColumns($criteria);
@@ -101,24 +104,29 @@ class reportsAuditActorAction extends sfAction
 	$criteria->addjoin(QubitAuditObject::RECORD_ID, QubitActor::ID);
 	$criteria->addjoin(QubitActor::ID, QubitActori18n::ID);
 
-    
-	$c1 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'access_object', Criteria::NOT_EQUAL);
-	$c2 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'relation', Criteria::NOT_EQUAL);
-	$c3 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'property', Criteria::NOT_EQUAL);
-	$c4 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'object_term_relation', Criteria::NOT_EQUAL);
-	$c5 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'object', Criteria::NOT_EQUAL);
-	$c6 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'bookin_object', Criteria::NOT_EQUAL);
-	$c7 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'presevation_object_i18n', Criteria::NOT_EQUAL);
-	$c8 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'access_log', Criteria::NOT_EQUAL);
-	$c1->addAnd($c2);
-	$c3->addAnd($c4);
-	$c5->addAnd($c6);
-	$c7->addAnd($c8);
-	$criteria->addAnd($c1);
-	$criteria->addAnd($c3);
-	$criteria->addAnd($c5);
-	$criteria->addAnd($c7);
-	$auditObjects = self::doSelect($criteria);
+	$c4 = $criteria->getNewCriterion(QubitAuditObject::ACTION, 'delete', Criteria::NOT_EQUAL);
+	$c5 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'access_object', Criteria::NOT_EQUAL);
+	$c6 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'relation', Criteria::NOT_EQUAL);
+	$c7 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'property', Criteria::NOT_EQUAL); 
+	$c8 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'object_term_relation', Criteria::NOT_EQUAL); 
+	$c9 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'object', Criteria::NOT_EQUAL);
+	$c10 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'bookin_object', Criteria::NOT_EQUAL);
+	$c11 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'presevation_object_i18n', Criteria::NOT_EQUAL);
+	$c12 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'access_log', Criteria::NOT_EQUAL);
+	$c13 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'property_i18n', Criteria::NOT_EQUAL);
+
+	$c4->addAnd($c5);
+	$criteria->addAnd($c4);
+	$c6->addAnd($c7);
+	$criteria->addAnd($c6);
+	$c8->addAnd($c9);
+	$criteria->addAnd($c8);
+	$c10->addAnd($c11);
+	$criteria->addAnd($c10);
+	$c12->addAnd($c13);
+	$criteria->addAnd($c12);
+
+
 
     // Page results
     $this->pager = new QubitPagerAudit("QubitAuditObject");
@@ -126,12 +134,7 @@ class reportsAuditActorAction extends sfAction
     $this->pager->setMaxPerPage(10000);
     $this->pager->setPage($request->page);
 
-    $this->auditObjects = $this->pager->getResults();
     $this->auditObjectsOlder = $this->pager->getResults();
-  	if (0 == count($this->auditObjects))
-	{
-      return sfView::ERROR;
-    }
 
     $c2 = clone $criteria;
     $this->foundcount = BasePeer::doCount($c2)->fetchColumn(0); 

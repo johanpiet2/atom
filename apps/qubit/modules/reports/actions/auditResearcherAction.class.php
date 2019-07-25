@@ -92,7 +92,6 @@ class reportsAuditResearcherAction extends sfAction
 	$criteria->addjoin(QubitAuditObject::RECORD_ID, QubitResearcher::ID);
 	$criteria->addjoin(QubitActor::ID, QubitResearcher::ID);
 	$criteria->addjoin(QubitActor::ID, QubitActori18n::ID);
-
     
 	$c1 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'access_object', Criteria::NOT_EQUAL);
 	$c2 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'relation', Criteria::NOT_EQUAL);
@@ -109,20 +108,13 @@ class reportsAuditResearcherAction extends sfAction
 	$criteria->addAnd($c5);
 	$criteria->addAnd($c7);
 
-	$auditObjects = self::doSelect($criteria);
-
     // Page results
     $this->pager = new QubitPagerAudit("QubitAuditObject");
     $this->pager->setCriteria($criteria);
-    $this->pager->setMaxPerPage($this->form->getValue('limit'));
+    $this->pager->setMaxPerPage($request->limit);
     $this->pager->setPage($request->page);
 
-    $this->auditObjects = $this->pager->getResults();
     $this->auditObjectsOlder = $this->pager->getResults();
-  	if (0 == count($this->auditObjects))
-	{
-      return sfView::ERROR;
-    }
 
     $c2 = clone $criteria;
     $this->foundcount = BasePeer::doCount($c2)->fetchColumn(0); 

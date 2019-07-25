@@ -15,10 +15,9 @@
     </section>
 	<?php $auditObjectsArr = array(); ?>
   	<?php foreach ($auditObjectsOlder as $item):  ?>
-		<?php $auditObjectsArr[] = array($item[0],$item[1],$item[2],$item[3],$item[4],$item[5],$item[6],$item[7],$item[8]); ?>
+		<?php $auditObjectsArr[] = array($item[0],$item[1],$item[2],$item[3],$item[4],$item[5],$item[6],$item[7],$item[8],$item[9],$item[10],$item[11]); ?>
     <?php endforeach;  ?>
-
-  	<?php foreach ($auditObjects as $item): ?>
+  	<?php foreach ($pager->getResults() as $item): ?>
        <tr class="<?php echo 0 == @++$row % 2 ? 'even' : 'odd' ?>">
         <td>
     		<?php echo "<hr>" ?>
@@ -35,39 +34,42 @@
 				</td>
 			</tr>
 
-			<?php if ($item[5] == "insert"): ?> 
+			<?php if ($item[7] == "insert"): ?> 
 				<?php $dAction = "Inserted into " ?> 
-			<?php elseif ($item[5] == "update"): ?>
+			<?php elseif ($item[7] == "update"): ?>
 				<?php $dAction = "Updated " ?> 
-			<?php elseif ($item[5] == "delete"): ?>
+			<?php elseif ($item[7] == "delete"): ?>
 				<?php $dAction = "Deleted from" ?> 
 			<?php else: ?>
-				<?php $dAction = $item[5] ?> 
+				<?php $dAction = $item[7] ?> 
 			<?php endif; ?>
  
-			<?php if ($item[6] == "information_object"): ?>
+			<?php if ($item[8] == "information_object"): ?>
 				<?php $dTable = "'Archival Description Store'" ?> 
-			<?php elseif ($item[6] == "repository"): ?>
+			<?php elseif ($item[8] == "repository"): ?>
 				<?php $dTable = "Repository/Archival Institution" ?> 
-			<?php elseif ($item[6] == "repository_i18n"): ?>
+			<?php elseif ($item[8] == "repository_i18n"): ?>
 				<?php $dTable = "Repository/Archival Institution Extend" ?> 
-			<?php elseif ($item[6] == "note"): ?>
+			<?php elseif ($item[8] == "note"): ?>
 				<?php $dTable = "Note" ?> 
-			<?php elseif ($item[6] == "other_name"): ?>
+			<?php elseif ($item[8] == "other_name"): ?>
 				<?php $dTable = "Other Name" ?> 
-			<?php elseif ($item[6] == "actor"): ?>
+			<?php elseif ($item[8] == "actor"): ?>
 				<?php $dTable = "Actor" ?> 
-			<?php elseif ($item[6] == "actor_i18n"): ?>
+			<?php elseif ($item[8] == "actor_i18n"): ?>
 				<?php $dTable = "Actor extend" ?> 
+			<?php elseif ($item["DB_TABLE"] == "contact_information_i18n"): ?> 
+				<?php $dTable = "Contact Information" ?> 
 			<?php else: ?>
-				<?php $dTable = $item[5] ?> 
+				<?php $dTable = $item[8] ?> 
 			<?php endif; ?>
  
  			<?php $user = ""; ?>
  			<?php $date = ""; ?>
 
 
-			<?php $rOlder = doGetTableValue($auditObjectsArr, $item["ID"], $item[7]); ?>
+			<?php $rOlder = doGetTableValue($auditObjectsArr, $item["ID"], $item["DB_TABLE"]); ?>
+			
 			<?php $rOlderValues = explode("~!~",$rOlder); ?>
 			<?php $dTableOlder = $rOlderValues[0] ?> 
 			<?php $dActionOlder = $rOlderValues[1] ?> 
@@ -78,13 +80,13 @@
 				<td><b>Field</b></td> <td><b>Old Value</b</td> <td><b>New Value</b</td> 
 			</tr>
 			<tr>
-				<td>ID</td> <td><?php echo $item[0] ?></td> <td><?php echo $item[0] ?></td> 
+				<td>ID</td> <td><?php echo $item["ID"] ?></td> <td><?php echo $item["ID"] ?></td> 
 			</tr>
 			<tr>
-				<td>User</td> <td><?php echo $user ?></td> <td><?php echo $item[8] ?></td> 
+				<td>User</td> <td><?php echo $user ?></td> <td><?php echo $item["USER"] ?></td> 
 			</tr>
 			<tr>
-				<td>Date & Time</td> <td><?php echo $date ?></td> <td><?php echo $item[9] ?></td> 
+				<td>Date & Time</td> <td><?php echo $date ?></td> <td><?php echo $item["ACTION_DATE_TIME"] ?></td> 
 			</tr>
 			<tr>
 				<td>Action</td> <td><?php echo $dActionOlder . $dTableOlder ?></td> <td><?php echo $dAction . $dTable ?></td> 
@@ -95,7 +97,7 @@
 			<?php echo '<b>DB QUERY: </b>' . "<br>" ?>  
 			</tr>
 			<tr>
-				<?php $strFieldsAndValues = explode("~~~",$item[7]) ?> 
+				<?php $strFieldsAndValues = explode("~~~",$item["DB_QUERY"]) ?> 
 				<?php $strFields = explode("~!~",$strFieldsAndValues[0]) ?> 
 				<?php $strValues = explode("~!~",$strFieldsAndValues[1]) ?>
 				<?php $arr_length = count($strFields); ?>
@@ -788,7 +790,7 @@
     </section>
 
 <?php 
-function doGetFieldValue($keyValue, $auditObjectsArr2, $item_ID, $item, $item6)
+function doGetFieldValue($keyValue, $auditObjectsArr2, $item_ID, $item, $itemTable)
 {
 	try 
 	{
@@ -803,13 +805,12 @@ function doGetFieldValue($keyValue, $auditObjectsArr2, $item_ID, $item, $item6)
 			{
 				break;
 			}
-			$strFieldsAndValuesOlder2 = explode("~~~",$auditObjectsArr2[$n][7]);
+			$strFieldsAndValuesOlder2 = explode("~~~",$auditObjectsArr2[$n][9]);
 			$strFieldsOlder2 = explode("~!~",$strFieldsAndValuesOlder2[0]); 
 			$strValuesOlder2 = explode("~!~",$strFieldsAndValuesOlder2[1]); 
-
 			if ($item_ID > $auditObjectsArr2[$n][2] )   //Check for ID to be older than current ID
 			{
- 				if ($item6 == $auditObjectsArr2[$n][5] )   //same tables
+ 				if ($itemTable == $auditObjectsArr2[$n][8] )   //same tables
  				{
 	 				for ($j=0; $j < count($strFieldsOlder2); $j++) 
 					{
@@ -830,7 +831,7 @@ function doGetFieldValue($keyValue, $auditObjectsArr2, $item_ID, $item, $item6)
 	}
 }
 
-function doGetTableValue($auditObjectsArr2, $item_ID,  $item6)
+function doGetTableValue($auditObjectsArr2, $item_ID,  $itemTable)
 {
 	try 
 	{
@@ -844,18 +845,19 @@ function doGetTableValue($auditObjectsArr2, $item_ID,  $item6)
 		$arrSize = $arrSize - 1;
 		for ($n = 0; $n < $arrSize; $n++) 
 		{
-			$strFieldsAndValuesOlder2 = explode("~~~",$auditObjectsArr2[$n][7]);
+			$strFieldsAndValuesOlder2 = explode("~~~",$auditObjectsArr2[$n][9]);
 			$strFieldsOlder2 = explode("~!~",$strFieldsAndValuesOlder2[0]); 
 			$strValuesOlder2 = explode("~!~",$strFieldsAndValuesOlder2[1]); 
 
 			if ($item_ID > $auditObjectsArr2[$n][2] )   //Check for ID to be older than current ID
 			{
- 				if ($item6 == $auditObjectsArr2[$n][5] )   //same tables
+		
+ 				if ($itemTable == $auditObjectsArr2[$n][8] )   //same tables
  				{
- 					$oAction = $auditObjectsArr2[$n][4]; 
- 					$oTable = $auditObjectsArr2[$n][5]; 
- 					$oUser = $auditObjectsArr2[$n][7]; 
- 					$oDdate = $auditObjectsArr2[$n][8]; 
+ 					$oAction = $auditObjectsArr2[$n][7]; 
+ 					$oTable = $auditObjectsArr2[$n][8]; 
+ 					$oUser = $auditObjectsArr2[$n][10]; 
+ 					$oDdate = $auditObjectsArr2[$n][11]; 
 
 					break;		 					
 	 			}
@@ -887,6 +889,10 @@ function doGetTableValue($auditObjectsArr2, $item_ID,  $item6)
 		{
 			$dTableOlder = "Repository Extend";
 		}
+		elseif ($oTable == "contact_information_i18n")
+		{
+			$dTableOlder = "Contact Information";
+		}
 		else
 		{
 			$dTableOlder = $oTable;
@@ -900,5 +906,9 @@ function doGetTableValue($auditObjectsArr2, $item_ID,  $item6)
 		throw new PropelException("Unable to perform get filed value.", $e);
 	}
 }
+
 ?>
+<?php slot('after-content') ?>
+<?php echo get_partial('default/pager', array('pager' => $pager)) ?>
+<?php end_slot() ?>
 

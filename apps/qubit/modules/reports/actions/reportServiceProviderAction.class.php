@@ -29,14 +29,6 @@ class reportsReportServiceProviderAction extends sfAction
     protected function addField($name)
     {
         switch ($name) {
-        case 'className':
-            $choices = array(
-            'QubitServiceProvider' => "Service Provider");
-            
-            $this->form->setValidator($name, new sfValidatorString);
-            $this->form->setWidget($name, new sfWidgetFormSelect(array('choices' => $choices)));
-            break;
-
         case 'dateStart':
             $this->form->setDefault('dateStart', Qubit::renderDate($this->resource['dateStart']));
             if (!isset($this->resource->id)) {
@@ -57,23 +49,6 @@ class reportsReportServiceProviderAction extends sfAction
             $this->form->setWidget('dateEnd', new sfWidgetFormInput);
             break;
 
-        case 'dateOf':
-            $choices = array('CREATED_AT' => $this->context->i18n->__('Creation'), 'UPDATED_AT' => $this->context->i18n->__('Revision'), 'both' => $this->context->i18n->__('Both'));
-            $this->form->setValidator($name, new sfValidatorChoice(array('choices' => array_keys($choices))));
-            $this->form->setWidget($name, new arWidgetFormSelectRadio(array('choices' => $choices, 'class' => 'radio inline')));
-            break;
-
-        case 'limit':
-            $this->form->setValidator($name, new sfValidatorString);
-            $this->form->setWidget($name, new sfWidgetFormInputHidden);
-
-            break;
-
-        case 'sort':
-            $this->form->setValidator($name, new sfValidatorString);
-            $this->form->setWidget($name, new sfWidgetFormInputHidden);
-
-            break;
         }
     }
     public function execute($request)
@@ -83,14 +58,7 @@ class reportsReportServiceProviderAction extends sfAction
         foreach ($this::$NAMES as $name) {
             $this->addField($name);
         }
-        $defaults = array(
-		    'className' => 'QubitServiceProvider', 
-		    'dateStart' => date('Y-m-d', strtotime('-1 month')), 
-		    'dateEnd' => date('Y-m-d'), 'dateOf' => 'CREATED_AT', 
-		    'publicationStatus' => 'all', 
-		    'limit' => '10', 
-		    'sort' => 'updatedDown');
-        
+
         $this->form->bind($request->getRequestParameters() + $request->getGetParameters() + $defaults);
 	    if ($this->form->isValid()) {
 	        $this->className = $this->form->getValue('className');
@@ -104,31 +72,8 @@ class reportsReportServiceProviderAction extends sfAction
         $this->sort = $this->request->getParameter('sort', 'updatedDown');
         // This join seems to be necessary to avoid cross joining the local table
         // with the QubitObject table
-    	$criteria->addJoin(constant($this->className . '::ID'), QubitObject::ID);
+    	$criteria->addJoin(constant('QubitAuditObject::ID'), QubitObject::ID);
         
-        switch ($this->form->getValue('className')) {
-        case 'QubitServiceProvider':
-            $nameColumn = 'authorized_form_of_name';
-            $this->nameColumnDisplay = 'Name';
-            $criteria = QubitServiceProvider::addGetOnlyServiceProviderObjectCriteria($criteria);
-		    $criteria->add(QubitServiceProvider::ID, QubitServiceProvider::ROOT_ID, Criteria::NOT_EQUAL); //Service Provider ID
-            break;
-
-        case 'QubitAuditObject':
-            $nameColumn = 'identifier';
-            $this->nameColumnDisplay = 'Identifier';
-
-           break;
-
-        // Default: information object
-        default:
-            $nameColumn = 'authorized_form_of_name';
-            $this->nameColumnDisplay = 'Name';
-            $criteria = QubitServiceProvider::addGetOnlyServiceProviderObjectCriteria($criteria);
-            break;
-
-        }
-		
         // End date at midnight
         if (null != $this->form->getValue('dateEnd')) {
             $vDay = substr($this->form->getValue('dateEnd'), 0, strpos($this->form->getValue('dateEnd'), "/"));
@@ -204,9 +149,9 @@ class reportsReportServiceProviderAction extends sfAction
 		        $criteria = QubitCultureFallback::addFallbackCriteria($criteria, $this->form->getValue('className'));
 		    }
         }
-	    $this->pager = new QubitPager($this->form->getValue('className'));
+	    $this->pager = new QubitPager("QubitAuditObject");
 	    $this->pager->setCriteria($criteria);
-	    $this->pager->setMaxPerPage($this->form->getValue('limit'));
+	    $this->pager->setMaxPerPage(10000);
 	    $this->pager->setPage($this->request->getParameter('page', 1));
     }
 }

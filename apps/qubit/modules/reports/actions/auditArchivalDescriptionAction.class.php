@@ -96,29 +96,29 @@ class reportsAuditArchivalDescriptionAction extends sfAction
 	$c5 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'object', Criteria::NOT_EQUAL);
 	$c6 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'bookin_object', Criteria::NOT_EQUAL);
 	$c7 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'presevation_object_i18n', Criteria::NOT_EQUAL);
+	$c8 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'QubitDigitalObject', Criteria::NOT_EQUAL);
+	$c9 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'property_i18n', Criteria::NOT_EQUAL);
+	$c10 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'QubitInformationObject', Criteria::NOT_EQUAL);
+	$c11 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'QubitEvent', Criteria::NOT_EQUAL);
 	$c1->addAnd($c2);
 	$c3->addAnd($c4);
 	$c5->addAnd($c6);
+	$c7->addAnd($c8);
+	$c9->addAnd($c10);
 	$criteria->addAnd($c1);
 	$criteria->addAnd($c3);
 	$criteria->addAnd($c5);
 	$criteria->addAnd($c7);
+	$criteria->addAnd($c9);
+	$criteria->addAnd($c11);
               
-	$auditObjects = self::doSelect($criteria);
-
     // Page results
     $this->pager = new QubitPagerAudit("QubitAuditObject");
     $this->pager->setCriteria($criteria);
     $this->pager->setMaxPerPage(10000);
     $this->pager->setPage($request->page);
 
-    $this->auditObjects = $this->pager->getResults();
     $this->auditObjectsOlder = $this->pager->getResults();
-    $this->auditObjectsOlder2 = $this->pager->getResults();
-  	if (0 == count($this->auditObjects))
-	{
-      return sfView::ERROR;
-    }
 
     $c2 = clone $criteria;
     $this->foundcount = BasePeer::doCount($c2)->fetchColumn(0); 

@@ -18,7 +18,7 @@
 		<?php $auditObjectsArr[] = array($item[0],$item[1],$item[2],$item[3],$item[4],$item[5],$item[6],$item[7],$item[8],$item[9]); ?>
     <?php endforeach;  ?>
 
-  	<?php foreach ($auditObjects as $item): ?>
+  	<?php foreach ($pager->getResults() as $item): ?>
   	
        <tr class="<?php echo 0 == @++$row % 2 ? 'even' : 'odd' ?>">
         <td>
@@ -51,6 +51,8 @@
 				<?php $dTable = "Service Provider (Actor) Extend" ?> 
 			<?php elseif ($item["DB_TABLE"] == "service_provider"): ?> 
 				<?php $dTable = "Service Provider" ?> 
+			<?php elseif ($item["DB_TABLE"] == "contact_information_i18n"): ?> 
+				<?php $dTable = "Contact Information" ?> 
 			<?php else: ?>
 				<?php $dTable = $item["DB_TABLE"] ?> 
 			<?php endif; ?>
@@ -104,7 +106,52 @@
 
 					<?php elseif (trim($strFields[$i]) == "CORPORATE_BODY_IDENTIFIERS"): ?>
 						<?php echo "<td><i>Field</i></td><td colspan=2>Identifier</td><tr>" ?> 
-						<?php $strOlder = doGetFieldValue("Corporate body identifiers",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
+						<?php $strOlder = doGetFieldValue("CORPORATE_BODY_IDENTIFIERS",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
+						<?php if ($strOlder != $strValues[$i]): ?>
+							<?php echo "<td><i>Value</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
+						<?php else: ?>
+							<?php echo "<td><i>Value</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
+						<?php endif; ?>
+
+					<?php elseif (trim($strFields[$i]) == "CONTACT_TYPE"): ?>
+						<?php echo "<td><i>Field</i></td><td colspan=2>Contact Type</td><tr>" ?> 
+						<?php $strOlder = doGetFieldValue("CONTACT_TYPE",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
+						<?php if ($strOlder != $strValues[$i]): ?>
+							<?php echo "<td><i>Value</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
+						<?php else: ?>
+							<?php echo "<td><i>Value</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
+						<?php endif; ?>
+
+					<?php elseif (trim($strFields[$i]) == "CITY"): ?>
+						<?php echo "<td><i>Field</i></td><td colspan=2>City</td><tr>" ?> 
+						<?php $strOlder = doGetFieldValue("CITY",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
+						<?php if ($strOlder != $strValues[$i]): ?>
+							<?php echo "<td><i>Value</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
+						<?php else: ?>
+							<?php echo "<td><i>Value</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
+						<?php endif; ?>
+
+					<?php elseif (trim($strFields[$i]) == "POSTAL_CITY"): ?>
+						<?php echo "<td><i>Field</i></td><td colspan=2>Postal City</td><tr>" ?> 
+						<?php $strOlder = doGetFieldValue("POSTAL_CITY",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
+						<?php if ($strOlder != $strValues[$i]): ?>
+							<?php echo "<td><i>Value</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
+						<?php else: ?>
+							<?php echo "<td><i>Value</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
+						<?php endif; ?>
+
+					<?php elseif (trim($strFields[$i]) == "REGION"): ?>
+						<?php echo "<td><i>Field</i></td><td colspan=2>Region</td><tr>" ?> 
+						<?php $strOlder = doGetFieldValue("REGION",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
+						<?php if ($strOlder != $strValues[$i]): ?>
+							<?php echo "<td><i>Value</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
+						<?php else: ?>
+							<?php echo "<td><i>Value</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
+						<?php endif; ?>
+
+					<?php elseif (trim($strFields[$i]) == "POSTAL_REGION"): ?>
+						<?php echo "<td><i>Field</i></td><td colspan=2>Postal Region</td><tr>" ?> 
+						<?php $strOlder = doGetFieldValue("POSTAL_REGION",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
 						<?php if ($strOlder != $strValues[$i]): ?>
 							<?php echo "<td><i>Value</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
 						<?php else: ?>
@@ -164,15 +211,13 @@ function doGetFieldValue($keyValue, $auditObjectsArr2, $item_ID, $item, $item4)
 				break;
 			}
 			
-			$strFieldsAndValuesOlder2 = explode("~~~",$auditObjectsArr2[$n][5]);
+			$strFieldsAndValuesOlder2 = explode("~~~",$auditObjectsArr2[$n][7]);
 			$strFieldsOlder2 = explode("~!~",$strFieldsAndValuesOlder2[0]); 
 			$strValuesOlder2 = explode("~!~",$strFieldsAndValuesOlder2[1]); 
 
 			if ($item_ID > $auditObjectsArr2[$n][0] )   //Check for ID to be older than current ID
 			{
-			if ($keyValue == 'AUTHORIZED_FORM_OF_NAME') {
-	}
- 				if ($item4 == $auditObjectsArr2[$n][4] )   //same tables
+ 				if ($item4 == $auditObjectsArr2[$n][6] )   //same tables
  				{
 	 				for ($j=0; $j < count($strFieldsOlder2); $j++) 
 					{
@@ -207,18 +252,18 @@ function doGetTableValue($auditObjectsArr2, $item_ID,  $item4)
 		$arrSize = $arrSize - 1;
 		for ($n = 0; $n < $arrSize; $n++) 
 		{
-			$strFieldsAndValuesOlder2 = explode("~~~",$auditObjectsArr2[$n][5]);
+			$strFieldsAndValuesOlder2 = explode("~~~",$auditObjectsArr2[$n][7]);
 			$strFieldsOlder2 = explode("~!~",$strFieldsAndValuesOlder2[0]); 
 			$strValuesOlder2 = explode("~!~",$strFieldsAndValuesOlder2[1]); 
 
 			if ($item_ID > $auditObjectsArr2[$n][0] )   //Check for ID to be older than current ID
 			{
- 				if ($item4 == $auditObjectsArr2[$n][4] )   //same tables
+ 				if ($item4 == $auditObjectsArr2[$n][6] )   //same tables
  				{
- 					$oAction = $auditObjectsArr2[$n][3]; 
- 					$oTable = $auditObjectsArr2[$n][4]; 
- 					$oUser = $auditObjectsArr2[$n][6]; 
- 					$oDdate = $auditObjectsArr2[$n][7]; 
+ 					$oAction = $auditObjectsArr2[$n][5]; 
+ 					$oTable = $auditObjectsArr2[$n][6]; 
+ 					$oUser = $auditObjectsArr2[$n][8]; 
+ 					$oDdate = $auditObjectsArr2[$n][9]; 
 
 					break;		 					
 	 			}
@@ -253,6 +298,10 @@ function doGetTableValue($auditObjectsArr2, $item_ID,  $item4)
 		elseif ($oTable == "service_provider")
 		{
 			$dTableOlder = "Service Provider";
+		}
+		elseif ($oTable == "contact_information_i18n")
+		{
+			$dTableOlder = "Contact Information";
 		}
 		else
 		{

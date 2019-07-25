@@ -1,4 +1,4 @@
-<h1><?php echo __('Audit Registry') ?></h1>
+<h1><?php echo __('Audit Actor/Authority Record') ?></h1>
 
 <table class="sticky-enabled">
   <thead>
@@ -18,7 +18,7 @@
 		<?php $auditObjectsArr[] = array($item[0],$item[1],$item[2],$item[3],$item[4],$item[5],$item[6],$item[7],$item[8],$item[9]); ?>
     <?php endforeach;  ?>
 
-  	<?php foreach ($auditObjects as $item): ?>
+  	<?php foreach ($pager->getResults() as $item): ?>
   	
        <tr class="<?php echo 0 == @++$row % 2 ? 'even' : 'odd' ?>">
         <td>
@@ -32,7 +32,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td>Name</td><td colspan=2><?php echo $item[8] . " - " . $item[9] ?></td> 
+				<td>Name</td><td colspan=2><b><?php echo $item[11] ?></b></td> 
 			</tr>
 			
 			<?php if ($item["ACTION"] == "insert"): ?> 
@@ -49,6 +49,12 @@
 				<?php $dTable = "Actor" ?> 
 			<?php elseif ($item["DB_TABLE"] == "actor_i18n"): ?> 
 				<?php $dTable = "Actor Extend" ?> 
+			<?php elseif ($item["DB_TABLE"] == "acl_user_group"): ?> 
+				<?php $dTable = "User Group" ?> 
+			<?php elseif ($item["DB_TABLE"] == "actor_i18n"): ?> 
+				<?php $dTable = "Actor Extend" ?> 
+			<?php elseif ($item["DB_TABLE"] == "contact_information_i18n"): ?> 
+				<?php $dTable = "Contact Information" ?> 
 			<?php else: ?>
 				<?php $dTable = $item["DB_TABLE"] ?> 
 			<?php endif; ?>
@@ -57,7 +63,7 @@
  			<?php $date = ""; ?>
 
 
-			<?php $rOlder = doGetTableValue($auditObjectsArr, $item["ID"], $item["DB_TABLE"]); ?>
+			<?php $rOlder = doGetTableValue($auditObjectsArr, $item[0], $item["DB_TABLE"]); ?>
 			<?php $rOlderValues = explode("~!~",$rOlder); ?>
 			<?php $dTableOlder = $rOlderValues[0] ?> 
 			<?php $dActionOlder = $rOlderValues[1] ?> 
@@ -68,10 +74,10 @@
 				<td><b>Field</b></td> <td><b>Old Value</b</td> <td><b>New Value</b</td> 
 			</tr>
 			<tr>
-				<td>ID</td> <td><?php //echo $item[0] ?></td> <td><?php echo $item[0] ?></td> 
+				<td>Audit ID</td> <td><?php //echo $item[0] ?></td> <td><?php echo $item[0] ?></td> 
 			</tr>
 			<tr>
-				<td>User</td> <td><?php echo $user ?></td> <td><?php echo $item[6] ?></td> 
+				<td>User</td> <td><?php echo $user ?></td> <td><?php echo $item[8] ?></td> 
 			</tr>
 			<tr>
 				<td>Date & Time</td> <td><?php echo $date ?></td> <td><?php echo $item["ACTION_DATE_TIME"] ?></td> 
@@ -91,284 +97,76 @@
 				<?php $arr_length = count($strFields); ?>
 				<?php for($i=0;$i<$arr_length;$i++) { ?>
 					<?php $strValue = $strValues[$i] ?> 
-						<?php if (trim($strFields[$i]) == "AUTHORIZED_FORM_OF_NAME"): ?>
+						<?php if (trim($strFields[$i]) == "USER_ID"): ?>
 					
-							<?php $strOlder = doGetFieldValue("AUTHORIZED_FORM_OF_NAME",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
+							<?php $strOlder = doGetFieldValue("USER_ID",$auditObjectsArr, $item[0], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
 							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Value</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
+								<?php echo "<td><i>User ID</i></td><td>" . QubitUser::getById($strOlder) . "</td><td bgcolor='#CCFF66'>" . QubitUser::getById($strValues[$i]) . "</td><tr>" ?> 
 							<?php else: ?>
-								<?php echo "<td><i>Value</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
+								<?php echo "<td><i>User ID</i></td><td>" . QubitUser::getById($strOlder) . "</td><td>" . QubitUser::getById($strValues[$i]) . "</td><tr>" ?> 
 							<?php endif; ?>
 
-						<?php elseif (trim($strFields[$i]) == "CORPORATE_BODY_IDENTIFIERS"): ?>
-							<?php $strOlder = doGetFieldValue("CORPORATE_BODY_IDENTIFIERS",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
+						<?php elseif (trim($strFields[$i]) == "GROUP_ID"): ?>
+							<?php $strOlder = doGetFieldValue("GROUP_ID",$auditObjectsArr, $item[0], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
 							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Value</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
+								<?php echo "<td><i>Group ID</i></td><td>" . QubitAclGroup::getById($strOlder) . "</td><td bgcolor='#CCFF66'>" . QubitAclGroup::getById($strValues[$i]) . "</td><tr>" ?> 
 							<?php else: ?>
-								<?php echo "<td><i>Value</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
+								<?php echo "<td><i>Group ID</i></td><td>" . QubitAclGroup::getById($strOlder) . "</td><td>" . QubitAclGroup::getById($strValues[$i]) . "</td><tr>" ?> 
 							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "GEOCULTURAL_CONTEXT"): ?>
-							<?php $strOlder = doGetFieldValue("GEOCULTURAL_CONTEXT",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
+						<?php elseif (trim($strFields[$i]) == "CLASS_NAME"): ?>
+							<?php $strOlder = doGetFieldValue("CLASS_NAME",$auditObjectsArr, $item[0], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
 							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Geocultural Context</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
+								<?php echo "<td><i>Class Name</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
 							<?php else: ?>
-								<?php echo "<td><i>Geocultural Context</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
+								<?php echo "<td><i>Class Name</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
 							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "COLLECTING_POLICIES"): ?>
-							<?php $strOlder = doGetFieldValue("COLLECTING_POLICIES",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
+						<?php elseif (trim($strFields[$i]) == "UPDATED_AT"): ?>
+							<?php $strOlder = doGetFieldValue("UPDATED_AT",$auditObjectsArr, $item[0], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
 							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Collection Policies</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
+								<?php echo "<td><i>Updated At</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
 							<?php else: ?>
-								<?php echo "<td><i>Collection Policies</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
+								<?php echo "<td><i>Updated At</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
 							<?php endif; ?>
-
-
-						<?php elseif (trim($strFields[$i]) == "BUILDINGS"): ?>
-							<?php $strOlder = doGetFieldValue("BUILDINGS",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
+						<?php elseif (trim($strFields[$i]) == "SOURCE_CULTURE"): ?>
+							<?php $strOlder = doGetFieldValue("SOURCE_CULTURE",$auditObjectsArr, $item[0], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
 							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Buildings</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
+								<?php echo "<td><i>Source Language</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
 							<?php else: ?>
-								<?php echo "<td><i>Buildings</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
+								<?php echo "<td><i>Source Language</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
 							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "HOLDINGS"): ?>
-							<?php $strOlder = doGetFieldValue("HOLDINGS",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Holdings</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Holdings</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "OPENING_TIMES"): ?>
-							<?php $strOlder = doGetFieldValue("OPENING_TIMES",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Opening Times</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Opening Times</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "UPLOAD_LIMIT"): ?>
-							<?php $strOlder = doGetFieldValue("UPLOAD_LIMIT",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Upload Limit</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Holdings</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "DISABLED_ACCESS"): ?>
-							<?php $strOlder = doGetFieldValue("DISABLED_ACCESS",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Disabled Access</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Disabled Access</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "RESEARCH_SERVICES"): ?>
-							<?php $strOlder = doGetFieldValue("RESEARCH_SERVICES",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Research Services</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Research Services</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "REPRODUCTION_SERVICES"): ?>
-							<?php $strOlder = doGetFieldValue("REPRODUCTION_SERVICES",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Reproduction Services</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Reproduction Services</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "PUBLIC_FACILITIES"): ?>
-							<?php $strOlder = doGetFieldValue("PUBLIC_FACILITIES",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Public Areas</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Public Areas</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "DESC_INSTITUTION_IDENTIFIER"): ?>
-							<?php $strOlder = doGetFieldValue("DESC_INSTITUTION_IDENTIFIER",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>	Institution Identifier</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>	Institution Identifier</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "DESC_RULES"): ?>
-							<?php $strOlder = doGetFieldValue("DESC_RULES",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Rules and/or Conventions Used</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Rules and/or Conventions Used</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "DESC_SOURCES"): ?>
-							<?php $strOlder = doGetFieldValue("DESC_SOURCES",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Sources</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Sources</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "DESC_REVISION_HISTORY"): ?>
-							<?php $strOlder = doGetFieldValue("DESC_REVISION_HISTORY",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Dates of creation<br> revision and deletion</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Dates of creation<br> revision and deletion</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "HISTORY"): ?>
-							<?php $strOlder = doGetFieldValue("HISTORY",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>History</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>History</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "MANDATES"): ?>
-							<?php $strOlder = doGetFieldValue("MANDATES",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Mandates/Sources of authority</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Mandates/Sources of authority</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "INTERNAL_STRUCTURES"): ?>
-							<?php $strOlder = doGetFieldValue("INTERNAL_STRUCTURES",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Administrative structure</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Administrative structure</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "DESC_STATUS_ID"): ?>
-							<?php $strOlder = doGetFieldValue("DESC_STATUS_ID",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Record ID</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Record ID</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "OBJECT_ID"): ?>
-							<?php $strOlder = doGetFieldValue("OBJECT_ID",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Object ID</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Object ID</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "DESC_IDENTIFIER"): ?>
-							<?php $strOlder = doGetFieldValue("DESC_IDENTIFIER",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Description Identifier</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Description Identifier</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "DESC_DETAIL_ID"): ?>
-							<?php $strOlder = doGetFieldValue("DESC_DETAIL_ID",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Object ID</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Object ID</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-
-
-						<?php elseif (trim($strFields[$i]) == "DATES_OF_EXISTENCE"): ?>
-							<?php $strOlder = doGetFieldValue("DATES_OF_EXISTENCE",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Dates of Existence</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Dates of Existence</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "PLACES"): ?>
-							<?php $strOlder = doGetFieldValue("PLACES",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Places</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Places</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "LEGAL_STATUS"): ?>
-							<?php $strOlder = doGetFieldValue("LEGAL_STATUS",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Legal Status</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Legal Status</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "FUNCTIONS"): ?>
-							<?php $strOlder = doGetFieldValue("FUNCTIONS",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Functions</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Functions</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "GENERAL_CONTEXT"): ?>
-							<?php $strOlder = doGetFieldValue("GENERAL_CONTEXT",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>General Context</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>General Context</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "INSTITUTION_RESPONSIBLE_IDENTIFIER"): ?>
-							<?php $strOlder = doGetFieldValue("INSTITUTION_RESPONSIBLE_IDENTIFIER",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Institution Identifier</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Institution Identifier</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "RULES"): ?>
-							<?php $strOlder = doGetFieldValue("RULES",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Rules and/or Conventions Used</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Rules and/or Conventions Used</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "SOURCES"): ?>
-							<?php $strOlder = doGetFieldValue("SOURCES",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Sources</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Sources</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "REVISION_HISTORY"): ?>
-							<?php $strOlder = doGetFieldValue("REVISION_HISTORY",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Rivision History</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Rivision History</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
 						<?php elseif (trim($strFields[$i]) == "CULTURE"): ?>
-							<?php $strOlder = doGetFieldValue("CULTURE",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
+							<?php $strOlder = doGetFieldValue("CULTURE",$auditObjectsArr, $item[0], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
 							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Culture/Language</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
+								<?php echo "<td><i>Source Language</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
 							<?php else: ?>
-								<?php echo "<td><i>Culture/Language</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
+								<?php echo "<td><i>Source Language</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
+							<?php endif; ?>
+						<?php elseif (trim($strFields[$i]) == "SECURITY_ID"): ?>
+							<?php $strOlder = doGetFieldValue("SECURITY_ID",$auditObjectsArr, $item[0], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
+							<?php if ($strOlder != $strValues[$i]): ?>
+								<?php echo "<td><i>Security Classification</i></td><td>" . QubitTerm::getById($strOlder) . "</td><td bgcolor='#CCFF66'>" . QubitTerm::getById($strValues[$i]) . "</td><tr>" ?> 
+							<?php else: ?>
+								<?php echo "<td><i>Security Classification</i></td><td>" . QubitTerm::getById($strOlder) . "</td><td>" . QubitTerm::getById($strValues[$i]) . "</td><tr>" ?> 
+							<?php endif; ?>
+
+						<?php elseif (trim($strFields[$i]) == "ACTIVE"): ?>
+							<?php $strOlder = doGetFieldValue("ACTIVE",$auditObjectsArr, $item[0], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
+							<?php if ($strOlder != $strValues[$i]): ?>
+								<?php ($strOlder==1)?$activeOld="Active":$activeOld="Inactive";  ($strValues[$i]==1)?$active="Active":$active="Inactive"; echo "<td><i>Account Status</i></td><td>" . $activeOld . "</td><td bgcolor='#CCFF66'>" . $active . "</td><tr>" ?> 
+							<?php else: ?>
+								<?php ($strOlder==1)?$activeOld="Active":$activeOld="Inactive";  ($strValues[$i]==1)?$active="Active":$active="Inactive"; echo "<td><i>Account Status</i></td><td>" . $activeOld . "</td><td>" . $active . "</td><tr>" ?> 
 							<?php endif; ?>
 
 						<?php elseif (trim($strFields[$i]) == "ENTITY_TYPE_ID"): ?>
-							<?php $strOlder = doGetFieldValue("ENTITY_TYPE_ID",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
+							<?php $strOlder = doGetFieldValue("ENTITY_TYPE_ID",$auditObjectsArr, $item[0], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
 							<?php if ($strOlder != $strValues[$i]): ?>
 								<?php echo "<td><i>Entity Type</i></td><td>" . QubitTerm::getById($strOlder) . "</td><td bgcolor='#CCFF66'>" . QubitTerm::getById($strValues[$i]) . "</td><tr>" ?> 
 							<?php else: ?>
-								<?php echo "<td><i>Entity Type</i></td><td>" . QubitTerm::getById($strOlder) . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
+								<?php echo "<td><i>Entity Type</i></td><td>" . QubitTerm::getById($strOlder) . "</td><td>" . QubitTerm::getById($strValues[$i]) . "</td><tr>" ?> 
 							<?php endif; ?>
 
 						<?php elseif (trim($strFields[$i]) == "DESCRIPTION_STATUS_ID"): ?>
-							<?php $strOlder = doGetFieldValue("DESCRIPTION_STATUS_ID",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
+							<?php $strOlder = doGetFieldValue("DESCRIPTION_STATUS_ID",$auditObjectsArr, $item[0], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
 							<?php if ($strOlder != $strValues[$i]): ?>
 								<?php echo "<td><i>Status</i></td><td>" . QubitTerm::getById($strOlder) . "</td><td bgcolor='#CCFF66'>" . QubitTerm::getById($strValues[$i]) . "</td><tr>" ?> 
 							<?php else: ?>
@@ -376,7 +174,7 @@
 							<?php endif; ?>
 
 						<?php elseif (trim($strFields[$i]) == "DESCRIPTION_DETAIL_ID"): ?>
-							<?php $strOlder = doGetFieldValue("DESCRIPTION_DETAIL_ID",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
+							<?php $strOlder = doGetFieldValue("DESCRIPTION_DETAIL_ID",$auditObjectsArr, $item[0], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
 							<?php if ($strOlder != $strValues[$i]): ?>
 								<?php echo "<td><i>Detail</i></td><td>" . QubitTerm::getById($strOlder) . "</td><td bgcolor='#CCFF66'>" . QubitTerm::getById($strValues[$i]) . "</td><tr>" ?> 
 							<?php else: ?>
@@ -384,40 +182,30 @@
 							<?php endif; ?>
 
 						<?php elseif (trim($strFields[$i]) == "DESCRIPTION_IDENTIFIER"): ?>
-							<?php $strOlder = doGetFieldValue("DESCRIPTION_IDENTIFIER",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
+							<?php $strOlder = doGetFieldValue("DESCRIPTION_IDENTIFIER",$auditObjectsArr, $item[0], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
 							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Authority Record Identifier</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
+								<?php echo "<td><i>Description</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
 							<?php else: ?>
-								<?php echo "<td><i>Authority Record Identifier</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
+								<?php echo "<td><i>Description</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
 							<?php endif; ?>
 
-						<?php elseif (trim($strFields[$i]) == "TYPE_ID"): ?>
-							<?php $strOlder = doGetFieldValue("TYPE_ID",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
+						<?php elseif (trim($strFields[$i]) == "CORPORATE_BODY_IDENTIFIERS"): ?>
+							<?php $strOlder = doGetFieldValue("CORPORATE_BODY_IDENTIFIERS",$auditObjectsArr, $item[0], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
 							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Other Name</i></td><td>" . QubitTerm::getById($strOlder) . "</td><td bgcolor='#CCFF66'>" . QubitTerm::getById($strValues[$i]) . "</td><tr>" ?> 
+								<?php echo "<td><i>Identifiers for Corporate Bodies</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
 							<?php else: ?>
-								<?php echo "<td><i>Other Name</i></td><td>" . QubitTerm::getById($strOlder) . "</td><td>" . QubitTerm::getById($strValues[$i]) . "</td><tr>" ?> 
+								<?php echo "<td><i>Identifiers for Corporate Bodies</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
 							<?php endif; ?>
-
-						<?php elseif (trim($strFields[$i]) == "SOURCE_CULTURE"): ?>
-							<?php $strOlder = doGetFieldValue("SOURCE_CULTURE",$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
-							<?php if ($strOlder != $strValues[$i]): ?>
-								<?php echo "<td><i>Source Culture</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php else: ?>
-								<?php echo "<td><i>Source Culture</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?> 
-							<?php endif; ?>
-
-
 
 
 
 
 						<?php else: ?>
-							<?php $strOlder = doGetFieldValue($strFields[$i],$auditObjectsArr, $item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
+							<?php $strOlder = doGetFieldValue($strFields[$i],$auditObjectsArr, $item[0], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
 							<?php if ($strOlder != $strValues[$i]): ?>
 								<?php echo "<td><i>" . $strFields[$i] . "</i></td><td>" . $strOlder . "</td><td bgcolor='#CCFF66'>" . $strValues[$i] . "</td><tr>" ?> 
 							<?php else: ?>
-								<?php $strOlder = doGetFieldValue($strFields[$i],$auditObjectsArr,$item["ID"], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
+								<?php $strOlder = doGetFieldValue($strFields[$i],$auditObjectsArr,$item[0], $item["ACTION_DATE_TIME"], $item["DB_TABLE"]); ?>
 								<?php echo "<td><i>". $strFields[$i] . "</i></td><td>" . $strOlder . "</td><td>" . $strValues[$i] . "</td><tr>" ?>
 							<?php endif; ?>
 
@@ -445,7 +233,7 @@
     </section>
 
 <?php 
-function doGetFieldValue($keyValue, $auditObjectsArr2, $item_ID, $item, $item4)
+function doGetFieldValue($keyValue, $auditObjectsArr2, $item_ID, $item, $itemTable)
 {
 	try 
 	{
@@ -461,15 +249,13 @@ function doGetFieldValue($keyValue, $auditObjectsArr2, $item_ID, $item, $item4)
 				break;
 			}
 			
-			$strFieldsAndValuesOlder2 = explode("~~~",$auditObjectsArr2[$n][5]);
+			$strFieldsAndValuesOlder2 = explode("~~~",$auditObjectsArr2[$n][7]);
 			$strFieldsOlder2 = explode("~!~",$strFieldsAndValuesOlder2[0]); 
 			$strValuesOlder2 = explode("~!~",$strFieldsAndValuesOlder2[1]); 
 
 			if ($item_ID > $auditObjectsArr2[$n][0] )   //Check for ID to be older than current ID
 			{
-			if ($keyValue == 'AUTHORIZED_FORM_OF_NAME') {
-	}
- 				if ($item4 == $auditObjectsArr2[$n][4] )   //same tables
+ 				if ($itemTable == $auditObjectsArr2[$n][6] )   //same tables
  				{
 	 				for ($j=0; $j < count($strFieldsOlder2); $j++) 
 					{
@@ -490,7 +276,7 @@ function doGetFieldValue($keyValue, $auditObjectsArr2, $item_ID, $item, $item4)
 	}
 }
 
-function doGetTableValue($auditObjectsArr2, $item_ID,  $item4)
+function doGetTableValue($auditObjectsArr2, $item_ID,  $itemTable)
 {
 	try 
 	{
@@ -504,18 +290,18 @@ function doGetTableValue($auditObjectsArr2, $item_ID,  $item4)
 		$arrSize = $arrSize - 1;
 		for ($n = 0; $n < $arrSize; $n++) 
 		{
-			$strFieldsAndValuesOlder2 = explode("~~~",$auditObjectsArr2[$n][5]);
+			$strFieldsAndValuesOlder2 = explode("~~~",$auditObjectsArr2[$n][7]);
 			$strFieldsOlder2 = explode("~!~",$strFieldsAndValuesOlder2[0]); 
 			$strValuesOlder2 = explode("~!~",$strFieldsAndValuesOlder2[1]); 
 
 			if ($item_ID > $auditObjectsArr2[$n][0] )   //Check for ID to be older than current ID
 			{
- 				if ($item4 == $auditObjectsArr2[$n][4] )   //same tables
+ 				if ($itemTable == $auditObjectsArr2[$n][6] )   //same tables
  				{
- 					$oAction = $auditObjectsArr2[$n][3]; 
- 					$oTable = $auditObjectsArr2[$n][4]; 
- 					$oUser = $auditObjectsArr2[$n][6]; 
- 					$oDdate = $auditObjectsArr2[$n][7]; 
+ 					$oAction = $auditObjectsArr2[$n][5]; 
+ 					$oTable = $auditObjectsArr2[$n][6]; 
+ 					$oUser = $auditObjectsArr2[$n][8]; 
+ 					$oDdate = $auditObjectsArr2[$n][9]; 
 
 					break;		 					
 	 			}
@@ -546,6 +332,14 @@ function doGetTableValue($auditObjectsArr2, $item_ID,  $item4)
 		elseif ($oTable == "actor_i18n")
 		{
 			$dTableOlder = "Actor Extend"; 
+		}
+		elseif ($oTable == "acl_user_group")
+		{
+			$dTableOlder = "User Group"; 
+		}
+		elseif ($oTable == "contact_information_i18n")
+		{
+			$dTableOlder = "Contact Information";
 		}
 		else
 		{

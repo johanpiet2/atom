@@ -24,10 +24,6 @@
 
 			<?php echo $form->renderHiddenFields() ?>
 
-			<div id='typeOfReport' style="display: none"> 
-				<?php echo $form->className->label('Types of Reports')->renderRow() ?>
-			</div>
-
 			<?php if (false): ?>
 			<?php echo __('Date range') ?>
 			<?php echo $form->dateStart->renderError() ?>
@@ -143,9 +139,5 @@
 <?php end_slot() ?>
 
 <?php slot('after-content') ?>
-<?php if ('QubitAuditObject' != $className) { ?>
-	<?php echo get_partial('default/pager', array('pager' => $pager)) ?>
-<?php } else { ?>
-	<?php //echo get_partial('default/pager', array('pager' => $auditObjects)) ?>
-<?php } ?>
+<?php echo get_partial('default/pager', array('pager' => $pager)) ?>
 <?php end_slot() ?>

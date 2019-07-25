@@ -114,45 +114,43 @@ class reportsReportBookOutAction extends sfAction
                 $dateEnd = date('Y-m-d 23:59:59');
             }
         }
-        if ($this->form->getValue('className') != 'QubitAuditObject') {
-		    // Add date criteria
-		    switch ($dateOf = $this->form->getValue('dateOf')) {
-		    case 'CREATED_AT':
-		    case 'UPDATED_AT':
-		        if (null !== $this->form->getValue('dateStart')) {
-		            $vDay = substr($this->form->getValue('dateStart'), 0, strpos($this->form->getValue('dateStart'), "/"));
-		            $vRes = substr($this->form->getValue('dateStart'), strpos($this->form->getValue('dateStart'), "/") + 1);
-		            $vMonth = substr($vRes, 0, strpos($vRes, "/"));
-		            $vYear = substr($vRes, strpos($vRes, "/") + 1, 4);
-		            $startDate2 = date_create("2001-01-01 23.59.59");
-		            $startDate = date_format($startDate2, 'Y-m-d H:i:s');
-		            $criteria->addAnd(constant('QubitObject::' . $dateOf), $startDate, Criteria::GREATER_EQUAL);
-		        }
-		        if (isset($dateEnd)) {
-		            $criteria->addAnd(constant('QubitObject::' . $dateOf), $dateEnd, Criteria::LESS_EQUAL);
-		        }
-		        break;
+	    // Add date criteria
+	    switch ($dateOf = $this->form->getValue('dateOf')) {
+	    case 'CREATED_AT':
+	    case 'UPDATED_AT':
+	        if (null !== $this->form->getValue('dateStart')) {
+	            $vDay = substr($this->form->getValue('dateStart'), 0, strpos($this->form->getValue('dateStart'), "/"));
+	            $vRes = substr($this->form->getValue('dateStart'), strpos($this->form->getValue('dateStart'), "/") + 1);
+	            $vMonth = substr($vRes, 0, strpos($vRes, "/"));
+	            $vYear = substr($vRes, strpos($vRes, "/") + 1, 4);
+	            $startDate2 = date_create("2001-01-01 23.59.59");
+	            $startDate = date_format($startDate2, 'Y-m-d H:i:s');
+	            $criteria->addAnd(constant('QubitObject::' . $dateOf), $startDate, Criteria::GREATER_EQUAL);
+	        }
+	        if (isset($dateEnd)) {
+	            $criteria->addAnd(constant('QubitObject::' . $dateOf), $dateEnd, Criteria::LESS_EQUAL);
+	        }
+	        break;
 
-		    default:
-		        if (null !== $this->form->getValue('dateStart')) {
-		            $vDay = substr($this->form->getValue('dateStart'), 0, strpos($this->form->getValue('dateStart'), "/"));
-		            $vRes = substr($this->form->getValue('dateStart'), strpos($this->form->getValue('dateStart'), "/") + 1);
-		            $vMonth = substr($vRes, 0, strpos($vRes, "/"));
-		            $vYear = substr($vRes, strpos($vRes, "/") + 1);
-		            $startDate = date_create($vYear . "-" . $vMonth . "-" . $vDay . " 00.00.00");
-		            $startDate = date_format($startDate, 'Y-m-d H:i:s');
-		            $c1 = $criteria->getNewCriterion(QubitObject::CREATED_AT, $startDate, Criteria::GREATER_EQUAL);
-		            $c2 = $criteria->getNewCriterion(QubitObject::UPDATED_AT, $startDate, Criteria::GREATER_EQUAL);
-		            $c1->addOr($c2);
-		            $criteria->addAnd($c1);
-		        }
-		        if (isset($dateEnd)) {
-		            $c3 = $criteria->getNewCriterion(QubitObject::CREATED_AT, $dateEnd, Criteria::LESS_EQUAL);
-		            $c4 = $criteria->getNewCriterion(QubitObject::UPDATED_AT, $dateEnd, Criteria::LESS_EQUAL);
-		            $c3->addOr($c4);
-		            $criteria->addAnd($c3);
-		        }
-		    }
+	    default:
+	        if (null !== $this->form->getValue('dateStart')) {
+	            $vDay = substr($this->form->getValue('dateStart'), 0, strpos($this->form->getValue('dateStart'), "/"));
+	            $vRes = substr($this->form->getValue('dateStart'), strpos($this->form->getValue('dateStart'), "/") + 1);
+	            $vMonth = substr($vRes, 0, strpos($vRes, "/"));
+	            $vYear = substr($vRes, strpos($vRes, "/") + 1);
+	            $startDate = date_create($vYear . "-" . $vMonth . "-" . $vDay . " 00.00.00");
+	            $startDate = date_format($startDate, 'Y-m-d H:i:s');
+	            $c1 = $criteria->getNewCriterion(QubitObject::CREATED_AT, $startDate, Criteria::GREATER_EQUAL);
+	            $c2 = $criteria->getNewCriterion(QubitObject::UPDATED_AT, $startDate, Criteria::GREATER_EQUAL);
+	            $c1->addOr($c2);
+	            $criteria->addAnd($c1);
+	        }
+	        if (isset($dateEnd)) {
+	            $c3 = $criteria->getNewCriterion(QubitObject::CREATED_AT, $dateEnd, Criteria::LESS_EQUAL);
+	            $c4 = $criteria->getNewCriterion(QubitObject::UPDATED_AT, $dateEnd, Criteria::LESS_EQUAL);
+	            $c3->addOr($c4);
+	            $criteria->addAnd($c3);
+	        }
 		    // Add sort criteria
 		    switch ($this->sort) {
 		    case 'nameDown':
@@ -173,10 +171,10 @@ class reportsReportBookOutAction extends sfAction
 		    }
 		    // Add fallback criteria for name
 		    if ('nameDown' == $this->sort || 'nameUp' == $this->sort) {
-		        $criteria = QubitCultureFallback::addFallbackCriteria($criteria, $this->form->getValue('className'));
+		        $criteria = QubitCultureFallback::addFallbackCriteria($criteria, 'QubitBookoutObject');
 		    }
         }
-	    $this->pager = new QubitPager($this->form->getValue('className'));
+	    $this->pager = new QubitPager('QubitBookoutObject');
 	    $this->pager->setCriteria($criteria);
 	    $this->pager->setMaxPerPage($this->form->getValue('limit'));
 	    $this->pager->setPage($this->request->getParameter('page', 1));

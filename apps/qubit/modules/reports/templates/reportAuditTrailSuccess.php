@@ -1,9 +1,18 @@
-<?php decorate_with('layout_2col') ?>
+<?php if (isset($pager) && $pager->getNbResults() || sfConfig::get('app_enable_institutional_scoping')): ?>
+  <?php decorate_with('layout_2col') ?>
+<?php else: ?>
+  <?php decorate_with('layout_1col') ?>
+<?php endif; ?>
 
 <?php slot('title') ?>
   <h1 class="multiline">
     <?php echo image_tag('/images/icons-large/icon-new.png', array('width' => '42', 'height' => '42')) ?>
     <?php echo __('Browse Audit Trail') ?>
+		<?php if (isset($pager) && $pager->getNbResults()): ?>
+        	<?php echo __('Showing %1% results', array('%1%' => $pager->getNbResults())) ?>
+		<?php else: ?>
+			<?php echo __('No results found') ?>
+		<?php endif; ?>
   </h1>
 <?php end_slot() ?>
 
@@ -78,162 +87,169 @@
 	<?php $user       = "" ?>
 	<?php $created    = "" ?>
 	
-	<?php foreach ($auditObjects as $item): ?>
-		<?php if ($item[4] != 'access_log') { ?>
-			<?php $action  = $item[3] ?>
-			<?php $user    = $item[6] ?>
-			<?php $created = $item[7] ?>
+	<?php foreach ($pager->getResults() as $item): ?>
+		<?php if ($item["DB_TABLE"] != 'access_log') { ?>
+			<?php $action  = $item["ACTION"] ?>
+			<?php $userOld    = $item["USER"] ?>
+			<?php $createdOld = $item["ACTION_DATE_TIME"] ?>
 			<?php if (($action != $actionOld) || ($user != $userOld) || ($created != $createdOld)) { ?>
 				<tr class="<?php echo 0 == @++$row % 2 ? 'even' : 'odd' ?>">
 				<?php if (isset($item["CLASS_NAME"])) {?>
-
 					<?php if ($item["CLASS_NAME"] == "QubitInformationObject") { ?>
-						<?php $informationObjectsAudit = QubitInformationObject::getById($item[1]); ?>
+						<?php $informationObjectsAudit = QubitInformationObject::getById($item["RECORD_ID"]); ?>
 						<?php if ($informationObjectsAudit == null) { ?>
-							<td><?php echo link_to("Deleted", array('module' => 'reports', 'action' => 'auditArchivalDescription', 'source' => $item[1])) ?></td> 
+							<td><?php echo link_to("Deleted", array('module' => 'reports', 'action' => 'auditArchivalDescription', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } else { ?>
-							<td><?php echo link_to($informationObjectsAudit, array('module' => 'reports', 'action' => 'auditArchivalDescription', 'source' => $item[1])) ?></td> 
+
+							<?php if ($item["DB_TABLE"] == 'QubitDigitalObject') { ?>
+								<td><?php echo link_to($informationObjectsAudit, array('module' => 'reports', 'action' => 'auditArchivalDescription', 'source' => $item["RECORD_ID"])) ?></td> 
+							<?php } ?>
+
+
+
+							<td><?php echo link_to($informationObjectsAudit, array('module' => 'reports', 'action' => 'auditArchivalDescription', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } ?>
 
 					<?php } elseif ($item["CLASS_NAME"] == "QubitAccessObject") { ?>
-						<?php $accessObjectsAudit = QubitAccessObject::getById($item[1]); ?>
+						<?php $accessObjectsAudit = QubitAccessObject::getById($item["RECORD_ID"]); ?>
 						<?php if ($accessObjectsAudit == null) { ?>
-							<td><?php echo link_to("QubitAccessObject to do", array('module' => 'reports', 'action' => 'auditAccess', 'source' => $item[1])) ?></td> 
+							<td><?php echo link_to("QubitAccessObject to do", array('module' => 'reports', 'action' => 'auditArchivalDescription', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } else { ?>
-							<td><?php echo link_to($accessObjectsAudit, array('module' => 'reports', 'action' => 'auditAccess', 'source' => $item[1])) ?></td> 
+							<td><?php echo link_to($accessObjectsAudit, array('module' => 'reports', 'action' => 'auditArchivalDescription', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } ?>
 
 					<?php } elseif ($item["CLASS_NAME"] == "QubitPresevationObject") { ?>
-						<?php $presevationObjectsAudit = QubitPresevationObject::getById($item[1]); ?>
+						<?php $presevationObjectsAudit = QubitPresevationObject::getById($item["RECORD_ID"]); ?>
 						<?php if ($presevationObjectsAudit == null) { ?>
-							<td><?php echo link_to("QubitPresevationObject to do", array('module' => 'reports', 'action' => 'auditPreservation', 'source' => $item[1])) ?></td> 
+							<td><?php echo link_to("QubitPresevationObject to do", array('module' => 'reports', 'action' => 'auditPreservation', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } else { ?>
-							<td><?php echo link_to($presevationObjectsAudit, array('module' => 'reports', 'action' => 'auditPreservation', 'source' => $item[1])) ?></td> 
+							<td><?php echo link_to($presevationObjectsAudit, array('module' => 'reports', 'action' => 'auditPreservation', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } ?>
 
 					<?php } else if ($item["CLASS_NAME"] == "QubitRegistry") { ?>
-						<?php $actorObjectsAudit = QubitActor::getById($item[1]); ?>
+						<?php $actorObjectsAudit = QubitActor::getById($item["RECORD_ID"]); ?>
 						<?php if ($actorObjectsAudit == null) { ?>
-							<td><?php echo link_to("Actor", array('module' => 'reports', 'action' => 'auditRegistry', 'source' => $item[1])) ?></td> 
+							<td><?php echo link_to("Actor", array('module' => 'reports', 'action' => 'auditRegistry', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } else { ?>
-							<td><?php echo link_to($actorObjectsAudit, array('module' => 'reports', 'action' => 'auditRegistry', 'source' => $item[1])) ?></td> 
+							<td><?php echo link_to($actorObjectsAudit, array('module' => 'reports', 'action' => 'auditRegistry', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } ?>
 					<?php } elseif ($item["CLASS_NAME"] == "QubitRepository") { ?>
-						<?php $actorObjectsAudit = QubitActor::getById($item[1]); ?>
+						<?php $actorObjectsAudit = QubitActor::getById($item["RECORD_ID"]); ?>
 						<?php if ($actorObjectsAudit == null) { ?>
-							<td><?php echo link_to("Actor", array('module' => 'reports', 'action' => 'auditRepository', 'source' => $item[1])) ?></td> 
+							<td><?php echo link_to("Actor", array('module' => 'reports', 'action' => 'auditRepository', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } else { ?>
-							<td><?php echo link_to($actorObjectsAudit, array('module' => 'reports', 'action' => 'auditRepository', 'source' => $item[1])) ?></td> 
+							<td><?php echo link_to($actorObjectsAudit, array('module' => 'reports', 'action' => 'auditRepository', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } ?>
 						
 					<?php } elseif ($item["CLASS_NAME"] == "QubitServiceProvider") { ?>
-						<?php $actorObjectsAudit = QubitActor::getById($item[1]); ?>
+						<?php $actorObjectsAudit = QubitActor::getById($item["RECORD_ID"]); ?>
 						<?php if ($actorObjectsAudit == null) { ?>
-							<td><?php echo link_to("Actor", array('module' => 'reports', 'action' => 'auditServiceProvider', 'source' => $item[1])) ?></td> 
+							<td><?php echo link_to("Actor", array('module' => 'reports', 'action' => 'auditServiceProvider', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } else { ?>
-							<td><?php echo link_to($actorObjectsAudit, array('module' => 'reports', 'action' => 'auditServiceProvider', 'source' => $item[1])) ?></td> 
+							<td><?php echo link_to($actorObjectsAudit, array('module' => 'reports', 'action' => 'auditServiceProvider', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } ?>
 						
 					<?php } elseif ($item["CLASS_NAME"] == "QubitResearcher") { ?>
-						<?php $actorObjectsAudit = QubitActor::getById($item[1]); ?>
+						<?php $actorObjectsAudit = QubitActor::getById($item["RECORD_ID"]); ?>
 						<?php if ($actorObjectsAudit == null) { ?>
-							<td><?php echo link_to("Actor", array('module' => 'reports', 'action' => 'auditResearcher', 'source' => $item[1])) ?></td> 
+							<td><?php echo link_to("Actor", array('module' => 'reports', 'action' => 'auditResearcher', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } else { ?>
-							<td><?php echo link_to($actorObjectsAudit, array('module' => 'reports', 'action' => 'auditResearcher', 'source' => $item[1])) ?></td> 
+							<td><?php echo link_to($actorObjectsAudit, array('module' => 'reports', 'action' => 'auditResearcher', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } ?>
 						
 					<?php } elseif ($item["CLASS_NAME"] == "QubitServiceProvider") { ?>
-						<?php $serviceProviderObjectsAudit = QubitActor::getById($item[1]); ?>
+						<?php $serviceProviderObjectsAudit = QubitActor::getById($item["RECORD_ID"]); ?>
 						<?php if ($serviceProviderObjectsAudit == null) { ?>
-							<td><?php echo link_to("Service Provider missing", array('module' => 'reports', 'action' => 'auditServiceProvider', 'source' => $item[0])) ?></td> 
+							<td><?php echo link_to("Service Provider missing", array('module' => 'reports', 'action' => 'auditServiceProvider', 'source' => $item["ID"])) ?></td> 
 						<?php } else { ?>
-							<td><?php echo link_to($serviceProviderObjectsAudit, array('module' => 'reports', 'action' => 'auditServiceProvider', 'source' => $item[1])) ?></td> 
+							<td><?php echo link_to($serviceProviderObjectsAudit, array('module' => 'reports', 'action' => 'auditServiceProvider', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } ?>
 						
 					<?php } elseif ($item["CLASS_NAME"] == "QubitPhysicalObject") { ?>
-						<?php $physicalObjectObjectsAudit = QubitPhysicalObject::getById($item[1]); ?>
+						<?php $physicalObjectObjectsAudit = QubitPhysicalObject::getById($item["RECORD_ID"]); ?>
 						<?php if ($physicalObjectObjectsAudit == null) { ?>
-							<td><?php echo link_to("Physical Object missing", array('module' => 'reports', 'action' => 'auditPhysicalStorage', 'source' => $item[1])) ?></td> 
+							<td><?php echo link_to("Physical Object missing", array('module' => 'reports', 'action' => 'auditPhysicalStorage', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } else { ?>
-							<td><?php echo link_to($physicalObjectObjectsAudit, array('module' => 'reports', 'action' => 'auditPhysicalStorage', 'source' => $item[1])) ?></td> 
+							<td><?php echo link_to($physicalObjectObjectsAudit, array('module' => 'reports', 'action' => 'auditPhysicalStorage', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } ?>
 
 					<?php } elseif ($item["CLASS_NAME"] == "QubitRegistry") { ?>
-						<?php $registryObjectsAudit = QubitRegistry::getById($item[1]); ?>
+						<?php $registryObjectsAudit = QubitRegistry::getById($item["RECORD_ID"]); ?>
 						<?php if ($registryObjectsAudit == null) { ?>
-							<td><?php echo link_to("Registry missing", array('module' => 'reports', 'action' => 'auditRegistry', 'source' => $item[1])) ?></td> 
+							<td><?php echo link_to("Registry missing", array('module' => 'reports', 'action' => 'auditRegistry', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } else { ?>
-							<td><?php echo link_to($registryObjectsAudit, array('module' => 'reports', 'action' => 'auditRegistry', 'source' => $item[1])) ?></td> 
+							<td><?php echo link_to($registryObjectsAudit, array('module' => 'reports', 'action' => 'auditRegistry', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } ?>
 
 					<?php } elseif ($item["CLASS_NAME"] == "QubitResearcher") { ?>
-						<?php $researcherObjectsAudit = QubitRegistry::getById($item[1]); ?>
+						<?php $researcherObjectsAudit = QubitRegistry::getById($item["RECORD_ID"]); ?>
 						<?php if ($researcherObjectsAudit == null) { ?>
-							<td><?php echo link_to("Researcher missing", array('module' => 'reports', 'action' => 'auditResearcher', 'source' => $item[0])) ?></td> 
+							<td><?php echo link_to("Researcher missing", array('module' => 'reports', 'action' => 'auditResearcher', 'source' => $item["ID"])) ?></td> 
 						<?php } else { ?>
-							<td><?php echo link_to($researcherObjectsAudit, array('module' => 'reports', 'action' => 'auditResearcher', 'source' => $item[0])) ?></td> 
+							<td><?php echo link_to($researcherObjectsAudit, array('module' => 'reports', 'action' => 'auditResearcher', 'source' => $item["ID"])) ?></td> 
 						<?php } ?>
 
 					<?php } elseif ($item["CLASS_NAME"] == "QubitUser") { ?>
-						<?php $actorObjectsAudit = QubitActor::getById($item[1]); ?>
+						<?php $actorObjectsAudit = QubitActor::getById($item["RECORD_ID"]); ?>
 						<?php if ($actorObjectsAudit == null) { ?>
-							<td><?php echo link_to("Actor missing", array('module' => 'reports', 'action' => 'auditActor', 'source' => $item[1])) ?></td> 
+							<td><?php echo link_to("Actor missing", array('module' => 'reports', 'action' => 'auditActor', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } else { ?>
-							<td><?php echo link_to($actorObjectsAudit, array('module' => 'reports', 'action' => 'auditActor', 'source' => $item[1])) ?></td> 
+							<td><?php echo link_to($actorObjectsAudit, array('module' => 'reports', 'action' => 'auditActor', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } ?>
 						
 					<?php } elseif ($item["CLASS_NAME"] == "QubitDonor") { ?>
-						<?php $donorObjectsAudit = QubitDonor::getById($item[1]); ?>
+						<?php $donorObjectsAudit = QubitDonor::getById($item["RECORD_ID"]); ?>
 						<?php if ($donorObjectsAudit == null) { ?>
-							<td><?php echo link_to("Donor missing", array('module' => 'reports', 'action' => 'auditDonor', 'source' => $item[0])) ?></td> 
+							<td><?php echo link_to("Donor missing", array('module' => 'reports', 'action' => 'auditDonor', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } else { ?>
-							<td><?php echo link_to($donorObjectsAudit, array('module' => 'reports', 'action' => 'auditDonor', 'source' => $item[0])) ?></td> 
+							<td><?php echo link_to($donorObjectsAudit, array('module' => 'reports', 'action' => 'auditDonor', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } ?>
 
-					<?php } elseif ($item["CLASS_NAME"] == "QubitTerm") { ?>
-						<?php $taxonomyObjectsAudit = QubitTerm::getById($item[1]); ?>
-						<?php if ($taxonomyObjectsAudit == null) { ?>
-							<td><?php echo link_to("Taxonomy/Term missing", array('module' => 'reports', 'action' => 'auditTaxonomy', 'source' => $item[0])) ?></td> 
+					<?php } elseif ($item["CLASS_NAME"] == "QubitActor") { ?>
+						<?php $actorObjectsAudit = QubitActor::getById($item["RECORD_ID"]); ?>
+						<?php if ($actorObjectsAudit == null) { ?>
+							<td><?php echo link_to("Actor missing", array('module' => 'reports', 'action' => 'auditActor', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } else { ?>
-							<td><?php echo link_to($taxonomyObjectsAudit, array('module' => 'reports', 'action' => 'auditTaxonomy', 'source' => $item[0])) ?></td> 
+							<td><?php echo link_to($actorObjectsAudit, array('module' => 'reports', 'action' => 'auditActor', 'source' => $item["RECORD_ID"])) ?></td> 
+						<?php } ?>
+						
+					<?php } elseif ($item["CLASS_NAME"] == "QubitTerm") { ?>
+						<?php $taxonomyObjectsAudit = QubitTerm::getById($item["RECORD_ID"]); ?>
+						<?php if ($taxonomyObjectsAudit == null) { ?>
+							<td><?php echo link_to("Taxonomy/Term missing", array('module' => 'reports', 'action' => 'auditTaxonomy', 'source' => $item["RECORD_ID"])) ?></td> 
+						<?php } else { ?>
+							<td><?php echo link_to($taxonomyObjectsAudit, array('module' => 'reports', 'action' => 'auditTaxonomy', 'source' => $item["RECORD_ID"])) ?></td> 
 						<?php } ?>
 
 					<?php } elseif ($item["CLASS_NAME"] == "QubitBookinObject") { ?>
-						<?php $bookinObjectsAudit = QubitBookinObject::getById($item[1]); ?>
+						<?php $bookinObjectsAudit = QubitBookinObject::getById($item["RECORD_ID"]); ?>
 						<?php if ($bookinObjectsAudit == null) { ?>
-							<td><?php echo link_to("Book In missing", array('module' => 'reports', 'action' => 'auditBookIn', 'source' => $item[0])) ?></td> 
+							<td><?php echo link_to("Book In missing", array('module' => 'reports', 'action' => 'auditBookIn', 'source' => $item["ID"])) ?></td> 
 						<?php } else { ?>
-							<td><?php echo link_to($bookinObjectsAudit, array('module' => 'reports', 'action' => 'auditBookIn', 'source' => $item[0])) ?></td> 
+							<td><?php echo link_to($bookinObjectsAudit, array('module' => 'reports', 'action' => 'auditBookIn', 'source' => $item["ID"])) ?></td> 
 						<?php } ?>
 
 					<?php } elseif ($item["CLASS_NAME"] == "QubitBookoutObject") { ?>
-						<?php $bookOutObjectsAudit = QubitBookoutObject::getById($item[1]); ?>
+						<?php $bookOutObjectsAudit = QubitBookoutObject::getById($item["RECORD_ID"]); ?>
 						<?php if ($bookOutObjectsAudit == null) { ?>
-							<td><?php echo link_to("Book Out missing", array('module' => 'reports', 'action' => 'auditBookOut', 'source' => $item[0])) ?></td> 
+							<td><?php echo link_to("Book Out missing", array('module' => 'reports', 'action' => 'auditBookOut', 'source' => $item["ID"])) ?></td> 
 						<?php } else { ?>
-							<td><?php echo link_to($bookOutObjectsAudit, array('module' => 'reports', 'action' => 'auditBookOut', 'source' => $item[0])) ?></td> 
+							<td><?php echo link_to($bookOutObjectsAudit, array('module' => 'reports', 'action' => 'auditBookOut', 'source' => $item["ID"])) ?></td> 
 						<?php } ?>
 
 					<?php } else { ?>
-						<td><?php echo $item[0] ?></td> 
+						<td><?php echo $item["ID"] ?></td> 
 					<?php } ?>
 
 				<?php } else { ?>
+
+
 				
-					<?php $deletedItem = QubitAuditObject::getById($item[1]); ?>
-					<?php for ($i=0; $i < count($deletedItem); $i++) { ?>
-							<?php if ($deletedItem["DB_TABLE"] == 'repository') { ?>
-							<td><?php echo $deletedItem[4] ?></td> 
-							
-						<?php } ?>
-				<?php } ?>
-					
-					
 				
-						<td><?php echo link_to($item[1], array('module' => 'reports', 'action' => 'reportDeleted', 'source' => $item[1])) ?></td> 
+						<td><?php echo link_to($item["RECORD_ID"], array('module' => 'reports', 'action' => 'reportDeleted', 'source' => $item["RECORD_ID"])) ?></td> 
 				<?php } ?>
-				<td><?php echo $item[3] ?></td> 
-				<td><?php echo $item[6] ?></td> 
+				<td><?php echo $item["ACTION"] ?></td> 
+				<td><?php echo $item["USER"] ?></td> 
 				
 				<?php if (isset($item["CLASS_NAME"])) {?>
 					<?php if ($item["CLASS_NAME"] == 'QubitInformationObject') { ?>
@@ -288,19 +304,85 @@
 					<?php } else if ($item["CLASS_NAME"] == 'QubitPresevationObject') { ?>
 						<td><?php echo "Preservation" ?></td> 
 						
+					<?php } else if ($item["CLASS_NAME"] == 'QubitDigitalObject') { ?>
+						<td><?php echo "Digital Object" ?></td> 
+						
+					<?php } else if ($item["CLASS_NAME"] == 'QubitObjectTermRelation') { ?>
+						<td><?php echo "Object Term Relation" ?></td> 
+						
 					<?php } else { ?>
 						<td><?php echo $item["CLASS_NAME"] ?></td> 
 
 					<?php } ?>
 				<?php } else { ?>
-					<td><?php echo $item["DB_TABLE"] ?></td> 
+					<?php if ($item["ACTION"] == 'delete'):
+						$deletedItemType = array();
+						$criteria = new Criteria;
+						$criteria = QubitAuditObject::setCriteriaDeleted($item["RECORD_ID"], "Qubit");
+						$deletedItemType = QubitAuditObject::doSelect($criteria); 
+						
+						$dbTable = "" ?>
+						<?php foreach ($deletedItemType as $itemDeleted): ?>
+							<?php $dbTable = $itemDeleted["DB_TABLE"]; ?>
+							
+					  	<?php endforeach; ?>
+						<?php if ($dbTable == ""):
+							$criteria = QubitAuditObject::setCriteriaDeleted($item["RECORD_ID"], "information_object");
+							$deletedItemType = QubitAuditObject::doSelect($criteria); ?>
+							<?php foreach ($deletedItemType as $itemDeleted): ?>
+								<?php $dbTable = $itemDeleted["DB_TABLE"]; ?>
+						  	<?php endforeach; ?>
+
+							<?php if ($dbTable == ""):
+								$criteria = QubitAuditObject::setCriteriaDeleted($item["RECORD_ID"], "registry");
+								$deletedItemType = QubitAuditObject::doSelect($criteria); ?>
+								<?php foreach ($deletedItemType as $itemDeleted): ?>
+									<?php $dbTable = $itemDeleted["DB_TABLE"]; ?>
+							  	<?php endforeach; ?>
+
+								<?php if ($dbTable == ""):
+									$criteria = QubitAuditObject::setCriteriaDeleted($item["RECORD_ID"], "donor");
+									$deletedItemType = QubitAuditObject::doSelect($criteria); ?>
+									<?php foreach ($deletedItemType as $itemDeleted): ?>
+										<?php $dbTable = $itemDeleted["DB_TABLE"]; ?>
+								  	<?php endforeach; ?>
+
+									<?php if ($dbTable == ""):
+										$criteria = QubitAuditObject::setCriteriaDeleted($item["RECORD_ID"], "service_provider");
+										$deletedItemType = QubitAuditObject::doSelect($criteria); ?>
+										<?php foreach ($deletedItemType as $itemDeleted): ?>
+											<?php $dbTable = $itemDeleted["DB_TABLE"]; ?>
+									  	<?php endforeach; ?>
+
+										<?php if ($dbTable == ""): ?>
+											<td><?php echo "Unknown" ?></td> 
+										<?php else: ?>
+											<td><?php echo $dbTable; ?></td>
+										<?php endif; ?>
+									<?php else: ?>
+										<td><?php echo "Archival Description"; ?></td>
+									<?php endif; ?>
+								<?php else: ?>
+									<td><?php echo $dbTable; ?></td>
+								<?php endif; ?>
+							<?php else: ?>
+								<td><?php echo "Archival Description"; ?></td>
+							<?php endif; ?>
+						<?php else: ?>
+							<td><?php echo $dbTable; ?></td>
+						<?php endif; ?>
+					<?php else: ?>
+						<td><?php echo $item["DB_TABLE"] ?></td> 
+					<?php endif; ?>
+
 				<?php } ?>
-				<td><?php echo $item[7] ?></td> 
+				<td><?php echo $item["ACTION_DATE_TIME"] ?></td> 
 			</tr>
 			<?php } ?>
-			<?php $actionOld  = $item[3] ?>
-			<?php $userOld    = $item[6] ?>
-			<?php $createdOld = $item[7] ?>
+			<?php $actionOld  = $item["ACTION"] ?>
+			<?php $userOld    = $item["USER"] ?>
+			<?php $createdOld = $item["ACTION_DATE_TIME"] ?>
+
 		<?php } ?>
       <?php endforeach; ?>
     </tbody>
@@ -308,6 +390,8 @@
 
 <?php end_slot() ?>
 
-<?php slot('after-content') ?>
-	<?php //echo //get_partial('default/pager', array('pager' => $pager2)) ?>
-<?php end_slot() ?>
+<?php if (isset($pager)): ?>
+  <?php slot('after-content') ?>
+    <?php echo get_partial('default/pager', array('pager' => $pager)) ?>
+  <?php end_slot() ?>
+<?php endif; ?>

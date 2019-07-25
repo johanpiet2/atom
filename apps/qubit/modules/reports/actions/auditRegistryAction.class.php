@@ -19,41 +19,6 @@
 
 class reportsAuditRegistryAction extends sfAction
 {
-	public static function doSelect(Criteria $criteria, PropelPDO $con = null)
-	{
-		$dbMap = Propel::getDatabaseMap($criteria->getDbName());
-		$db = Propel::getDB($criteria->getDbName());
-
-		if ($con === null) {
-			$con = Propel::getConnection($criteria->getDbName(), Propel::CONNECTION_READ);
-		}
-
-		$stmt = null;
-
-		if ($criteria->isUseTransaction()) $con->beginTransaction();
-
-		try {
-
-			$params = array();
-			$sql = BasePeer::createSelectSql($criteria, $params);
-
-			$stmt = $con->prepare($sql);
-			BasePeer::populateStmtValues($stmt, $params, $dbMap, $db);
-
-			$stmt->execute();
-
-			if ($criteria->isUseTransaction()) $con->commit();
-
-		} catch (Exception $e) {
-			if ($stmt) $stmt = null; // close
-			if ($criteria->isUseTransaction()) $con->rollBack();
-			Propel::log($e->getMessage(), Propel::LOG_ERR);
-			throw new PropelException($e);
-		}
-
-		return $stmt;
-	}
-
   public function execute($request)
   {
 
@@ -109,20 +74,13 @@ class reportsAuditRegistryAction extends sfAction
 	$criteria->addAnd($c5);
 	$criteria->addAnd($c7);
 
-	$auditObjects = self::doSelect($criteria);
-
     // Page results
     $this->pager = new QubitPagerAudit("QubitAuditObject");
     $this->pager->setCriteria($criteria);
     $this->pager->setMaxPerPage(10000);
     $this->pager->setPage($request->page);
 
-    $this->auditObjects = $this->pager->getResults();
     $this->auditObjectsOlder = $this->pager->getResults();
-  	if (0 == count($this->auditObjects))
-	{
-      return sfView::ERROR;
-    }
 
     $c2 = clone $criteria;
     $this->foundcount = BasePeer::doCount($c2)->fetchColumn(0); 

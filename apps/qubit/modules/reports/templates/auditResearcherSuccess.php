@@ -18,7 +18,7 @@
 		<?php $auditObjectsArr[] = array($item[0],$item[1],$item[2],$item[3],$item[4],$item[5],$item[6],$item[7],$item[8],$item[9]); ?>
     <?php endforeach;  ?>
 
-  	<?php foreach ($auditObjects as $item): ?>
+  	<?php foreach ($pager->getResults() as $item): ?>
   	
        <tr class="<?php echo 0 == @++$row % 2 ? 'even' : 'odd' ?>">
         <td>
@@ -51,6 +51,8 @@
 				<?php $dTable = "Researcher (Actor) Extend" ?> 
 			<?php elseif ($item["DB_TABLE"] == "researcher"): ?> 
 				<?php $dTable = "Researcher" ?> 
+			<?php elseif ($item["DB_TABLE"] == "contact_information_i18n"): ?> 
+				<?php $dTable = "Contact Information" ?> 
 			<?php else: ?>
 				<?php $dTable = $item["DB_TABLE"] ?> 
 			<?php endif; ?>
@@ -73,7 +75,7 @@
 				<td>ID</td> <td><?php //echo $item[0] ?></td> <td><?php echo $item[0] ?></td> 
 			</tr>
 			<tr>
-				<td>User</td> <td><?php echo $user ?></td> <td><?php echo $item[6] ?></td> 
+				<td>User</td> <td><?php echo $user ?></td> <td><?php echo $item[8] ?></td> 
 			</tr>
 			<tr>
 				<td>Date & Time</td> <td><?php echo $date ?></td> <td><?php echo $item["ACTION_DATE_TIME"] ?></td> 
@@ -164,15 +166,13 @@ function doGetFieldValue($keyValue, $auditObjectsArr2, $item_ID, $item, $item4)
 				break;
 			}
 			
-			$strFieldsAndValuesOlder2 = explode("~~~",$auditObjectsArr2[$n][5]);
+			$strFieldsAndValuesOlder2 = explode("~~~",$auditObjectsArr2[$n][7]);
 			$strFieldsOlder2 = explode("~!~",$strFieldsAndValuesOlder2[0]); 
 			$strValuesOlder2 = explode("~!~",$strFieldsAndValuesOlder2[1]); 
 
 			if ($item_ID > $auditObjectsArr2[$n][0] )   //Check for ID to be older than current ID
 			{
-			if ($keyValue == 'AUTHORIZED_FORM_OF_NAME') {
-	}
- 				if ($item4 == $auditObjectsArr2[$n][4] )   //same tables
+ 				if ($item4 == $auditObjectsArr2[$n][6] )   //same tables
  				{
 	 				for ($j=0; $j < count($strFieldsOlder2); $j++) 
 					{
@@ -207,18 +207,18 @@ function doGetTableValue($auditObjectsArr2, $item_ID,  $item4)
 		$arrSize = $arrSize - 1;
 		for ($n = 0; $n < $arrSize; $n++) 
 		{
-			$strFieldsAndValuesOlder2 = explode("~~~",$auditObjectsArr2[$n][5]);
+			$strFieldsAndValuesOlder2 = explode("~~~",$auditObjectsArr2[$n][7]);
 			$strFieldsOlder2 = explode("~!~",$strFieldsAndValuesOlder2[0]); 
 			$strValuesOlder2 = explode("~!~",$strFieldsAndValuesOlder2[1]); 
 
 			if ($item_ID > $auditObjectsArr2[$n][0] )   //Check for ID to be older than current ID
 			{
- 				if ($item4 == $auditObjectsArr2[$n][4] )   //same tables
+ 				if ($item4 == $auditObjectsArr2[$n][6] )   //same tables
  				{
- 					$oAction = $auditObjectsArr2[$n][3]; 
- 					$oTable = $auditObjectsArr2[$n][4]; 
- 					$oUser = $auditObjectsArr2[$n][6]; 
- 					$oDdate = $auditObjectsArr2[$n][7]; 
+ 					$oAction = $auditObjectsArr2[$n][5]; 
+ 					$oTable = $auditObjectsArr2[$n][6]; 
+ 					$oUser = $auditObjectsArr2[$n][8]; 
+ 					$oDdate = $auditObjectsArr2[$n][9]; 
 
 					break;		 					
 	 			}
@@ -253,6 +253,10 @@ function doGetTableValue($auditObjectsArr2, $item_ID,  $item4)
 		elseif ($oTable == "researcher")
 		{
 			$dTableOlder = "Researcher";
+		}
+		elseif ($oTable == "contact_information_i18n")
+		{
+			$dTableOlder = "Contact Information";
 		}
 		else
 		{
