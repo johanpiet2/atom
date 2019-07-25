@@ -457,7 +457,7 @@ class InformationObjectEditBookoutObjectsAction extends DefaultEditAction {
 				$this->processForm();
 				$this->resource->save();
 				$this->informationObject = QubitInformationObject::getById($this->resource->id);
-				$this->publish($this->informationObject);
+				//$this->publish($this->informationObject);
 				if ($this->form->getValue('cbReceipt') != 1) {
 					$this->redirect(array($this->resource, 'module' => 'informationobject'));
 				} else {
