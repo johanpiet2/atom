@@ -68,7 +68,6 @@
 		<th><?php echo __('Description/Title'); ?></th>
 		<th><?php echo __('Method of Storage'); ?></th>
 		<th><?php echo __('Location'); ?></th>
-		<th><?php echo __('Repository'); ?></th>
 		<th><?php echo __('Period Covered'); ?></th>
 		<th><?php echo __('Extent'); ?></th>
 		<th><?php echo __('Accrual Space'); ?></th>
@@ -95,7 +94,6 @@
 			<?php } else { ?> 
 				<td>-</td> 
 			<?php }	?>
-			<td><?php echo render_value(QubitRepository::getById($result->getRepositoryId(array('cultureFallback' => true)))) ?> </td>
 			
 			<?php if (isset($result->id)) { ?> <td><?php echo $result->getPeriodCovered(array('cultureFallback' => true)) ?></td> <?php } else { ?> <td>-</td> <?php }	?>
 			<?php if (isset($result->id)) { ?> <td><?php echo $result->getExtent(array('cultureFallback' => true)) ?></td> <?php } else { ?> <td>-</td> <?php }	?>

@@ -45,6 +45,7 @@
               <option value="repository"><?php echo sfConfig::get('app_ui_label_donor', __('Repository/Archival Institution')) ?></option>
               <option value="researcher"><?php echo sfConfig::get('app_ui_label_researcher', __('Researcher')) ?></option>
               <option value="service_provider"><?php echo __('Service Provider') ?></option>
+              <option value="user"><?php echo sfConfig::get('app_ui_label_researcher', __('User Action')) ?></option>
               <!--option value="term"><?php echo __('Terms') ?></option>
               <option value="user"><?php echo sfConfig::get('app_ui_label_user', __('User')) ?></option>
               <option value="dc"><?php echo __('To Add') ?></option -->
