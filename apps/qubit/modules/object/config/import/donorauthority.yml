@@ -1,0 +1,52 @@
+# This file is part of Access to Memory (AtoM).
+#
+# Access to Memory (AtoM) is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the Free
+# Software Foundation; either version 2 of the License, or (at your option)
+# any later version.
+#
+# Access to Memory (AtoM) is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# Access to Memory (AtoM); if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+# AUTHORITY RECORD XML (2015) IMPORT FILTER MAPPINGS
+#
+# @subpackage object import
+# @author Johan Pieterse <johan.pieterse@sita.co.za>
+# @version svn: $Id:$
+
+authority_object:
+  XPath:  "//authority/authorityinfo"
+  Object:  Actor
+  # define an axis for the parent object; if no node is matched here, the object is rooted if possible
+  Parent:  "ancestor::authority | ancestor::authorityheader | ancestor::authorityid | ancestor::authorityname"
+
+  Methods:
+    authorityName:
+      XPath:   "authorizedFormOfName"
+      Method:  setAuthorizedFormOfName
+
+    authorityDetail:
+      XPath:   "authoritydetail"
+      Method:  setDetail
+
+    authorityAliases:
+      XPath:   "authorityaliases"
+      Method:  setAliases
+
+    authorityRelations:
+      XPath:   "authorityrelations"
+      Method:  setRelations
+
+    authorityAddress:
+      XPath:   "authorityaddress"
+      Method:  setAddress
+
+    authorityId:
+      XPath:   "identifier"
+      Method:  setId
