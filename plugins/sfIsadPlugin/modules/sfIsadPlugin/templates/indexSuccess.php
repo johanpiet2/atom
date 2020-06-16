@@ -6,7 +6,9 @@
 
 <?php slot('title') ?>
 
-  <h1><?php echo render_title($isad) ?></h1>
+	  <h1>
+		<?php echo render_title($isad) ?>
+	</h1>
 
   <?php if (isset($errorSchema)): ?>
     <div class="messages error">
@@ -46,13 +48,18 @@
 <?php end_slot() ?>
 
 <?php slot('before-content') ?>
-
+ 
   <?php echo get_component('digitalobject', 'imageflow', array('resource' => $resource)) ?>
 
 <?php end_slot() ?>
 
-<?php if (0 < count($resource->digitalObjectsRelatedByobjectId)): ?>
-  <?php echo get_component('digitalobject', 'show', array('link' => $digitalObjectLink, 'resource' => $resource->digitalObjectsRelatedByobjectId[0], 'usageType' => QubitTerm::REFERENCE_ID)) ?>
+<?php if (0 < count($resource->digitalObjectsRelatedByobjectId)): //SITA multiple digital objects loaded against Archival Description?>
+	<?php if (QubitSetting::getByName('multi_digital_linked_display') == '1'): //SITA option to disable display of multiple digital objects loaded against Archival Description?>
+		<?php for ($n = 0; $n < count($resource->digitalObjectsRelatedByobjectId); $n++) 
+			{ ?>
+				<?php echo get_component('digitalobject', 'show', array('link' => $digitalObjectLink, 'resource' => $resource->digitalObjectsRelatedByobjectId[$n], 'usageType' => QubitTerm::REFERENCE_ID)) ?>
+		<?php } 	?>
+	<?php endif; ?>
 <?php endif; ?>
 
 <section id="identityArea">
@@ -61,9 +68,12 @@
     <?php echo link_to_if(SecurityPrivileges::editCredentials($sf_user, 'informationObject'), '<h2>'.__('Identity area').'</h2>', array($resource, 'module' => 'informationobject', 'action' => 'edit'), array('anchor' => 'identityArea', 'title' => __('Edit identity area'))) ?>
   <?php endif; ?>
 
-  <?php echo render_show(__('Reference code'), render_value($isad->referenceCode), array('fieldLabel' => 'referenceCode')) ?>
-
-  <?php echo render_show(__('Title'), render_title($resource), array('fieldLabel' => 'title')) ?>
+  <?php echo render_show(__('Reference code'), render_value($isad->referenceCode)) ?>
+  <?php echo render_show(__('Title'), render_value($resource->getTitle(array('cultureFallback' => true)))) ?>
+  <?php echo render_show(__('Volume'), render_value($resource->getVolumeNumberIdentifier(array('cultureFallback' => true)))) ?>  
+  <?php echo render_show(__('Reference'), render_value($resource->getFileNumberIdentifier(array('cultureFallback' => true)))) ?>  
+  <?php echo render_show(__('Part'), render_value($resource->getPartNumberIdentifier(array('cultureFallback' => true)))) ?>  
+  <?php echo render_show(__('Item'), render_value($resource->getItemNumberIdentifier(array('cultureFallback' => true)))) ?>  
 
   <div class="field">
     <h3><?php echo __('Date(s)') ?></h3>
@@ -106,9 +116,13 @@
     <?php endforeach; ?>
   </div>
 
-  <div class="repository">
-    <?php echo render_show_repository(__('Repository'), $resource) ?>
-  </div>
+  <?php echo render_show_repository(__('Repository'), $resource) ?>
+
+   <!-- /#SITA -->
+   <?php $isRegistry = QubitRegistry::getById($resource->getRegistryId(array('cultureFallback' => true ))) ?>
+  <?php if ($isRegistry != "Unknown"): ?>
+	  <?php echo render_show(__('Register'), link_to(QubitRegistry::getById($resource->getRegistryId(array('cultureFallback' => true ))),array('module' => 'registry', 'action' => 'index', 'source' => $resource->getRegistryId(array('cultureFallback' => true ))))) ?>  
+  <?php endif; ?>
 
   <?php if (check_field_visibility('app_element_visibility_isad_archival_history')): ?>
     <?php echo render_show(__('Archival history'), render_value($resource->getArchivalHistory(array('cultureFallback' => true))), array('fieldLabel' => 'archivalHistory')) ?>
@@ -321,6 +335,13 @@
     </div>
 
   </div> <!-- /section#rightsArea -->
+
+  <div class="section" id="administrationArea">
+  <?php echo link_to_if(SecurityPrivileges::editCredentials($sf_user, 'informationObject'), '<h2>'.__('Administration area').'</h2>', array($resource, 'module' => 'informationobject', 'action' => 'edit'), array('anchor' => 'administrationArea', 'title' => __('Edit administration area'))) ?>  
+	<?php echo render_show(__('Dispay standards'), ($resource->displayStandard)) ?>  
+	<?php echo render_show(__('Type of archive'), render_value($resource->getFormat(array('cultureFallback' => true)))) ?>
+  </div> <!-- /section#administrationArea -->    
+  
 
 <?php endif; ?>
 
