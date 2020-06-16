@@ -24,11 +24,19 @@
  */
 class reportsReportDonorAction extends sfAction
 {
-    public static $NAMES = array('dateStart', 'dateEnd', 'dateOf', 'limit');
+    public static $NAMES = array('className', 'dateStart', 'dateEnd', 'dateOf', 'limit');
 	
     protected function addField($name)
     {
         switch ($name) {
+        case 'className':
+            $choices = array(
+            'QubitDonor' => "Donor");
+            
+            $this->form->setValidator($name, new sfValidatorString);
+            $this->form->setWidget($name, new sfWidgetFormSelect(array('choices' => $choices)));
+            break;
+
         case 'dateStart':
             $this->form->setDefault('dateStart', Qubit::renderDate($this->resource['dateStart']));
             if (!isset($this->resource->id)) {
@@ -70,6 +78,11 @@ class reportsReportDonorAction extends sfAction
     }
     public function execute($request)
     {
+		// Check authorization
+		if ((!$this->context->user->isAdministrator()) && (!$this->context->user->isSuperUser()) && (!$this->context->user->isAuditUser())) {
+			QubitAcl::forwardUnauthorized();
+		}
+
         $this->form = new sfForm;
         $this->form->getValidatorSchema()->setOption('allow_extra_fields', true);
         foreach ($this::$NAMES as $name) {
@@ -77,7 +90,7 @@ class reportsReportDonorAction extends sfAction
         }
         $defaults = array(
 		    'className' => 'QubitDonor', 
-		    'dateStart' => date('Y-m-d', strtotime('-1 month')), 
+		    'dateStart' => date('Y-m-d', strtotime('-1 week')), 
 		    'dateEnd' => date('Y-m-d'), 'dateOf' => 'CREATED_AT', 
 		    'publicationStatus' => 'all', 
 		    'limit' => '10', 

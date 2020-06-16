@@ -79,14 +79,19 @@ class reportsReportRegistryAction extends sfAction
     }
     public function execute($request)
     {
+		// Check authorization
+		if ((!$this->context->user->isAdministrator()) && (!$this->context->user->isSuperUser()) && (!$this->context->user->isAuditUser())) {
+			QubitAcl::forwardUnauthorized();
+		}
+
         $this->form = new sfForm;
         $this->form->getValidatorSchema()->setOption('allow_extra_fields', true);
         foreach ($this::$NAMES as $name) {
             $this->addField($name);
         }
         $defaults = array(
-		    'className' => 'QubitBookoutObject', 
-		    'dateStart' => date('Y-m-d', strtotime('-1 month')), 
+		    'className' => 'QubitRegistry', 
+		    'dateStart' => date('Y-m-d', strtotime('-1 week')), 
 		    'dateEnd' => date('Y-m-d'), 'dateOf' => 'CREATED_AT', 
 		    'publicationStatus' => 'all', 
 		    'limit' => '10', 
@@ -117,64 +122,11 @@ class reportsReportRegistryAction extends sfAction
             $criteria->add(QubitActor::PARENT_ID, null, Criteria::ISNOTNULL);
             break;
 
-        case 'QubitFunction':
-            $nameColumn = 'authorized_form_of_name';
-            $this->nameColumnDisplay = 'Name';
-            break;
-
-        case 'QubitRepository':
-            $nameColumn = 'authorized_form_of_name';
-            $this->nameColumnDisplay = 'Name';
-            $criteria = QubitRepository::addGetOnlyRepositoryCriteria($criteria);
-            break;
-
         case 'QubitRegistry':
             $nameColumn = 'authorized_form_of_name';
             $this->nameColumnDisplay = 'Name';
             $criteria = QubitRegistry::addGetOnlyRegisterObjectCriteria($criteria);
             break;
-
-        case 'QubitPresevationObject':
-            $nameColumn = 'authorized_form_of_name';
-            $this->nameColumnDisplay = 'Name';
-            $criteria = QubitPresevationObject::addGetOnlyPreservationObjectCriteria($criteria);
-            break;
-
-        case 'QubitAccessObject':
-            $nameColumn = 'authorized_form_of_name';
-            $this->nameColumnDisplay = 'Name';
-            $criteria = QubitAccessObject::addGetOnlyAccessObjectCriteria($criteria);
-            break;
-
-        case 'QubitPhysicalObject':
-            $nameColumn = 'authorized_form_of_name';
-            $this->nameColumnDisplay = 'Name';
-            $criteria = QubitPhysicalObject::addGetOnlyPhysicalObjectCriteria($criteria);
-            break;
-
-        case 'QubitBookoutObject':
-            $nameColumn = 'authorized_form_of_name';
-            $this->nameColumnDisplay = 'Name';
-            $criteria = QubitBookoutObject::addGetOnlyBookoutObjectCriteria($criteria);
-            break;
-
-        case 'QubitBookinObject':
-            $nameColumn = 'name';
-            $this->nameColumnDisplay = 'ID';
-            $criteria = QubitBookinObject::addGetOnlyBookinObjectCriteria($criteria);
-           break;
-
-        case 'QubitTerm':
-            $nameColumn = 'name';
-            $this->nameColumnDisplay = 'Name';
-            $criteria->add(QubitTerm::PARENT_ID, null, Criteria::ISNOTNULL);
-            break;
-
-        case 'QubitAuditObject':
-            $nameColumn = 'identifier';
-            $this->nameColumnDisplay = 'Identifier';
-
-           break;
 
         // Default: information object
         default:
@@ -322,7 +274,10 @@ class reportsReportRegistryAction extends sfAction
             $vRes = substr($this->form->getValue('dateEnd'), strpos($this->form->getValue('dateEnd'), "/") + 1);
             $vMonth = substr($vRes, 0, strpos($vRes, "/"));
             $vYear = substr($vRes, strpos($vRes, "/") + 1,4);
-            if (checkdate((int)$vDay, (int)$vMonth, (int)$vYear)) {
+			if ((int)$vMonth < 10) {
+				$vMonth = "0".$vMonth;
+			}
+            if (checkdate((int)$vMonth, (int)$vDay, (int)$vYear)) {
                 $dateEnd = date_create($vYear . "-" . $vMonth . "-" . $vDay . " 23.59.59");
                 $dateEnd = date_format($dateEnd, 'Y-m-d H:i:s');
             } else {
@@ -354,8 +309,15 @@ class reportsReportRegistryAction extends sfAction
 		            $vRes = substr($this->form->getValue('dateStart'), strpos($this->form->getValue('dateStart'), "/") + 1);
 		            $vMonth = substr($vRes, 0, strpos($vRes, "/"));
 		            $vYear = substr($vRes, strpos($vRes, "/") + 1);
-		            $startDate = date_create($vYear . "-" . $vMonth . "-" . $vDay . " 00.00.00");
-		            $startDate = date_format($startDate, 'Y-m-d H:i:s');
+					if ((int)$vMonth < 10) {
+						$vMonth = "0".$vMonth;
+					}
+					if (checkdate((int)$vMonth, (int)$vDay, (int)$vYear)) {
+						$startDate = date_create($vYear . "-" . $vMonth . "-" . $vDay . " 00.00.00");
+						$startDate = date_format($startDate, 'Y-m-d H:i:s');
+					} else {
+						$startDate = date('2020-01-01 23.59.59');
+					}
 		            $c1 = $criteria->getNewCriterion(QubitObject::CREATED_AT, $startDate, Criteria::GREATER_EQUAL);
 		            $c2 = $criteria->getNewCriterion(QubitObject::UPDATED_AT, $startDate, Criteria::GREATER_EQUAL);
 		            $c1->addOr($c2);

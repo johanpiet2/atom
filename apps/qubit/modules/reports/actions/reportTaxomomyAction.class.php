@@ -19,16 +19,24 @@
  * Display a list of recently updates to the db
  *
  * @package AccesstoMemory
- * @subpackage book out
+ * @subpackage search
  * @author Johan Pieterse <johan.pieterse@sita.co.za>
  */
-class reportsReportBookOutAction extends sfAction
+class reportsReportTaxonomyAction extends sfAction
 {
-    public static $NAMES = array('className', 'dateStart', 'dateEnd', 'dateOf', 'limit');
+    public static $NAMES = array('dateStart', 'dateEnd', 'dateOf', 'limit');
 	
     protected function addField($name)
     {
         switch ($name) {
+        case 'className':
+            $choices = array(
+            'QubitTaxonomy' => "Taxonomy");
+            
+            $this->form->setValidator($name, new sfValidatorString);
+            $this->form->setWidget($name, new sfWidgetFormSelect(array('choices' => $choices)));
+            break;
+
         case 'dateStart':
             $this->form->setDefault('dateStart', Qubit::renderDate($this->resource['dateStart']));
             if (!isset($this->resource->id)) {
@@ -68,6 +76,7 @@ class reportsReportBookOutAction extends sfAction
             break;
         }
     }
+
     public function execute($request)
     {
 		// Check authorization
@@ -81,7 +90,7 @@ class reportsReportBookOutAction extends sfAction
             $this->addField($name);
         }
         $defaults = array(
-		    'className' => 'QubitBookoutObject', 
+		    'className' => 'QubitTaxonomy', 
 		    'dateStart' => date('Y-m-d', strtotime('-1 month')), 
 		    'dateEnd' => date('Y-m-d'), 'dateOf' => 'CREATED_AT', 
 		    'publicationStatus' => 'all', 
@@ -98,14 +107,16 @@ class reportsReportBookOutAction extends sfAction
     {
         $criteria = new Criteria;
         $this->sort = $this->request->getParameter('sort', 'updatedDown');
-        // This join seems to be necessary to avoid cross joining the local table
-        // with the QubitObject table
-    	$criteria->addJoin(QubitBookoutObject::ID, QubitObject::ID);
-        
-        $nameColumn = 'authorized_form_of_name';
+        $nameColumn = 'name';
         $this->nameColumnDisplay = 'Name';
-        $criteria = QubitBookoutObject::addGetOnlyBookoutObjectCriteria($criteria);
-		
+		// Show only editable taxonomies
+		$criteria = QubitTaxonomy::addEditableTaxonomyCriteria($criteria);
+
+		// Do source culture fallback
+		$criteria = QubitCultureFallback::addFallbackCriteria($criteria, 'QubitTaxonomy');
+
+		$criteria->addAscendingOrderByColumn('name');
+
         // End date at midnight
         if (null != $this->form->getValue('dateEnd')) {
             $vDay = substr($this->form->getValue('dateEnd'), 0, strpos($this->form->getValue('dateEnd'), "/"));
@@ -156,6 +167,7 @@ class reportsReportBookOutAction extends sfAction
 	            $c3->addOr($c4);
 	            $criteria->addAnd($c3);
 	        }
+
 		    // Add sort criteria
 		    switch ($this->sort) {
 		    case 'nameDown':
@@ -176,13 +188,18 @@ class reportsReportBookOutAction extends sfAction
 		    }
 		    // Add fallback criteria for name
 		    if ('nameDown' == $this->sort || 'nameUp' == $this->sort) {
-		        $criteria = QubitCultureFallback::addFallbackCriteria($criteria, 'QubitBookoutObject');
+		        $criteria = QubitCultureFallback::addFallbackCriteria($criteria, $this->form->getValue('className'));
 		    }
         }
-	    $this->pager = new QubitPager('QubitBookoutObject');
-	    $this->pager->setCriteria($criteria);
-	    $this->pager->setMaxPerPage($this->form->getValue('limit'));
-	    $this->pager->setPage($this->request->getParameter('page', 1));
+		// Page results
+		$this->pager = new QubitPager('QubitTaxonomy');
+		$this->pager->setCriteria($criteria);
+		$this->pager->setMaxPerPage($request->limit);
+		$this->pager->setPage($request->page);
+
+		$this->taxonomies = $this->pager->getResults();
+		
     }
+    
 }
 

@@ -5,6 +5,11 @@
     <?php echo image_tag('/images/icons-large/icon-new.png', array('width' => '42', 'height' => '42')) ?>
     <?php echo __('Browse Deleted Records') ?>
   </h1>
+    <section class="actions">
+      <ul>
+		<li><input class="c-btn c-btn-submit" type="button" onclick="history.back();" value="Back"></li>
+      </ul>
+    </section>
 <?php end_slot() ?>
 
 <?php slot('sidebar') ?>
@@ -21,10 +26,6 @@
       </form>
 
 	</div>
-		<div>
-	        <button type="submit" class="btn"><?php echo link_to(__('Back to reports'), array('module' => 'reports', 'action' => 'reportSelect'), array('title' => __('Back to reports'))) ?></button>
-		</div>
-
 </section>
 <?php end_slot() ?>
 
@@ -60,4 +61,10 @@
 
 <?php slot('after-content') ?>
 <?php echo get_partial('default/pager', array('pager' => $pager)) ?>
+    <section class="actions">
+      <ul>
+		<li><input class="c-btn c-btn-submit" type="button" onclick="history.back();" value="Back"></li>
+      </ul>
+    </section>
+
 <?php end_slot() ?>

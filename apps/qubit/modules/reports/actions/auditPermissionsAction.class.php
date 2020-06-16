@@ -16,8 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with Qubit Toolkit.  If not, see <http://www.gnu.org/licenses/>.
  */
+/**
+ * Display a list of recently updates to the db
+ *
+ * @package AccesstoMemory
+ * @subpackage Audit Trail Permissions/Groups report
+ * @author Johan Pieterse <johan.pieterse@sita.co.za>
+ */
 
-class reportsAuditRepositoryAction extends sfAction
+
+class reportsAuditPermissionsAction extends sfAction
 {
 	public static function doSelect(Criteria $criteria, PropelPDO $con = null)
 	{
@@ -56,8 +64,6 @@ class reportsAuditRepositoryAction extends sfAction
 
   public function execute($request)
   {
-
-    $this->resource = $this->getRoute()->resource;
     // Check user authorization
     if (!$this->getUser()->isAuthenticated())
     {
@@ -75,51 +81,23 @@ class reportsAuditRepositoryAction extends sfAction
     }
     
     $criteria = new Criteria;
-    $c1 = new Criteria;
-    $c2 = new Criteria;
-    $c3 = new Criteria;
-    $c4 = new Criteria;
-    $c5 = new Criteria;
-    $c6 = new Criteria;
-    $c7 = new Criteria;
-    $c8 = new Criteria;
-    $criteria->addSelectColumn(QubitActor::ID);
-    $criteria->addSelectColumn(QubitActorI18n::AUTHORIZED_FORM_OF_NAME);
+
     BaseAuditObject::addSelectColumns($criteria);
 
-    $criteria->addjoin(QubitAuditObject::RECORD_ID, QubitActor::ID);
-    $criteria->addjoin(QubitActor::ID, QubitActorI18n::ID);
-    $criteria->add(QubitAuditObject::RECORD_ID, $request->source, Criteria::LIKE);
+    $criteria->add(QubitAuditObject::RECORD_ID, $request->source, Criteria::EQUAL);
     $criteria->addDescendingOrderByColumn(QubitAuditObject::ACTION_DATE_TIME);
-    
-	$c1 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'access_object', Criteria::NOT_EQUAL);
-	$c2 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'relation', Criteria::NOT_EQUAL);
-	$c3 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'property', Criteria::NOT_EQUAL);
-	$c4 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'object_term_relation', Criteria::NOT_EQUAL);
-	$c5 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'object', Criteria::NOT_EQUAL);
-	$c6 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'bookin_object', Criteria::NOT_EQUAL);
-	$c7 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'presevation_object_i18n', Criteria::NOT_EQUAL);
-	$c8 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'access_log', Criteria::NOT_EQUAL);
-	$c1->addAnd($c2);
-	$c3->addAnd($c4);
-	$c5->addAnd($c6);
-	$c7->addAnd($c8);
-	$criteria->addAnd($c1);
-	$criteria->addAnd($c3);
-	$criteria->addAnd($c5);
-	$criteria->addAnd($c7);
-              
+ 
 	$auditObjects = self::doSelect($criteria);
 
     // Page results
     $this->pager = new QubitPagerAudit("QubitAuditObject");
     $this->pager->setCriteria($criteria);
-//    $this->pager->setMaxPerPage($this->form->getValue('limit'));
-    $this->pager->setMaxPerPage(1000000);
+    $this->pager->setMaxPerPage(10000);
     $this->pager->setPage($request->page);
 
+    $this->auditObjects = $this->pager->getResults();
     $this->auditObjectsOlder = $this->pager->getResults();
-  	if (0 == count($this->auditObjectsOlder))
+  	if (0 == count($this->auditObjects))
 	{
       return sfView::ERROR;
     }

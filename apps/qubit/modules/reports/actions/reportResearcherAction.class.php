@@ -78,6 +78,11 @@ class reportsReportResearcherAction extends sfAction
     }
     public function execute($request)
     {
+		// Check authorization
+		if ((!$this->context->user->isAdministrator()) && (!$this->context->user->isSuperUser()) && (!$this->context->user->isAuditUser())) {
+			QubitAcl::forwardUnauthorized();
+		}
+
         $this->form = new sfForm;
         $this->form->getValidatorSchema()->setOption('allow_extra_fields', true);
         foreach ($this::$NAMES as $name) {

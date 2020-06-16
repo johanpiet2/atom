@@ -16,7 +16,7 @@
 
 <?php slot('content') ?>
 
-	<?php echo $form->renderFormTag(url_for(array('module' => 'reports', 'action' => 'browseUnPublish')), array('method' => 'post')) ?>
+	<?php echo $form->renderFormTag(url_for(array('module' => 'publish', 'action' => 'browseUnPublish')), array('method' => 'post')) ?>
 
     <?php echo $form->renderHiddenFields() ?>
     

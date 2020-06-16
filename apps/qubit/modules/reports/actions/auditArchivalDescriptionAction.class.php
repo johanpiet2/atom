@@ -56,71 +56,66 @@ class reportsAuditArchivalDescriptionAction extends sfAction
 
   public function execute($request)
   {
-
-    $this->resource = $this->getRoute()->resource;
     // Check user authorization
     if (!$this->getUser()->isAuthenticated())
     {
       QubitAcl::forwardUnauthorized();
     }
-    if (!QubitAcl::check($this->resource, 'auditTrail'))
-    {
-      //QubitAcl::forwardUnauthorized(); //To Fix SITA JJP
-    }
+
+	// Check authorization
+	if ((!sfContext::getInstance()->getUser()->hasGroup(QubitAclGroup::ADMINISTRATOR_ID)) && !$this->getUser()->hasGroup(QubitAclGroup::AUDIT_ID)) {
+	  $this->redirect('admin/secure');
+	}
 
     if (!isset($request->limit))
     {
       $request->limit = sfConfig::get('app_hits_per_page');
     }
     
-    $criteria = new Criteria;
-    $c1 = new Criteria;
-    $c2 = new Criteria;
-    $c3 = new Criteria;
-    $c4 = new Criteria;
-    $c5 = new Criteria;
-    $c6 = new Criteria;
-    $c7 = new Criteria;
+	$criteria = new Criteria;
+	$c1 = new Criteria;
+	$c2 = new Criteria;
+	$c3 = new Criteria;
+	$c4 = new Criteria;
+	$c5 = new Criteria;
+	$c6 = new Criteria;
+	$c7 = new Criteria;
+	$c8 = new Criteria;
+	$c9 = new Criteria;
+	$c10 = new Criteria;
+	$c11 = new Criteria;
+	$c12 = new Criteria;
+	$c13 = new Criteria;
+	$c14 = new Criteria;
+	$c15 = new Criteria;
+	$c16 = new Criteria;
+	$c17 = new Criteria;
+	$c18 = new Criteria;
+	$c19 = new Criteria;
+	$c20 = new Criteria;
     $criteria->addSelectColumn(QubitInformationObject::ID);
     $criteria->addSelectColumn(QubitInformationObject::IDENTIFIER);
     BaseAuditObject::addSelectColumns($criteria);
 
     $criteria->addjoin(QubitAuditObject::RECORD_ID, QubitInformationObject::ID);
-    $criteria->add(QubitAuditObject::RECORD_ID, $request->source, Criteria::LIKE);
-    $criteria->addDescendingOrderByColumn(QubitAuditObject::ACTION_DATE_TIME);
-    
-	$c1 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'access_object', Criteria::NOT_EQUAL);
-	$c2 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'relation', Criteria::NOT_EQUAL);
-	$c3 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'property', Criteria::NOT_EQUAL);
-	$c4 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'object_term_relation', Criteria::NOT_EQUAL);
-	$c5 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'object', Criteria::NOT_EQUAL);
-	$c6 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'bookin_object', Criteria::NOT_EQUAL);
-	$c7 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'presevation_object_i18n', Criteria::NOT_EQUAL);
-	$c8 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'QubitDigitalObject', Criteria::NOT_EQUAL);
-	$c9 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'property_i18n', Criteria::NOT_EQUAL);
-	$c10 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'QubitInformationObject', Criteria::NOT_EQUAL);
-	$c11 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'QubitEvent', Criteria::NOT_EQUAL);
-	$c1->addAnd($c2);
-	$c3->addAnd($c4);
-	$c5->addAnd($c6);
-	$c7->addAnd($c8);
-	$c9->addAnd($c10);
-	$criteria->addAnd($c1);
-	$criteria->addAnd($c3);
-	$criteria->addAnd($c5);
-	$criteria->addAnd($c7);
-	$criteria->addAnd($c9);
-	$criteria->addAnd($c11);
+    $criteria->add(QubitAuditObject::RECORD_ID, $request->source, Criteria::EQUAL);
+	if (!isset($limit))
+	{
+	  $limit = sfConfig::get('app_hits_per_page');
+	}
               
+    $criteria->addDescendingOrderByColumn(QubitAuditObject::ACTION_DATE_TIME);
+//echo $criteria->toString()."<br>";
     // Page results
     $this->pager = new QubitPagerAudit("QubitAuditObject");
     $this->pager->setCriteria($criteria);
-    $this->pager->setMaxPerPage(10000);
+    $this->pager->setMaxPerPage($limit);
     $this->pager->setPage($request->page);
 
     $this->auditObjectsOlder = $this->pager->getResults();
 
     $c2 = clone $criteria;
     $this->foundcount = BasePeer::doCount($c2)->fetchColumn(0); 
+    
   }
 }

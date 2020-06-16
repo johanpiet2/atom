@@ -17,7 +17,7 @@
  * along with Qubit Toolkit.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class reportsAuditRepositoryAction extends sfAction
+class reportsAuditAccessAction extends sfAction
 {
 	public static function doSelect(Criteria $criteria, PropelPDO $con = null)
 	{
@@ -56,8 +56,6 @@ class reportsAuditRepositoryAction extends sfAction
 
   public function execute($request)
   {
-
-    $this->resource = $this->getRoute()->resource;
     // Check user authorization
     if (!$this->getUser()->isAuthenticated())
     {
@@ -74,57 +72,35 @@ class reportsAuditRepositoryAction extends sfAction
       $request->limit = sfConfig::get('app_hits_per_page');
     }
     
-    $criteria = new Criteria;
-    $c1 = new Criteria;
-    $c2 = new Criteria;
-    $c3 = new Criteria;
-    $c4 = new Criteria;
-    $c5 = new Criteria;
-    $c6 = new Criteria;
-    $c7 = new Criteria;
-    $c8 = new Criteria;
-    $criteria->addSelectColumn(QubitActor::ID);
-    $criteria->addSelectColumn(QubitActorI18n::AUTHORIZED_FORM_OF_NAME);
-    BaseAuditObject::addSelectColumns($criteria);
+	$criteria = new Criteria;
+	BaseAuditObject::addSelectColumns($criteria);
+//	$criteria->addJoin(QubitRelation::SUBJECT_ID, QubitAuditObject::RECORD_ID);
+//	$criteria->addJoin(QubitInformationObject::ID, QubitRelation::OBJECT_ID);
+//	$criteria->addJoin(QubitInformationObject::ID, QubitInformationObjectI18n::ID);
+//	$criteria->addSelectColumn(QubitInformationObject::IDENTIFIER);
+//	$criteria->addSelectColumn(QubitInformationObjectI18n::TITLE);
+//	$criteria->addSelectColumn(QubitRepository::DESC_IDENTIFIER);
+//	$criteria->addSelectColumn(QubitActorI18n::AUTHORIZED_FORM_OF_NAME);
 
-    $criteria->addjoin(QubitAuditObject::RECORD_ID, QubitActor::ID);
-    $criteria->addjoin(QubitActor::ID, QubitActorI18n::ID);
-    $criteria->add(QubitAuditObject::RECORD_ID, $request->source, Criteria::LIKE);
-    $criteria->addDescendingOrderByColumn(QubitAuditObject::ACTION_DATE_TIME);
-    
-	$c1 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'access_object', Criteria::NOT_EQUAL);
-	$c2 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'relation', Criteria::NOT_EQUAL);
-	$c3 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'property', Criteria::NOT_EQUAL);
-	$c4 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'object_term_relation', Criteria::NOT_EQUAL);
-	$c5 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'object', Criteria::NOT_EQUAL);
-	$c6 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'bookin_object', Criteria::NOT_EQUAL);
-	$c7 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'presevation_object_i18n', Criteria::NOT_EQUAL);
-	$c8 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'access_log', Criteria::NOT_EQUAL);
-	$c1->addAnd($c2);
-	$c3->addAnd($c4);
-	$c5->addAnd($c6);
-	$c7->addAnd($c8);
-	$criteria->addAnd($c1);
-	$criteria->addAnd($c3);
-	$criteria->addAnd($c5);
-	$criteria->addAnd($c7);
+    $criteria->add(QubitAuditObject::RECORD_ID, $request->source, Criteria::EQUAL);
+
+	if (!isset($limit))
+	{
+	  $limit = sfConfig::get('app_hits_per_page');
+	}
               
-	$auditObjects = self::doSelect($criteria);
-
+    $criteria->addDescendingOrderByColumn(QubitAuditObject::ACTION_DATE_TIME);
+echo $criteria->toString()."<br>";
     // Page results
     $this->pager = new QubitPagerAudit("QubitAuditObject");
     $this->pager->setCriteria($criteria);
-//    $this->pager->setMaxPerPage($this->form->getValue('limit'));
-    $this->pager->setMaxPerPage(1000000);
+    $this->pager->setMaxPerPage($limit);
     $this->pager->setPage($request->page);
 
     $this->auditObjectsOlder = $this->pager->getResults();
-  	if (0 == count($this->auditObjectsOlder))
-	{
-      return sfView::ERROR;
-    }
 
     $c2 = clone $criteria;
     $this->foundcount = BasePeer::doCount($c2)->fetchColumn(0); 
+    
   }
 }

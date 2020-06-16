@@ -97,7 +97,7 @@
  		  <?php if (isset($result->authorizedFormOfName)) { ?> <td><?php echo link_to($result->authorizedFormOfName, array($result, 'module' => 'actor')) ?></td> <?php } else { ?> <td>-</td> <?php }	?>
 
 		  <?php if ($result->datesOfExistence) { ?> <td><?php echo $result->datesOfExistence ?></td> <?php } else { ?> <td>-</td> <?php }	?>
-		  <?php if ($result->history) { ?> <td><?php echo $result->history ?></td> <?php } else { ?> <td>-</td> <?php }	?>
+		  <?php if ($result->history) { ?> <td><?php echo substr($result->history,0,55)."..." ?></td> <?php } else { ?> <td>-</td> <?php }	?>
 		  <?php if ($result->places) { ?> <td><?php echo $result->places ?></td> <?php } else { ?> <td>-</td> <?php }	?>
 		  <?php if ($result->legalStatus) { ?> <td><?php echo $result->legalStatus ?></td> <?php } else { ?> <td>-</td> <?php }	?>
 		  <?php if ($result->mandates) { ?> <td><?php echo $result->mandates ?></td> <?php } else { ?> <td>-</td> <?php }	?>

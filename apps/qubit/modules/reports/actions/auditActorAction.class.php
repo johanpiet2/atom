@@ -64,17 +64,16 @@ class reportsAuditActorAction extends sfAction
 
   public function execute($request)
   {
-
-    //$this->resource = $this->getRoute()->resource;
     // Check user authorization
     if (!$this->getUser()->isAuthenticated())
     {
       QubitAcl::forwardUnauthorized();
     }
-	if (!sfContext::getInstance()->getUser()->hasGroup('audit') && !sfContext::getInstance()->getUser()->hasGroup(QubitAclGroup::ADMINISTRATOR_ID))
-    {
-      QubitAcl::forwardUnauthorized(); //To Fix SITA JJP
-    }
+
+	// Check authorization
+	if ((!sfContext::getInstance()->getUser()->hasGroup(QubitAclGroup::ADMINISTRATOR_ID)) && !$this->getUser()->hasGroup(QubitAclGroup::AUDIT_ID)) {
+	  $this->redirect('admin/secure');
+	}
 
     if (!isset($request->limit))
     {
@@ -126,12 +125,13 @@ class reportsAuditActorAction extends sfAction
 	$c12->addAnd($c13);
 	$criteria->addAnd($c12);
 
+		//echo $criteria->toString();
 
 
     // Page results
     $this->pager = new QubitPagerAudit("QubitAuditObject");
     $this->pager->setCriteria($criteria);
-    $this->pager->setMaxPerPage(10000);
+    $this->pager->setMaxPerPage(1);
     $this->pager->setPage($request->page);
 
     $this->auditObjectsOlder = $this->pager->getResults();

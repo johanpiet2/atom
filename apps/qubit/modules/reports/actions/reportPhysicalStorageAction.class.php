@@ -79,6 +79,11 @@ class reportsReportPhysicalStorageAction extends sfAction
 
     public function execute($request)
     {
+		// Check authorization
+		if ((!$this->context->user->isAdministrator()) && (!$this->context->user->isSuperUser()) && (!$this->context->user->isAuditUser())) {
+			QubitAcl::forwardUnauthorized();
+		}
+
         $this->form = new sfForm;
         $this->form->getValidatorSchema()->setOption('allow_extra_fields', true);
         foreach ($this::$NAMES as $name) {
@@ -109,6 +114,21 @@ class reportsReportPhysicalStorageAction extends sfAction
         	$criteria->addJoin(constant($this->className . '::ID'), QubitObject::ID);
         }
         
+		//get repositories lined to user logged in
+		$userRepos = array();
+		$userRepos = QubitRepository::filteredUser($this->context->user->getAttribute('user_id'), $this->context->user->isAdministrator());
+
+		$userReposStrip = array();
+		foreach ($userRepos as $key => $value) {
+			$userReposStrip[] = $key;
+		}
+
+		// Only show repositories linked to user
+		if (!$this->context->user->isAdministrator()) {
+			$criteria->addJoin(QubitPhysicalObject::ID, QubitPhysicalObjectI18n::ID);
+			$criteria->add(QubitPhysicalObjectI18n::REPOSITORY_ID, $userReposStrip, Criteria::IN);
+		}
+		
         switch ($this->form->getValue('className')) {
         case 'QubitPhysicalObject':
             $nameColumn = 'authorized_form_of_name';
@@ -202,7 +222,7 @@ class reportsReportPhysicalStorageAction extends sfAction
 	    $this->pager->setCriteria($criteria);
 	    $this->pager->setMaxPerPage($this->form->getValue('limit'));
 	    $this->pager->setPage($this->request->getParameter('page', 1));
-
+//echo $criteria->toString()."<br>";
     }
     
 }

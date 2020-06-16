@@ -63,10 +63,11 @@ class reportsAuditServiceProviderAction extends sfAction
     {
       QubitAcl::forwardUnauthorized();
     }
-    if (!QubitAcl::check($this->resource, 'auditTrail'))
-    {
-      //QubitAcl::forwardUnauthorized(); //To Fix SITA JJP
-    }
+
+	// Check authorization
+	if ((!sfContext::getInstance()->getUser()->hasGroup(QubitAclGroup::ADMINISTRATOR_ID)) && !$this->getUser()->hasGroup(QubitAclGroup::AUDIT_ID)) {
+	  $this->redirect('admin/secure');
+	}
 
     if (!isset($request->limit))
     {
@@ -82,17 +83,17 @@ class reportsAuditServiceProviderAction extends sfAction
     $c6 = new Criteria;
     $c7 = new Criteria;
     BaseAuditObject::addSelectColumns($criteria);
-    $criteria->addSelectColumn(QubitActor::CORPORATE_BODY_IDENTIFIERS);
-    $criteria->addSelectColumn(QubitActorI18n::AUTHORIZED_FORM_OF_NAME);
+//    $criteria->addSelectColumn(QubitActor::CORPORATE_BODY_IDENTIFIERS);
+//    $criteria->addSelectColumn(QubitActorI18n::AUTHORIZED_FORM_OF_NAME);
 
     $criteria->add(QubitAuditObject::RECORD_ID, $request->source, Criteria::EQUAL);
     $criteria->addDescendingOrderByColumn(QubitAuditObject::ACTION_DATE_TIME);
  
  
-	$criteria->addjoin(QubitAuditObject::RECORD_ID, QubitServiceProvider::ID);
-	$criteria->addjoin(QubitActor::ID, QubitServiceProvider::ID);
-	$criteria->addjoin(QubitActor::ID, QubitActori18n::ID);
-
+//	$criteria->addjoin(QubitAuditObject::RECORD_ID, QubitServiceProvider::ID);
+//	$criteria->addjoin(QubitActor::ID, QubitServiceProvider::ID);
+//	$criteria->addjoin(QubitActor::ID, QubitActori18n::ID);
+/*
 	$c1 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'access_object', Criteria::NOT_EQUAL);
 	$c2 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'relation', Criteria::NOT_EQUAL);
 	$c3 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'property', Criteria::NOT_EQUAL);
@@ -107,12 +108,16 @@ class reportsAuditServiceProviderAction extends sfAction
 	$criteria->addAnd($c3);
 	$criteria->addAnd($c5);
 	$criteria->addAnd($c7);
+*/
+	
+	$criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'service_provider', Criteria::EQUAL);
 
     // Page results
     $this->pager = new QubitPagerAudit("QubitAuditObject");
     $this->pager->setCriteria($criteria);
     $this->pager->setMaxPerPage($request->limit);
     $this->pager->setPage($request->page);
+//	$this->pager->init();
 
     $this->auditObjectsOlder = $this->pager->getResults();
 

@@ -56,17 +56,16 @@ class reportsAuditObjectAction extends sfAction
 
   public function execute($request)
   {
-
-    $this->resource = $this->getRoute()->resource;
     // Check user authorization
     if (!$this->getUser()->isAuthenticated())
     {
       QubitAcl::forwardUnauthorized();
     }
-    if (!QubitAcl::check($this->resource, 'auditTrail'))
-    {
-      //QubitAcl::forwardUnauthorized(); //To Fix SITA JJP
-    }
+
+	// Check authorization
+	if ((!sfContext::getInstance()->getUser()->hasGroup(QubitAclGroup::ADMINISTRATOR_ID)) && !$this->getUser()->hasGroup(QubitAclGroup::AUDIT_ID)) {
+	  $this->redirect('admin/secure');
+	}
 
     if (!isset($request->limit))
     {

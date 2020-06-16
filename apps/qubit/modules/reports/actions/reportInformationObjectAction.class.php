@@ -1,3 +1,4 @@
+February@0203
 <?php
 /*
  * This file is part of the Access to Memory (AtoM) software.
@@ -93,7 +94,7 @@ class reportsReportInformationObjectAction extends sfAction
 			// Show only Repositories linked to user - Administrator can see all
 		 	$choices = array();
 			$choices = QubitRepository::filteredUser($this->context->user->getAttribute('user_id'), $this->context->user->isAdministrator());
-						
+
             $this->form->setValidator('repositories', new sfValidatorChoice(array('choices' => array_keys($choices))));
             $this->form->setWidget('repositories', new sfWidgetFormSelect(array('choices' => $choices)));
             break;
@@ -315,14 +316,19 @@ class reportsReportInformationObjectAction extends sfAction
     }
     public function execute($request)
     {
+		// Check authorization
+		if ((!$this->context->user->isAdministrator()) && (!$this->context->user->isSuperUser()) && (!$this->context->user->isAuditUser())) {
+			QubitAcl::forwardUnauthorized();
+		}
+
         $this->form = new sfForm;
         $this->form->getValidatorSchema()->setOption('allow_extra_fields', true);
         foreach ($this::$NAMES as $name) {
             $this->addField($name);
         }
         $defaults = array(
-		    'className' => 'QubitBookoutObject', 
-		    'dateStart' => date('Y-m-d', strtotime('-1 month')), 
+		    'className' => 'QubitInformationObject', 
+		    'dateStart' => date('Y-m-d', strtotime('-1 week')), 
 		    'dateEnd' => date('Y-m-d'), 'dateOf' => 'CREATED_AT', 
 		    'publicationStatus' => 'all', 
 		    'limit' => '10', 
@@ -488,7 +494,10 @@ class reportsReportInformationObjectAction extends sfAction
             $vRes = substr($this->form->getValue('dateEnd'), strpos($this->form->getValue('dateEnd'), "/") + 1);
             $vMonth = substr($vRes, 0, strpos($vRes, "/"));
             $vYear = substr($vRes, strpos($vRes, "/") + 1,4);
-            if (checkdate((int)$vDay, (int)$vMonth, (int)$vYear)) {
+			if ((int)$vMonth < 10) {
+				$vMonth = "0".$vMonth;
+			}
+            if (checkdate((int)$vMonth, (int)$vDay, (int)$vYear)) {
                 $dateEnd = date_create($vYear . "-" . $vMonth . "-" . $vDay . " 23.59.59");
                 $dateEnd = date_format($dateEnd, 'Y-m-d H:i:s');
             } else {
@@ -505,9 +514,16 @@ class reportsReportInformationObjectAction extends sfAction
 	            $vRes = substr($this->form->getValue('dateStart'), strpos($this->form->getValue('dateStart'), "/") + 1);
 	            $vMonth = substr($vRes, 0, strpos($vRes, "/"));
 	            $vYear = substr($vRes, strpos($vRes, "/") + 1, 4);
-	            $startDate2 = date_create("2001-01-01 23.59.59");
-	            $startDate = date_format($startDate2, 'Y-m-d H:i:s');
-	            $criteria->addAnd(constant('QubitObject::' . $dateOf), $startDate, Criteria::GREATER_EQUAL);
+				if ((int)$vMonth < 10) {
+					$vMonth = "0".$vMonth;
+				}
+				if (checkdate((int)$vMonth, (int)$vDay, (int)$vYear)) {
+					$startDate = date_create($vYear . "-" . $vMonth . "-" . $vDay . " 00.00.00");
+					$startDate = date_format($startDate, 'Y-m-d H:i:s');
+				} else {
+					$startDate = date('2020-01-01 23.59.59');
+				}
+				$criteria->addAnd(constant('QubitObject::' . $dateOf), $startDate, Criteria::GREATER_EQUAL);
 	        }
 	        if (isset($dateEnd)) {
 	            $criteria->addAnd(constant('QubitObject::' . $dateOf), $dateEnd, Criteria::LESS_EQUAL);
@@ -520,8 +536,15 @@ class reportsReportInformationObjectAction extends sfAction
 	            $vRes = substr($this->form->getValue('dateStart'), strpos($this->form->getValue('dateStart'), "/") + 1);
 	            $vMonth = substr($vRes, 0, strpos($vRes, "/"));
 	            $vYear = substr($vRes, strpos($vRes, "/") + 1);
-	            $startDate = date_create($vYear . "-" . $vMonth . "-" . $vDay . " 00.00.00");
-	            $startDate = date_format($startDate, 'Y-m-d H:i:s');
+				if ((int)$vMonth < 10) {
+					$vMonth = "0".$vMonth;
+				}
+				if (checkdate((int)$vMonth, (int)$vDay, (int)$vYear)) {
+					$startDate = date_create($vYear . "-" . $vMonth . "-" . $vDay . " 00.00.00");
+					$startDate = date_format($startDate, 'Y-m-d H:i:s');
+				} else {
+					$startDate = date('Y-m-d 23:59:59');
+				}
 	            $c1 = $criteria->getNewCriterion(QubitObject::CREATED_AT, $startDate, Criteria::GREATER_EQUAL);
 	            $c2 = $criteria->getNewCriterion(QubitObject::UPDATED_AT, $startDate, Criteria::GREATER_EQUAL);
 	            $c1->addOr($c2);
@@ -556,7 +579,13 @@ class reportsReportInformationObjectAction extends sfAction
 	    if ('nameDown' == $this->sort || 'nameUp' == $this->sort) {
 	        $criteria = QubitCultureFallback::addFallbackCriteria($criteria, $this->form->getValue('className'));
 	    }
-
+		
+		if (QubitSetting::getByName('max_row_report') != '-1') {
+			$resultLimit = QubitSetting::getByName('max_row_report');
+			$criteria->setLimit($resultLimit); //bug to fix. does not show limit
+			//echo $resultLimit."<br>";
+		}
+//echo $criteria->toString()."<br>";
 	    $this->pager = new QubitPager($this->form->getValue('className'));
 	    $this->pager->setCriteria($criteria);
 	    $this->pager->setMaxPerPage($this->form->getValue('limit'));

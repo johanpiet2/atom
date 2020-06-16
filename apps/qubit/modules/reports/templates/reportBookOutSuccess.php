@@ -64,21 +64,9 @@
 		<th><?php echo __('Title') ?></th>
 		<th><?php echo __('Name of Requestor') ?></th>
 		<th><?php echo __('Dispatcher') ?></th>
-		<th><?php echo __('Location') ?></th>
 		<th><?php echo __('Requested Period') ?></th>
 		<th><?php echo __('Remarks/Comments') ?></th>
-		<th><?php echo __('Unique Identifier') ?></th>
-		<th><?php echo __('Physical Storage') ?></th>
-		<th><?php echo __('Row') ?></th>
-		<th><?php echo __('Shelf') ?></th>
-		<th><?php echo __('Availability') ?></th>
-		<th><?php echo __('Record Condition') ?></th>
 
-        <?php if ('CREATED_AT' != $form->getValue('dateOf')): ?>
-          <th style="width: 110px"><?php echo __('Updated'); ?></th>
-        <?php else: ?>
-          <th style="width: 110px"><?php echo __('Created'); ?></th>
-        <?php endif; ?>
       </tr>
     </thead><tbody>
     <?php  foreach ($pager->getResults() as $result): ?>
@@ -94,7 +82,7 @@
 				}
 				if (isset($informationObjectsBookOut)) 
 				{ 
-					?> <td><?php echo $informationObjectsBookOut->identifier ?></td> <?php
+					?> <td><?php echo link_to($informationObjectsBookOut->identifier, array($informationObjectsBookOut, 'module' => 'informationobject')) ?></td> <?php
 				} 
 				else { ?> 
 					<td>-</td> <?php 
@@ -108,27 +96,11 @@
 		
 			<?php if (isset($result->requestorId)) { ?> <td><?php echo $result->requestorId ?></td> <?php } else { ?> <td>-</td> <?php }	?>
 			<?php if (isset($result->dispatcherId)) { ?> <td><?php echo $result->dispatcherId ?></td> <?php } else { ?> <td>-</td> <?php }	?>
-			<?php if (isset($result->id)) { ?> <td><?php echo $result->getLocation(array('cultureFallback' => true)) ?></td> <?php } else { ?> <td>-</td> <?php }	?>
 			<?php if (isset($result->id)) { ?> <td><?php echo $result->getTime_period(array('cultureFallback' => true)) ?></td> <?php } else { ?> <td>-</td> <?php }	?>
 			<?php if (isset($result->id)) { ?> <td><?php echo $result->getRemarks(array('cultureFallback' => true)) ?></td> <?php } else { ?> <td>-</td> <?php }	?>
-			<?php if (isset($result->unique_identifier)) { ?> <td><?php echo $result->unique_identifier ?></td> <?php } else { ?> <td>-</td> <?php }	?>
-			<?php if (isset($result->strong_room)) { ?> <td><?php echo $result->strong_room ?></td> <?php } else { ?> <td>-</td> <?php }	?>
-			<?php if (isset($result->shelf)) { ?> <td><?php echo $result->shelf ?></td> <?php } else { ?> <td>-</td> <?php }	?>
-			<?php if (isset($result->row)) { ?> <td><?php echo $result->row ?></td> <?php } else { ?> <td>-</td> <?php }	?>
-			<?php if (isset($result->availability)) { ?> <td><?php echo $result->availability ?></td> <?php } else { ?> <td>-</td> <?php }	?>
-			<?php if (isset($result->record_condition)) { ?> <td><?php echo $result->record_condition ?></td> <?php } else { ?> <td>-</td> <?php }	?>
 
           </td>
 
-			<?php if ($this->start_dateDays->d > 2): ?>
-				<td>
-					<?php if ('CREATED_AT' != $form->getValue('dateOf')): ?>
-					<?php echo $result->updatedAt ?>
-					<?php else: ?>
-					<?php echo $result->createdAt ?>
-					<?php endif; ?>
-				</td>
-			<?php endif; ?>
         </tr>
 
       <?php endforeach; ?>

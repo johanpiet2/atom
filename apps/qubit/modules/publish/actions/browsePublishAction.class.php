@@ -106,6 +106,7 @@ class publishbrowsePublishAction extends sfAction
         $this->pager->setCriteria($criteria);
         $this->pager->setMaxPerPage($request->limit);
         $this->pager->setPage($request->page);
+				
         if ($request->isMethod('post')) {
             $stack = array();
             foreach ($_REQUEST as $key => $value) {
@@ -119,6 +120,7 @@ class publishbrowsePublishAction extends sfAction
             
             $ii = 0;
             foreach ($stack as $value) {
+				QubitXMLImport::addLog("Go in and publish +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "", get_class($this), true);
                 $ii += 1;
                 if ($ii % 2) {
                     $tID = $value;
@@ -143,33 +145,35 @@ class publishbrowsePublishAction extends sfAction
                                     
                                     // make sure only "Yes" will be published
                                     
+									QubitXMLImport::addLog("Check Publish", "", get_class($this), false);
                                     if ($item->publishId == $this->publish) {
                                         $publishname = "publish_" . $item2->objectId . "_" . date("Y-m-dHis") . ".csv";
                                         $locations   = array();
                                         $fileCopied  = false;
-                                        if (null !== ($digitalObject = $infoObject->getDigitalObject())) {
+										QubitXMLImport::addLog("Publish", $publishname, get_class($this), false);
+										$digitalObject = $infoObject->getDigitalObjectS();
+                                        if (count($digitalObject) > 0) {
+											QubitXMLImport::addLog("digitalObject", "digital object found", get_class($this), false);
                                             if (isset($digitalObject->mimeType)) {
                                                 $path_parts = pathinfo(sfConfig::get('sf_web_dir') . $digitalObject->path . $digitalObject->name);
                                                 if (!isset($digitalObject->name)) {
                                                     throw new sfException(sfContext::getInstance()->i18n->__(sfConfig::get('sf_web_dir') . $digitalObject->path . $digitalObject->name . " No digital image/file available."));
                                                 }
-                                                
                                                 // only copy the thumbnail or in event of pdf/mp3/4 original file
-                                                QubitXMLImport::addLog("digitalObject->name", $digitalObject->name, get_class($this), true);
-                                                
+                                                $mimePieces = explode('/', $digitalObject->mimeType);
+                                                QubitXMLImport::addLog("Image", $mimePieces[0], get_class($this), false);
                                                 if (QubitDigitalObject::isImageFile($digitalObject->getName())) {
                                                     $extension      = $path_parts['extension'];
                                                     $randomFilename = substr(str_shuffle(MD5(microtime())), 0, 10);
-                                                    $filename       = $path_parts['filename'] . "_142." . $extension;
+                                                    $filename       = $path_parts['filename'] . "." . $extension;
                                                     $mqPath         = QubitSetting::getByName('mq_path');
                                                     if ($mqPath == null) {
                                                         throw new sfException(sfContext::getInstance()->i18n->__("No MQ path defined. Contact support/administrator"));
-                                                        QubitXMLImport::addLog("No MQ path defined. Contact support/administrator", "No MQ path defined. Contact support/administrator", get_class($this), true);
                                                     } else {
                                                         // only copy thumbnail
                                                         if ($fileCopied == false) {
-                                                            $filenameRandom = $path_parts['filename'] . "_" . $randomFilename . "_142." . $extension;
-                                                            QubitXMLImport::addLog("filenameRandom: " . $filenameRandom, "filenameRandom", get_class($this), true);
+                                                            $filenameRandom = $path_parts['filename'] . "_" . $randomFilename . "." . $extension;
+                                                            QubitXMLImport::addLog("filenameRandom: " . $filenameRandom, "filenameRandom", get_class($this), false);
                                                             $fileCopied = true;
                                                             if (file_exists($mqPath)) {
                                                                 if (!copy(sfConfig::get('sf_web_dir') . $digitalObject->path . $filename, $mqPath . "/" . $filenameRandom)) {
@@ -197,7 +201,7 @@ class publishbrowsePublishAction extends sfAction
                                                     } else {
                                                         if ($fileCopied == false) {
                                                             $filenameRandom = $path_parts['filename'] . "_" . $randomFilename . "." . $extension;
-                                                            QubitXMLImport::addLog("filenameRandom: " . $filenameRandom, "filenameRandom", get_class($this), true);
+                                                            QubitXMLImport::addLog("filenameRandom: " . $filenameRandom, "filenameRandom", get_class($this), false);
                                                             $fileCopied = true;
                                                             
                                                             if (file_exists(sfConfig::get('sf_web_dir') . $digitalObject->path . $filename . "." . $extension)) {

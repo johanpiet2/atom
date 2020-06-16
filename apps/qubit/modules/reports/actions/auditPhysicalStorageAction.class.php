@@ -63,10 +63,10 @@ class reportsAuditPhysicalStorageAction extends sfAction
     {
       QubitAcl::forwardUnauthorized();
     }
-    if (!QubitAcl::check($this->resource, 'auditTrail'))
-    {
-      //QubitAcl::forwardUnauthorized(); //To Fix SITA JJP
-    }
+	// Check authorization
+	if ((!sfContext::getInstance()->getUser()->hasGroup(QubitAclGroup::ADMINISTRATOR_ID)) && !$this->getUser()->hasGroup(QubitAclGroup::AUDIT_ID)) {
+	  $this->redirect('admin/secure');
+	}
 
     if (!isset($request->limit))
     {

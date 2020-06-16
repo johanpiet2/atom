@@ -21,7 +21,7 @@
 
 <?php slot('content') ?>
 
-	<?php echo $form->renderFormTag(url_for(array('module' => 'publish', 'action' => 'browsePublish')), array('method' => 'post')) ?>
+	<?php echo $form->renderFormTag(url_for(array('module' => 'reports', 'action' => 'browsePublish')), array('method' => 'post')) ?>
 
     <?php echo $form->renderHiddenFields() ?>
     
@@ -67,7 +67,13 @@
 					$this->informationObj = QubitInformationObject::getById($item2->objectId);
         		}
         	?>
-         	<?php echo link_to(render_title($this->informationObj), array($this->informationObj, 'module' => 'informationobject')) ?>
+        	
+        	
+        	
+         <?php echo link_to(render_title($this->informationObj), array($this->informationObj, 'module' => 'informationobject')) ?>
+         
+         
+         
         </td><td>
 		     <?php echo $this->informationObj->identifier ?>
         </td><td>

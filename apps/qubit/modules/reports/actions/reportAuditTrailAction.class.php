@@ -25,7 +25,7 @@
 
 class reportsReportAuditTrailAction extends sfAction
 {
-    public static $NAMES = array('dateStart', 'dateEnd', 'cbAuditTrail', 'actionUser', 'userAction', 'limit');
+    public static $NAMES = array('dateStart', 'dateEnd', 'actionUser', 'userAction', 'userActivity', 'limit');
 	
     protected function addField($name)
     {
@@ -50,16 +50,35 @@ class reportsReportAuditTrailAction extends sfAction
             $this->form->setWidget('dateEnd', new sfWidgetFormInput);
             break;
 
-        case 'cbAuditTrail':
-		    $this->form->setDefault($name, false);
-		    $this->form->setValidator($name, new sfValidatorBoolean);
-		    $this->form->setWidget($name, new sfWidgetFormInputCheckbox);
-
+        case 'userAction':
+            $choices = array('0' =>'', 'insert' => "Insert", 'update' => "Update", 'delete' => "Delete");
+            
+            $this->form->setValidator($name, new sfValidatorString);
+            $this->form->setWidget($name, new sfWidgetFormSelect(array('choices' => $choices)));
             break;
 
-        case 'userAction':
-            $choices = array('0' =>'', 'insert' => "Insert", 'update' => "Update");
-            
+        case 'userActivity':
+            $choices = array( '0' => "",
+				'QubitAccessObject' => "Access",
+				'QubitInformationObject' => "Archival Description", 
+				'QubitRepository' => "Archival Institution",
+				'QubitActor' => "Authority Record",
+				'QubitBookinObject' => "Book in",
+				'QubitBookoutObject' => "Book out",
+				'QubitDigitalObject' => "Digital Object",
+				'QubitDonor' => "Donor",
+				'QubitPhysicalObject' => "Physical Storage",
+				'QubitPresevationObject' => "Preservation",
+				'QubitRegistry' => "Registry",
+				'QubitResearcher' => "Researcher",
+				'QubitServiceProvider' => "Service Provider",
+				'QubitTaxonomy' => "Taxonomy",
+				'QubitAccession' => "Accession",
+				'QubitDeaccession' => "Deaccession",
+				'QubitTerm' => "Term",
+				'QubitObjectTermRelation' => "Term Relation",
+				'QubitUser' => "Users"
+			);
             $this->form->setValidator($name, new sfValidatorString);
             $this->form->setWidget($name, new sfWidgetFormSelect(array('choices' => $choices)));
             break;
@@ -67,7 +86,20 @@ class reportsReportAuditTrailAction extends sfAction
 		case 'actionUser':
 			$values = array();
 			$values[] = null;
-			foreach (QubitUser::getAll() as $user) {
+	        $criteria = new Criteria;
+
+			// filter users per users linked to repository
+			if ((!$this->context->user->isAdministrator()) && ($this->context->user->isSuperUser())) {
+				$repos = new QubitUser;
+				$this->userRepos = $repos->getRepositoriesById($this->context->user->getAttribute('user_id'));
+				QubitUser::addSelectColumns($criteria);
+				$criteria->addJoin(QubitAclPermission::USER_ID, QubitUser::ID, Criteria::LEFT_JOIN);
+				$criteria->add(QubitAclPermission::OBJECT_ID, $this->userRepos, Criteria::IN);
+			}
+			$criteria->addGroupByColumn(QubitUser::USERNAME);
+			$criteria->addAscendingOrderByColumn(QubitUser::USERNAME);
+
+			foreach (QubitUser::get($criteria) as $user) {
 				$values[$user->username] = $user->__toString();
 			}
 			
@@ -92,6 +124,11 @@ class reportsReportAuditTrailAction extends sfAction
     }
     public function execute($request)
     {
+		// Check authorization
+		if ((!sfContext::getInstance()->getUser()->hasGroup(QubitAclGroup::ADMINISTRATOR_ID)) && !$this->getUser()->hasGroup(QubitAclGroup::AUDIT_ID)) {
+		  $this->redirect('admin/secure');
+		}
+
         $this->form = new sfForm;
         $this->form->getValidatorSchema()->setOption('allow_extra_fields', true);
         foreach ($this::$NAMES as $name) {
@@ -111,64 +148,233 @@ class reportsReportAuditTrailAction extends sfAction
 	
     public function doSearch($limit, $page)
     {
-        $criteria = new Criteria;
         $this->sort = $this->request->getParameter('sort', 'updatedDown');
        
 		$criteria = new Criteria;
-		$c1 = new Criteria;
-		$c2 = new Criteria;
-		$c3 = new Criteria;
-		$c4 = new Criteria;
-		$c5 = new Criteria;
-		$c6 = new Criteria;
-		$c7 = new Criteria;
-		$c8 = new Criteria;
-		$c9 = new Criteria;
-		$c10 = new Criteria;
-		$c11 = new Criteria;
-		$c12 = new Criteria;
+
 		BaseAuditObject::addSelectColumns($criteria);
-		if ($this->form->getValue('cbAuditTrail') != 1) {
+		$dbTable = $this->form->getValue('userActivity');
+		if ($this->form->getValue('userAction') != 'delete') {
 			$criteria->addSelectColumn(QubitObject::CLASS_NAME);
 		    // This join seems to be necessary to avoid cross joining the local table
 		    // with the QubitObject table
 			$criteria->addJoin(QubitAuditObject::RECORD_ID, QubitObject::ID);
-    		$criteria->add(QubitAuditObject::ACTION, 'delete', Criteria::NOT_EQUAL);
-			$criteria->add(QubitAuditObject::ID, null, Criteria::ISNOTNULL);
+			if ($dbTable == 'QubitInformationObject') {
+				$criteria->addJoin(QubitAuditObject::RECORD_ID, QubitInformationObject::ID);
+				$criteria->addJoin(QubitInformationObject::ID, QubitInformationObjectI18n::ID);
+				$criteria->addJoin(QubitRepository::ID, QubitInformationObject::REPOSITORY_ID);
+				$criteria->addJoin(QubitRepository::ID, QubitActorI18n::ID);
+				$criteria->addSelectColumn(QubitInformationObject::IDENTIFIER);
+				$criteria->addSelectColumn(QubitInformationObjectI18n::TITLE);
+				$criteria->addSelectColumn(QubitRepository::DESC_IDENTIFIER);
+				$criteria->addSelectColumn(QubitActorI18n::AUTHORIZED_FORM_OF_NAME);
+			} else if ($dbTable == 'QubitAccessObject') {
+				$criteria->addJoin(QubitRelation::SUBJECT_ID, QubitAuditObject::RECORD_ID);
+				$criteria->addJoin(QubitInformationObject::ID, QubitRelation::OBJECT_ID);
+				$criteria->addJoin(QubitInformationObject::ID, QubitInformationObjectI18n::ID);
+				$criteria->addJoin(QubitRepository::ID, QubitInformationObject::REPOSITORY_ID);
+				$criteria->addJoin(QubitRepository::ID, QubitActorI18n::ID);
+				$criteria->addSelectColumn(QubitInformationObject::IDENTIFIER);
+				$criteria->addSelectColumn(QubitInformationObjectI18n::TITLE);
+				$criteria->addSelectColumn(QubitRepository::DESC_IDENTIFIER);
+				$criteria->addSelectColumn(QubitActorI18n::AUTHORIZED_FORM_OF_NAME);
+    		} else if ($dbTable == 'QubitPresevationObject') {
+				$criteria->addJoin(QubitPresevationObject::ID, QubitAuditObject::SECONDARY_VALUE);
+				$criteria->addJoin(QubitRelation::SUBJECT_ID, QubitAuditObject::SECONDARY_VALUE);
+				$criteria->addJoin(QubitInformationObject::ID, QubitRelation::OBJECT_ID);
+				$criteria->addJoin(QubitInformationObject::ID, QubitInformationObjectI18n::ID);
+				$criteria->addJoin(QubitRepository::ID, QubitInformationObject::REPOSITORY_ID);
+				$criteria->addJoin(QubitRepository::ID, QubitActorI18n::ID);
+				$criteria->addSelectColumn(QubitInformationObject::IDENTIFIER);
+				$criteria->addSelectColumn(QubitInformationObjectI18n::TITLE);
+				$criteria->addSelectColumn(QubitRepository::DESC_IDENTIFIER);
+				$criteria->addSelectColumn(QubitActorI18n::AUTHORIZED_FORM_OF_NAME);
+    		} else if ($dbTable == 'QubitBookoutObject') {
+				$criteria->addJoin(QubitRelation::SUBJECT_ID, QubitAuditObject::RECORD_ID);
+				$criteria->addJoin(QubitInformationObject::ID, QubitRelation::OBJECT_ID);
+				$criteria->addJoin(QubitInformationObject::ID, QubitInformationObjectI18n::ID);
+				$criteria->addJoin(QubitRepository::ID, QubitInformationObject::REPOSITORY_ID);
+				$criteria->addJoin(QubitRepository::ID, QubitActorI18n::ID);
+				$criteria->addSelectColumn(QubitActorI18n::AUTHORIZED_FORM_OF_NAME);
+				$criteria->addSelectColumn(QubitInformationObject::IDENTIFIER);
+				$criteria->addSelectColumn(QubitInformationObjectI18n::TITLE);
+    		} else if ($dbTable == 'QubitResearcher') {
+				$criteria->addJoin(QubitResearcher::ID, QubitAuditObject::SECONDARY_VALUE);
+				$criteria->addJoin(QubitRepository::ID, QubitResearcher::REPOSITORY_ID);
+				$criteria->addJoin(QubitRepository::ID, QubitActor::ID);
+				$criteria->addJoin(QubitActor::ID, QubitActorI18n::ID);
+				$criteria->addSelectColumn(QubitActor::CORPORATE_BODY_IDENTIFIERS);
+				$criteria->addSelectColumn(QubitActorI18n::AUTHORIZED_FORM_OF_NAME);
+    		} else if ($dbTable == 'QubitServiceProvider') {
+				$criteria->addJoin(QubitServiceProvider::ID, QubitAuditObject::SECONDARY_VALUE);
+				$criteria->addJoin(QubitRepository::ID, QubitServiceProvider::REPOSITORY_ID);
+				$criteria->addJoin(QubitRepository::ID, QubitActorI18n::ID);
+				$criteria->addJoin(QubitActor::ID, QubitActorI18n::ID);
+				$criteria->addSelectColumn(QubitActor::CORPORATE_BODY_IDENTIFIERS);
+				$criteria->addSelectColumn(QubitActorI18n::AUTHORIZED_FORM_OF_NAME);
+    		} else if ($dbTable == 'QubitPhysicalObject') {
+				$criteria->addJoin(QubitPhysicalObjectI18n::ID, QubitAuditObject::RECORD_ID);
+				$criteria->addJoin(QubitPhysicalObject::ID, QubitPhysicalObjectI18n::ID);
+				$criteria->addJoin(QubitRepository::ID, QubitPhysicalObjectI18n::REPOSITORY_ID);
+				$criteria->addJoin(QubitRepository::ID, QubitActor::ID);
+				$criteria->addJoin(QubitActor::ID, QubitActorI18n::ID);
+				$criteria->addSelectColumn(QubitPhysicalObjectI18n::NAME);
+				$criteria->addSelectColumn(QubitPhysicalObjectI18n::UNIQUEIDENTIFIER);
+				$criteria->addSelectColumn(QubitActorI18n::AUTHORIZED_FORM_OF_NAME);
+    		} else if ($dbTable == 'QubitRepository') {
+				$criteria->addJoin(QubitRepository::ID, QubitAuditObject::RECORD_ID);
+				$criteria->addJoin(QubitRepository::ID, QubitActor::ID);
+				$criteria->addJoin(QubitActor::ID, QubitActorI18n::ID);
+				$criteria->addSelectColumn(QubitRepository::IDENTIFIER);
+				$criteria->addSelectColumn(QubitActorI18n::AUTHORIZED_FORM_OF_NAME);
+    		} else if ($dbTable == 'QubitActor') {
+				$criteria->addJoin(QubitActor::ID, QubitAuditObject::RECORD_ID);
+				$criteria->addJoin(QubitActor::ID, QubitActorI18n::ID);
+				$criteria->addSelectColumn(QubitActorI18n::AUTHORIZED_FORM_OF_NAME);
+    		} else if ($dbTable == 'QubitDonor') {
+				$criteria->addJoin(QubitDonor::ID, QubitAuditObject::RECORD_ID);
+				$criteria->addJoin(QubitActor::ID, QubitAuditObject::RECORD_ID);
+				$criteria->addJoin(QubitActor::ID, QubitActorI18n::ID);
+				$criteria->addSelectColumn(QubitActorI18n::AUTHORIZED_FORM_OF_NAME);
+    		} else if ($dbTable == 'QubitRegistry') {
+				$criteria->addJoin(QubitRegistry::ID, QubitAuditObject::RECORD_ID);
+				$criteria->addJoin(QubitActor::ID, QubitAuditObject::RECORD_ID);
+				$criteria->addJoin(QubitActor::ID, QubitActorI18n::ID);
+				$criteria->addSelectColumn(QubitActorI18n::AUTHORIZED_FORM_OF_NAME);
+				$criteria->addSelectColumn(QubitActor::CORPORATE_BODY_IDENTIFIERS);
+    		} else if ($dbTable == 'QubitDigitalObject') {
+				$criteria->addJoin(QubitDigitalObject::ID, QubitAuditObject::RECORD_ID);
+				$criteria->addJoin(QubitInformationObject::ID, QubitDigitalObject::OBJECT_ID);
+				$criteria->addJoin(QubitInformationObject::ID, QubitInformationObjectI18n::ID);
+				$criteria->addJoin(QubitRepository::ID, QubitInformationObject::REPOSITORY_ID);
+				$criteria->addJoin(QubitRepository::ID, QubitActorI18n::ID);
+				$criteria->addSelectColumn(QubitActorI18n::AUTHORIZED_FORM_OF_NAME);
+				$criteria->addSelectColumn(QubitInformationObject::IDENTIFIER);
+				$criteria->addSelectColumn(QubitInformationObjectI18n::TITLE);
+				$criteria->addSelectColumn(QubitDigitalObject::NAME);
+				$criteria->addSelectColumn(QubitActorI18n::AUTHORIZED_FORM_OF_NAME);
+    		} else if ($dbTable == 'QubitUser') {
+				$repos = new QubitUser;
+				$this->userRepos = $repos->getRepositoriesById($this->context->user->getAttribute('user_id'));
+				QubitUser::addSelectColumns($criteria);
+				$criteria->addJoin(QubitAclPermission::USER_ID, QubitUser::ID, Criteria::LEFT_JOIN);
+    		}
 
-			//$criteria->addGroupByColumn(QubitAuditObject::RECORD_ID);
-			$c4 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'object_term_relation', Criteria::NOT_EQUAL);
-			$c5 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'setting_i18n', Criteria::NOT_EQUAL); //settings is handled different to fix SITA
-			$c6 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'relation', Criteria::NOT_EQUAL);
-			$c7 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'relation_i18n', Criteria::NOT_EQUAL); 
-			$c8 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'QubitRelation', Criteria::NOT_EQUAL); 
-			$c9 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'digital_object', Criteria::NOT_EQUAL); 
-			$c10 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'QubitDigitalObject', Criteria::NOT_EQUAL); 
-			$c11 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'QubitEvent', Criteria::NOT_EQUAL); 
-			$c12 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'event', Criteria::NOT_EQUAL); 
-			$c13 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, '', Criteria::NOT_EQUAL); 
-			$c14 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'event_i18n', Criteria::NOT_EQUAL); 
-			$c15 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'QubitAccessObject', Criteria::NOT_EQUAL); //part of Archival description
-			$c16 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'QubitPresevationObject', Criteria::NOT_EQUAL);  //part of Archival description
-			$c17 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'access_object_i18n', Criteria::NOT_EQUAL);
-	 		$c4->addAnd($c5);
-			$criteria->addAnd($c4);
-	 		$c6->addAnd($c7);
-			$criteria->addAnd($c6);
-	 		$c8->addAnd($c9);
-			$criteria->addAnd($c8);
-	 		$c10->addAnd($c11);
-			$criteria->addAnd($c10);
-	 		$c12->addAnd($c13);
-			$criteria->addAnd($c12);
-	 		$c14->addAnd($c15);
-			$criteria->addAnd($c14);
-	 		$c16->addAnd($c17);
-			$criteria->addAnd($c16);
-        } else {
+			//get repositories lined to user logged in
+			$userRepos = array();
+			$userRepos = QubitRepository::filteredUser($this->context->user->getAttribute('user_id'), $this->context->user->isAdministrator());
+
+			$userReposStrip = array();
+			foreach ($userRepos as $key => $value) {
+				$userReposStrip[] = $key;
+			}
+
+			// Only show repositories linked to user
+			if (!$this->context->user->isAdministrator()) {
+				if (($dbTable == 'QubitInformationObject') || ($dbTable == 'QubitAccessObject') || ($dbTable == 'QubitPresevationObject')) {
+					$criteria->add(QubitInformationObject::REPOSITORY_ID, $userReposStrip, Criteria::IN);
+				} else if ($dbTable == 'QubitPhysicalObject') {
+					$criteria->add(QubitPhysicalObjectI18n::REPOSITORY_ID, $userReposStrip, Criteria::IN);
+				} else if ($dbTable == 'QubitResearcher') {
+					$criteria->add(QubitResearcher::REPOSITORY_ID, $userReposStrip, Criteria::IN);
+				} else if ($dbTable == 'QubitBookoutObject') {
+					$criteria->add(QubitInformationObject::REPOSITORY_ID, $userReposStrip, Criteria::IN);
+				} else if ($dbTable == 'QubitServiceProvider') {
+					$criteria->add(QubitServiceProvider::REPOSITORY_ID, $userReposStrip, Criteria::IN);
+				} else if ($dbTable == 'QubitRepository') {
+					$criteria->add(QubitRepository::ID, $userReposStrip, Criteria::IN);
+				} else if ($dbTable == 'QubitDigitalObject') {
+					$criteria->add(QubitInformationObject::REPOSITORY_ID, $userReposStrip, Criteria::IN);
+				} else if ($dbTable == 'QubitDigitalObject') {
+			} 		$criteria->add(QubitAclPermission::OBJECT_ID, $this->userRepos, Criteria::IN);
+				}
+
+
+			if ($dbTable == 'QubitInformationObject') {
+				$criteria4 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, ''.$dbTable.'', Criteria::EQUAL);
+				$criteria22 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'information_object', Criteria::EQUAL);
+				$criteria4->addOr($criteria22);				
+			} else if ($dbTable == 'QubitPresevationObject') {
+				$criteria4 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, ''.$dbTable.'', Criteria::EQUAL);
+				$criteria22 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'presevation_object', Criteria::EQUAL);
+				$criteria4->addOr($criteria22);				
+			} else if ($dbTable == 'QubitRepository') {
+				$criteria4 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, ''.$dbTable.'', Criteria::EQUAL);
+				$criteria22 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'repository_object', Criteria::EQUAL);
+				$criteria4->addOr($criteria22);				
+			} else if ($dbTable == 'QubitResearcher') {
+				$criteria4 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, ''.$dbTable.'', Criteria::EQUAL);
+				$criteria22 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'researcher', Criteria::EQUAL);
+				$criteria4->addOr($criteria22);				
+			} else if ($dbTable == 'QubitServiceProvider') {
+				$criteria4 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, ''.$dbTable.'', Criteria::EQUAL);
+				$criteria22 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'service_provider', Criteria::EQUAL);
+				$criteria4->addOr($criteria22);				
+			} else if ($dbTable == 'QubitPhysicalObject') {
+				$criteria4 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, ''.$dbTable.'', Criteria::EQUAL);
+				$criteria22 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'physical_object', Criteria::EQUAL);
+				$criteria4->addOr($criteria22);				
+			} else if ($dbTable == 'QubitDonor') {
+				$criteria4 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, ''.$dbTable.'', Criteria::EQUAL);
+				$criteria22 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'donor', Criteria::EQUAL);
+				$criteria4->addOr($criteria22);				
+			} else if ($dbTable == 'QubitBookoutObject') {
+				$criteria4 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, ''.$dbTable.'', Criteria::EQUAL);
+				$criteria22 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'bookout_object', Criteria::EQUAL);
+				$criteria4->addOr($criteria22);				
+			} else if ($dbTable == 'QubitBookinObject') {
+				$criteria4 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, ''.$dbTable.'', Criteria::EQUAL);
+				$criteria22 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'bookin_object', Criteria::EQUAL);
+				$criteria4->addOr($criteria22);				
+			} else if ($dbTable == 'QubitAccessObject') {
+				$criteria4 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, ''.$dbTable.'', Criteria::EQUAL);
+				$criteria22 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'access_object', Criteria::EQUAL);
+				$criteria4->addOr($criteria22);				
+			} else if ($dbTable == 'QubitRegistry') {
+				$criteria4 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, ''.$dbTable.'', Criteria::EQUAL);
+				$criteria22 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'registry', Criteria::EQUAL);
+				$criteria4->addOr($criteria22);				
+			} else {
+				$criteria4 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, ''.$dbTable.'', Criteria::EQUAL);
+			}
+			$criteria->addAnd($criteria4);					
+		} else { //deleted items
+		echo $this->form->getValue('userActivity')."<br>";
+			if ($this->form->getValue('userActivity') != '0') {
+				$criteria4 = new Criteria;
+				$criteria4 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, ''.$this->form->getValue('userActivity').'', Criteria::EQUAL);
+			} else {
+				$criteria4 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'QubitInformationObject', Criteria::EQUAL);
+				$criteria22 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'QubitActor', Criteria::EQUAL);
+				$criteria4->addOr($criteria22);		
+				$criteria23 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'QubitRepository', Criteria::EQUAL);
+				$criteria4->addOr($criteria23);		
+				$criteria24 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'QubitUser', Criteria::EQUAL);
+				$criteria4->addOr($criteria24);
+				$criteria25 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'QubitServiceProvider', Criteria::EQUAL);
+				$criteria4->addOr($criteria25);		
+				$criteria26 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'QubitPhysicalObject', Criteria::EQUAL);
+				$criteria4->addOr($criteria26);
+				$criteria27 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'QubitTaxonomy', Criteria::EQUAL);
+				$criteria4->addOr($criteria27);		
+				$criteria28 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'QubitTerm', Criteria::EQUAL);
+				$criteria4->addOr($criteria28);
+				$criteria29 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'QubitRightsHolder', Criteria::EQUAL);
+				$criteria4->addOr($criteria29);		
+				$criteria30 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'QubitAccession', Criteria::EQUAL);
+				$criteria4->addOr($criteria30);
+				$criteria31 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'QubitDeaccession', Criteria::EQUAL);
+				$criteria4->addOr($criteria31);		
+				$criteria32 = $criteria->getNewCriterion(QubitAuditObject::DB_TABLE, 'QubitFunction', Criteria::EQUAL);
+				$criteria4->addOr($criteria32);				
+			}
+
+			$criteria->addAnd($criteria4);					
+
     		$criteria->add(QubitAuditObject::ACTION, 'delete', Criteria::EQUAL);
         }
-        if (null !== $this->form->getValue('dateStart')) {
+        
+		if (null !== $this->form->getValue('dateStart')) {
     		$startDate = $this->form->getValue('dateStart');
         	if (strpos($startDate,"/",0) == 0) {
 				$startDate = date('d/m/Y', strtotime("-3 months"));			    
@@ -177,13 +383,16 @@ class reportsReportAuditTrailAction extends sfAction
 		    $vRes = substr($startDate, strpos($startDate, "/") + 1);
 		    $vMonth = substr($vRes, 0, strpos($vRes, "/"));
 		    $vYear = substr($vRes, strpos($vRes, "/") + 1);
-            if (checkdate((int)$vDay, (int)$vMonth, (int)$vYear)) {
-			    $startDate = date_create($vYear . "-" . $vMonth . "-" . $vDay . " 00.00.00");
+			if ((int)$vMonth < 10) {
+				$vMonth = "0".$vMonth;
+			}
+            if (checkdate((int)$vMonth, (int)$vDay, (int)$vYear)) {
+			    $startDate = date_create($vYear . "-" . $vMonth . "-" . $vDay . " 00:00:00");
 		        $startDate = date_format($startDate, 'Y-m-d H:i:s');
             } else {
                 $startDate = date('Y-m-d 23:59:59');
             }
-		    $startDate = $vYear . "-" . $vMonth . "-" . $vDay . " 00.00.00";
+		    $startDate = $vYear . "-" . $vMonth . "-" . $vDay . " 00:00:00";
 	        $c1 = $criteria->getNewCriterion(QubitAuditObject::ACTION_DATE_TIME, $startDate, Criteria::GREATER_EQUAL);
 	        $criteria->addAnd($c1);
         }
@@ -193,7 +402,10 @@ class reportsReportAuditTrailAction extends sfAction
             $vRes = substr($this->form->getValue('dateEnd'), strpos($this->form->getValue('dateEnd'), "/") + 1);
             $vMonth = substr($vRes, 0, strpos($vRes, "/"));
             $vYear = substr($vRes, strpos($vRes, "/") + 1,4);
-            if (checkdate((int)$vDay, (int)$vMonth, (int)$vYear)) {
+			if ((int)$vMonth < 10) {
+				$vMonth = "0".$vMonth;
+			}
+            if (checkdate((int)$vMonth, (int)$vDay, (int)$vYear)) {
                 $dateEnd = date_create($vYear . "-" . $vMonth . "-" . $vDay . " 23.59.59");
                 $dateEnd = date_format($dateEnd, 'Y-m-d H:i:s');
             } else {
@@ -203,25 +415,40 @@ class reportsReportAuditTrailAction extends sfAction
             $criteria->addAnd($c1);
         }
 
-        if ($this->form->getValue('actionUser') == '1') {
+        if ($this->form->getValue('actionUser') != '0') {
             $c2 = $criteria->getNewCriterion(QubitAuditObject::USER, $this->form->getValue('actionUser'), Criteria::EQUAL);
             $criteria->addAnd($c2);
 		}
-        if ($this->form->getValue('userAction') == '1') {
+		
+        if ($this->form->getValue('userAction') != '0' && $this->form->getValue('userAction') != 'delete') {
             $c3 = $criteria->getNewCriterion(QubitAuditObject::ACTION, $this->form->getValue('userAction'), Criteria::EQUAL);
             $criteria->addAnd($c3);
 		}
-
-	    $criteria->addDescendingOrderByColumn(QubitAuditObject::ACTION_DATE_TIME);
-	    $criteria->addDescendingOrderByColumn(QubitAuditObject::ACTION);
-	    $criteria->addDescendingOrderByColumn(QubitAuditObject::USER);
 	    
 		if (!isset($limit))
 		{
 		  $limit = sfConfig::get('app_hits_per_page');
 		}
+		
+		if ($this->form->getValue('userAction') != 'delete') { //group only items not deleted
+			$criteria->addGroupByColumn(QubitAuditObject::ACTION);        
+			$criteria->addGroupByColumn(QubitAuditObject::USER);        
+			//$criteria->addGroupByColumn(QubitAuditObject::ACTION_DATE_TIME);        
+			$criteria->addGroupByColumn(QubitAuditObject::RECORD_ID);        
+		}
+	    $criteria->addDescendingOrderByColumn(QubitAuditObject::ACTION_DATE_TIME);
+	    $criteria->addDescendingOrderByColumn(QubitAuditObject::ACTION);
+	    $criteria->addDescendingOrderByColumn(QubitAuditObject::USER);
+		if (QubitSetting::getByName('max_row_report') != '-1') {
+			$rowToReturn = QubitSetting::getByName('max_row_report');
+			$rowToReturn = preg_replace('/\s+/', '', $rowToReturn);
+			$rowToReturn = (int)$rowToReturn;
+			 
+			$criteria->setLimit($rowToReturn); //bug not working
+		}
+		
 		// Page results
-		$this->pager = new QubitPagerAudit("QubitAuditObject");
+		$this->pager = new QubitPagerAudit("QubitAuditTrailObject");
 		$this->pager->setCriteria($criteria);
 		$this->pager->setMaxPerPage($limit);
 		$this->pager->setPage($page ? $page : 1);

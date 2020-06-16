@@ -87,6 +87,9 @@ class reportsreportSelectAction extends DefaultEditAction
     
     public function execute($request)
     {
+		if ((!$this->context->user->isAdministrator()) && (!$this->context->user->isSuperUser()) && (!$this->context->user->isAuditUser())) {
+			QubitAcl::forwardUnauthorized();
+		}
         parent::execute($request);
         
         if ($request->isMethod('post')) {
@@ -178,6 +181,12 @@ class reportsreportSelectAction extends DefaultEditAction
                         $this->getRoute()->resource,
                         'module' => 'reports',
                         'action' => 'reportServiceProvider'
+                    );
+                } else if ($request->getParameter('objectType') == 'user') {
+                    $reportSelectRoute = array(
+                        $this->getRoute()->resource,
+                        'module' => 'reports',
+                        'action' => 'reportUser'
                     );
                 } else {
                     $reportSelectRoute = array(

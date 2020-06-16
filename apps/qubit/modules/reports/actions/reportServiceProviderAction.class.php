@@ -29,6 +29,14 @@ class reportsReportServiceProviderAction extends sfAction
     protected function addField($name)
     {
         switch ($name) {
+        case 'className':
+            $choices = array(
+            'QubitServiceProvider' => "Service Provider");
+            
+            $this->form->setValidator($name, new sfValidatorString);
+            $this->form->setWidget($name, new sfWidgetFormSelect(array('choices' => $choices)));
+            break;
+
         case 'dateStart':
             $this->form->setDefault('dateStart', Qubit::renderDate($this->resource['dateStart']));
             if (!isset($this->resource->id)) {
@@ -49,16 +57,46 @@ class reportsReportServiceProviderAction extends sfAction
             $this->form->setWidget('dateEnd', new sfWidgetFormInput);
             break;
 
+        case 'dateOf':
+            $choices = array('CREATED_AT' => $this->context->i18n->__('Creation'), 'UPDATED_AT' => $this->context->i18n->__('Revision'), 'both' => $this->context->i18n->__('Both'));
+            $this->form->setValidator($name, new sfValidatorChoice(array('choices' => array_keys($choices))));
+            $this->form->setWidget($name, new arWidgetFormSelectRadio(array('choices' => $choices, 'class' => 'radio inline')));
+            break;
+
+        case 'limit':
+            $this->form->setValidator($name, new sfValidatorString);
+            $this->form->setWidget($name, new sfWidgetFormInputHidden);
+
+            break;
+
+        case 'sort':
+            $this->form->setValidator($name, new sfValidatorString);
+            $this->form->setWidget($name, new sfWidgetFormInputHidden);
+
+            break;
         }
     }
     public function execute($request)
     {
+		// Check authorization
+		if ((!$this->context->user->isAdministrator()) && (!$this->context->user->isSuperUser()) && (!$this->context->user->isAuditUser())) {
+			QubitAcl::forwardUnauthorized();
+		}
+
         $this->form = new sfForm;
         $this->form->getValidatorSchema()->setOption('allow_extra_fields', true);
         foreach ($this::$NAMES as $name) {
             $this->addField($name);
         }
 
+        $defaults = array(
+		    'className' => 'QubitServiceProvider', 
+		    'dateStart' => date('Y-m-d', strtotime('-1 week')), 
+		    'dateEnd' => date('Y-m-d'), 'dateOf' => 'CREATED_AT', 
+		    'publicationStatus' => 'all', 
+		    'limit' => '10', 
+		    'sort' => 'updatedDown');
+        
         $this->form->bind($request->getRequestParameters() + $request->getGetParameters() + $defaults);
 	    if ($this->form->isValid()) {
 	        $this->className = $this->form->getValue('className');
@@ -80,7 +118,10 @@ class reportsReportServiceProviderAction extends sfAction
             $vRes = substr($this->form->getValue('dateEnd'), strpos($this->form->getValue('dateEnd'), "/") + 1);
             $vMonth = substr($vRes, 0, strpos($vRes, "/"));
             $vYear = substr($vRes, strpos($vRes, "/") + 1,4);
-            if (checkdate((int)$vDay, (int)$vMonth, (int)$vYear)) {
+			if ((int)$vMonth < 10) {
+				$vMonth = "0".$vMonth;
+			}
+            if (checkdate((int)$vMonth, (int)$vDay, (int)$vYear)) {
                 $dateEnd = date_create($vYear . "-" . $vMonth . "-" . $vDay . " 23.59.59");
                 $dateEnd = date_format($dateEnd, 'Y-m-d H:i:s');
             } else {
@@ -97,8 +138,15 @@ class reportsReportServiceProviderAction extends sfAction
 		            $vRes = substr($this->form->getValue('dateStart'), strpos($this->form->getValue('dateStart'), "/") + 1);
 		            $vMonth = substr($vRes, 0, strpos($vRes, "/"));
 		            $vYear = substr($vRes, strpos($vRes, "/") + 1, 4);
-		            $startDate2 = date_create("2001-01-01 23.59.59");
-		            $startDate = date_format($startDate2, 'Y-m-d H:i:s');
+					if ((int)$vMonth < 10) {
+						$vMonth = "0".$vMonth;
+					}
+					if (checkdate((int)$vMonth, (int)$vDay, (int)$vYear)) {
+						$startDate = date_create($vYear . "-" . $vMonth . "-" . $vDay . " 00.00.00");
+						$startDate = date_format($startDate, 'Y-m-d H:i:s');
+					} else {
+						$startDate = date('2020-01-01 23.59.59');
+					}
 		            $criteria->addAnd(constant('QubitObject::' . $dateOf), $startDate, Criteria::GREATER_EQUAL);
 		        }
 		        if (isset($dateEnd)) {
@@ -112,8 +160,15 @@ class reportsReportServiceProviderAction extends sfAction
 		            $vRes = substr($this->form->getValue('dateStart'), strpos($this->form->getValue('dateStart'), "/") + 1);
 		            $vMonth = substr($vRes, 0, strpos($vRes, "/"));
 		            $vYear = substr($vRes, strpos($vRes, "/") + 1);
-		            $startDate = date_create($vYear . "-" . $vMonth . "-" . $vDay . " 00.00.00");
-		            $startDate = date_format($startDate, 'Y-m-d H:i:s');
+					if ((int)$vMonth < 10) {
+						$vMonth = "0".$vMonth;
+					}
+					if (checkdate((int)$vMonth, (int)$vDay, (int)$vYear)) {
+						$startDate = date_create($vYear . "-" . $vMonth . "-" . $vDay . " 00.00.00");
+						$startDate = date_format($startDate, 'Y-m-d H:i:s');
+					} else {
+						$startDate = date('2020-01-01 23.59.59');
+					}
 		            $c1 = $criteria->getNewCriterion(QubitObject::CREATED_AT, $startDate, Criteria::GREATER_EQUAL);
 		            $c2 = $criteria->getNewCriterion(QubitObject::UPDATED_AT, $startDate, Criteria::GREATER_EQUAL);
 		            $c1->addOr($c2);
