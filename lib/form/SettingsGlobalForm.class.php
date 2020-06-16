@@ -24,6 +24,7 @@
  * @package    AccesstoMemory
  * @subpackage settings
  * @author     David Juhasz <david@artefactual.com>
+ * @author     Johan Pieterse <johan.pieterse@sita.co.za>
  */
 class SettingsGlobalForm extends sfForm
 {
@@ -59,6 +60,14 @@ class SettingsGlobalForm extends sfForm
       'google_maps_api_key' => new sfWidgetFormInput,
       'generate_reports_as_pub_user' => new sfWidgetFormSelectRadio(array('choices' => array(1 => 'yes', 0 => 'no')), array('class' => 'radio')),
       'cache_xml_on_save' => new sfWidgetFormSelectRadio(array('choices' => array(1 => 'yes', 0 => 'no')), array('class' => 'radio')),
+      'clipboard_save_max_age' => new sfWidgetFormInput,
+      //SITA One Instance
+      'open_system' => new sfWidgetFormSelectRadio(array('choices' => array(1 => 'yes', 0 => 'no')), array('class' => 'radio')),
+      'concatenate_identifier' => new sfWidgetFormSelectRadio(array('choices' => array(1 => 'yes', 0 => 'no')), array('class' => 'radio')),
+      'concatenate_overwrite' => new sfWidgetFormSelectRadio(array('choices' => array(1 => 'yes', 0 => 'no')), array('class' => 'radio')),
+      'multi_digital_linked' => new sfWidgetFormSelectRadio(array('choices' => array(1 => 'yes', 0 => 'no')), array('class' => 'radio')),
+      'multi_digital_linked_display' => new sfWidgetFormSelectRadio(array('choices' => array(1 => 'yes', 0 => 'no')), array('class' => 'radio')),
+      'max_row_report' => new sfWidgetFormInput,
     ));
 
     // Add labels
@@ -88,6 +97,15 @@ class SettingsGlobalForm extends sfForm
       'google_maps_api_key' => $this->i18n->__('Google Maps Javascript API key (for displaying dynamic maps)'),
       'generate_reports_as_pub_user' => $this->i18n->__('Generate archival description reports as public user'),
       'cache_xml_on_save' => $this->i18n->__('Cache description XML exports upon creation/modification'),
+      'clipboard_save_max_age' => $this->i18n->__('Saved clipboard maximum age (in days)'),
+
+      //SITA One Instance
+      'open_system' => $this->i18n->__('View all Repositories and Authority Records'),
+      'concatenate_identifier' => $this->i18n->__('Concatenate Identifier'),
+      'concatenate_overwrite' => $this->i18n->__('Concatenate Overwrite Identifier'),
+      'multi_digital_linked' => $this->i18n->__('Link multiple digital objects to a single Archival Description'),
+      'multi_digital_linked_display' => $this->i18n->__('Display multiple linked digital objects to a single Archival Description'),
+      'max_row_report' => $this->i18n->__('On reporting, the system will return this number of rows'),
     ));
 
     // Add helper text
@@ -110,6 +128,16 @@ class SettingsGlobalForm extends sfForm
       // 'explode_multipage_files' => $this->i18n->__('')
       // 'show_tooltips' => $this->i18n->__('')
       // 'sword_deposit_dir' => $this->i18n->__('')
+      'clipboard_save_max_age' => $this->i18n->__('The number of days a saved clipboard should be retained before it is eligible for deletion'),
+      
+      //SITA One Instance
+      'open_system' => $this->i18n->__('Choose whether in the Single Instance environment all users can see all Repositories/Authority Reords or only the Repositories/Authority Reords linked to their profile'),
+      'concatenate_identifier' => $this->i18n->__('Choose whether to concatenate Volume, File, Part and Item number into Identifier? Empty fields will be replaced by #'),
+      'concatenate_overwrite' => $this->i18n->__('Choose whether to overwrite concatenated Volume, File, Part and Item number into Identifier? If not selected and Identifier has data, the data will be kept and not replaced with concateneted data.'),
+      'multi_digital_linked' => $this->i18n->__('Choose whether to enable linking of multiple digital objects to a single Archival Description'),
+      'multi_digital_linked_display' => $this->i18n->__('Choose whether to display multiple linked digital objects to a single Archival Description'),
+      'max_row_report' => $this->i18n->__('Choose the number of rows to display when initiating a report. -1 to display all rows. Caution this can take a long time to complete.'),
+
     ));
 
     // Hits per page validator
@@ -149,6 +177,15 @@ class SettingsGlobalForm extends sfForm
     $this->validatorSchema['google_maps_api_key'] = new sfValidatorString(array('required' => false));
     $this->validatorSchema['generate_reports_as_pub_user'] = new sfValidatorInteger(array('required' => false));
     $this->validatorSchema['cache_xml_on_save'] = new sfValidatorInteger(array('required' => false));
+    $this->validatorSchema['clipboard_save_max_age'] = new sfValidatorInteger(array('required' => false));
+
+      //SITA One Instance
+    $this->validatorSchema['open_system'] = new sfValidatorInteger(array('required' => false));
+    $this->validatorSchema['concatenate_identifier'] = new sfValidatorInteger(array('required' => false));
+    $this->validatorSchema['concatenate_overwrite'] = new sfValidatorInteger(array('required' => false));
+    $this->validatorSchema['multi_digital_linked'] = new sfValidatorInteger(array('required' => false));
+    $this->validatorSchema['multi_digital_linked_display'] = new sfValidatorInteger(array('required' => false));
+    $this->validatorSchema['max_row_report'] = new sfValidatorInteger(array('required' => false));
 
     // Set decorator
     $decorator = new QubitWidgetFormSchemaFormatterList($this->widgetSchema);
