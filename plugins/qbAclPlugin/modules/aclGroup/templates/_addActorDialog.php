@@ -1,5 +1,6 @@
 <?php $sf_response->addJavaScript('/vendor/yui/container/container-min') ?>
 
+
 <!-- form for yui dialog -->
 <div id="myDialog">
   <div class="hd"><?php echo __('Add %1%', array('%1%' => lcfirst(sfConfig::get('app_ui_label_actor')))) ?></div>

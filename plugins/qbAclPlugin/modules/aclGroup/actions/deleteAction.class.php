@@ -32,10 +32,10 @@ class AclGroupDeleteAction extends sfAction
     }
 
     // Check permissions
-    if ($this->group->isProtected() || !QubitAcl::check($this->group, 'delete'))
-    {
-      QubitAcl::forwardUnauthorized();
-    }
+    //if ($this->group->isProtected() || !QubitAcl::check($this->group, 'delete'))
+    //{
+    //  QubitAcl::forwardUnauthorized();
+    //}
 
     if ($request->isMethod('delete'))
     {

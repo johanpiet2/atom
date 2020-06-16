@@ -1,15 +1,16 @@
 <?php $sf_response->addStylesheet('/vendor/yui/container/assets/skins/sam/container', 'first') ?>
+
 <?php $sf_response->addJavaScript('/vendor/yui/container/container-min') ?>
 
 <!-- form for yui dialog -->
 <div id="myDialog">
-  <div class="hd"><?php echo __('Add %1%', array('%1%' => lcfirst(sfConfig::get('app_ui_label_repository')))) ?></div>
+  <div class="hd"><?php echo __('Add %1%', array('%1%' => lcfirst(sfConfig::get('app_ui_label_researcher')))) ?></div>
   <div class="bd">
-    <form name="repositoryAcl" method="post">
+    <form name="researcherAcl" method="post">
       <div class="form-item">
-        <label for="addRepository"><?php echo __('%1% name', array('%1%' => sfConfig::get('app_ui_label_repository'))) ?></label>
-        <select name="addRepository" id="addRepository" class="form-autocomplete"></select>
-        <input class="list" type="hidden" value="<?php echo url_for(array('module' => 'repository', 'action' => 'autocomplete')) ?>"/>
+        <label for="addResearcher"><?php echo __('%1% name', array('%1%' => sfConfig::get('app_ui_label_researcher'))) ?></label>
+        <select name="addResearcher" id="addResearcher" class="form-autocomplete"></select>
+        <input class="list" type="hidden" value="<?php echo url_for(array('module' => 'researcher', 'action' => 'autocomplete')) ?>"/>
       </div>
     </form>
   </div>
@@ -58,8 +59,8 @@ var handleCancel = function() {
     this.cancel();
 };
 var handleSubmit = function() {
-  var repositoryInput = jQuery('input[name="addRepository"]');
-  var objectUri = repositoryInput.val().split('/');
+  var researcherInput = jQuery('input[name="addResearcher"]');
+  var objectUri = researcherInput.val().split('/');
   var objectId = objectUri.pop();
 
   // Don't duplicate an existing table
@@ -75,7 +76,7 @@ var handleSubmit = function() {
       caption.css('background', 'none');
     }, 1000);
   }
-  else if ('null' != repositoryInput.val())
+  else if ('null' != researcherInput.val())
   {
     var newTable = '$tableTemplate';
 
@@ -86,9 +87,9 @@ var handleSubmit = function() {
     }
 
     newTable = jQuery(newTable);
-    newTable.find('caption').text(repositoryInput.next('input').val());
+    newTable.find('caption').text(researcherInput.next('input').val());
     newTable.hide();
-    jQuery('a#addRepositoryLink').parent('div').before(newTable);
+    jQuery('a#addResearcherLink').parent('div').before(newTable);
     newTable.slideDown();
   }
 
@@ -96,19 +97,18 @@ var handleSubmit = function() {
   this.hide();
 
   // Clear dialog values
-  repositoryInput.val('null');
-  repositoryInput.next('input').val(null);
+  researcherInput.val('null');
+  researcherInput.next('input').val(null);
 };
 var myButtons = [
     { text: "Submit", handler: handleSubmit, isDefault: true },
     { text: "Cancel", handler: handleCancel }
 ];
 
-// Remove progressively enhanced content class, just before creating the module
-//    YAHOO.util.Dom.removeClass("myDialog", "yui-pe-content");
-    
 var config = {
-  width: "680px",
+  width: "480px",
+  hight: "200px",
+  autoScroll : "true",
   zIndex: "100",
   fixedcenter: true,
   draggable: true,
@@ -124,9 +124,9 @@ myDialog.render();
 // Remove all showEvent listeners to prevent default 'focusFirst' behaviour
 myDialog.showEvent.unsubscribeAll();
 
-// Focus on 'addRepository' (visible) field
+// Focus on 'addResearcher' (visible) field
 myDialog.showEvent.subscribe(function () {
-  document.getElementById('addRepository').focus();
+  document.getElementById('addResearcher').focus();
 }, this, true);
 
 EOL
