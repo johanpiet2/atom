@@ -1,0 +1,98 @@
+<?php
+
+require('../fpdf/fpdf.php');
+
+/*
+ * This file is part of the AccesstoMemory (AtoM) software.
+ *
+ * AccesstoMemory (AtoM) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+  *
+ * AccesstoMemory (AtoM) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with AccesstoMemory (AtoM).  If not, see <http://www.gnu.org/licenses/>.
+ * Johan Pieterse SITA 30 May 2014
+ */
+
+class physicalobjectpdfAction extends sfAction
+{
+	//.pdf create
+	// Current column
+	var $col = 0;
+	// Ordinate of column start
+	var $y0;
+
+	//Demo 5
+	var $B;
+	var $I;
+	var $U;
+	var $HREF;
+	
+	public function execute($request)
+	{
+		if (!isset($request->limit))
+		{
+		  $request->limit = sfConfig::get('app_hits_per_page');
+		}
+
+		$criteria = new Criteria;
+		$criteria->addJoin(QubitPhysicalObject::ID, QubitPhysicalObjectI18n::ID);
+		$criteria->add(QubitPhysicalObjectI18n::CULTURE, $this->context->user->getCulture());
+		$criteria->add(QubitPhysicalObjectI18n::NAME, "$request->query%", Criteria::LIKE);
+
+		$criteria->addAscendingOrderByColumn(QubitPhysicalObjectI18n::NAME);
+
+		$this->pager = new QubitPager('QubitPhysicalObject');
+		$this->pager->setCriteria($criteria);
+		$this->physicalObjects = $this->pager->getResults();
+
+		//pdf
+		$pdf = new FPDF();
+		$title = sfConfig::get('app_ui_label_physicalobject');
+		$pdf->SetTitle($title);
+		$pdf->SetAuthor('SITA');
+		$pdf->AliasNbPages();
+		$link = "http://www.sita.co.za";
+		
+		// First page
+		$pdf->AddPage("P", "A4", $title);
+
+		$pdf->Image('logo.png',10,10,30,0,'','http://www.sita.co.za'); //can write as watermark //logo, left-x, top-y, width, height (0=dynamic to width)
+		$pdf->SetFont('Arial','',10);
+		$pdf->Write(5,"To find out what's new in this tutorial, click ");
+		$pdf->SetFont('','U');
+		$pdf->Write(5,'here',$link);
+		$pdf->SetFont('');
+		//$pdf->PDF('P', 'mm', 'A4'); //P for portrait L=landscape
+		$pdf->SetTopMargin("20");
+
+		//Start second page
+		$header = array('Name', 'Location', 'Unique Identifier', 'Description/Title','Period Covered','Extend','Finding Aids','Accrual Space','Forms','Type');
+
+		$pdf->AddPage("L","A3", $title);
+		$pdf->SetFont('Arial','',10);
+		$data = array();
+		$line = "";
+		foreach ($this->physicalObjects as $item)
+		{
+		  // Write reference code, container name, title, creation dates
+		  $line = $item->name . ";" . $item->location . ";" . $item->uniqueIdentifier . ";" . $item->descriptionTitle . ";" . $item->periodCovered . ";" . $item->extend . ";" . $item->findingAids . ";" . $item->accrualSpace . ";" . $item->forms . ";" . (string)$item->type;
+
+		 $data[] = explode(';',trim($line));  
+		}
+
+		$pdf->BasicTable($header,$data);
+
+		$pdf->SetLeftMargin(45);
+		$pdf->SetFontSize(9);
+		$pdf->Output("","I"); //I=Browser F=Local file D=Download file S=Return as string
+
+		return sfView::NONE;
+	}
+}

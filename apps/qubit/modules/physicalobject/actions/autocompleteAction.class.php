@@ -37,13 +37,27 @@ class PhysicalObjectAutocompleteAction extends sfAction
 
     if (sfConfig::get('app_markdown_enabled', true))
     {
-      $criteria->add(QubitPhysicalObjectI18n::NAME, "%$request->query%", Criteria::LIKE);
+		$criteria->add(QubitPhysicalObjectI18n::NAME, "%$request->query%", Criteria::LIKE);
     }
     else
-    {
-      $criteria->add(QubitPhysicalObjectI18n::NAME, "$request->query%", Criteria::LIKE);
+    { 
+		$criteria->add(QubitPhysicalObjectI18n::NAME, "$request->query%", Criteria::LIKE);
     }
 
+	if (($isAdmin == 0) && (QubitSetting::getByName('open_system') == '0')) {
+		// one instance SITA extend top code to filter
+		// get list of allowed repositories then filter on other allowed criteria
+		$this->allowedRepositories = QubitRepository::filteredUserRepositories($this->context->user->getAttribute('user_id'), $this->context->user->isAdministrator());
+
+		$repositoryInclusionList = array();
+		foreach ($this->allowedRepositories as $value) {
+			$repositoryInclusionList[] = $value['id'];
+		}
+		
+		unset($value);
+		$criteria->add(QubitPhysicalObjectI18n::REPOSITORY_ID, $repositoryInclusionList, Criteria::IN);
+	}
+	
     $criteria->addAscendingOrderByColumn(QubitPhysicalObjectI18n::NAME);
 
     $this->pager = new QubitPager('QubitPhysicalObject');

@@ -62,7 +62,6 @@ class ObjectAddDigitalObjectAction extends sfAction
     {
       $this->repository = $this->resource->getMaintainingRepository();
     }
-
     // Check that object exists and that it is not the root
     if (!isset($this->resource) || !isset($this->resource->parent))
     {
@@ -72,7 +71,8 @@ class ObjectAddDigitalObjectAction extends sfAction
     // Check if already exists a digital object
     if (null !== $digitalObject = $this->resource->getDigitalObjectRelatedByobjectId())
     {
-      //$this->redirect(array($digitalObject, 'module' => 'digitalobject', 'action' => 'edit'));
+		//NARSSA/SITA JJP multiple object upload enabled
+		// $this->redirect(array($digitalObject, 'module' => 'digitalobject', 'action' => 'edit'));
     }
 
     // Check user authorization
