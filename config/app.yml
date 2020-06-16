@@ -14,7 +14,13 @@ all:
 
   # Use sfMemcacheCache if you want a distributed cache.
   # sfAPCCache works with both APC and APCu
-  cache_engine: sfAPCCache
+  cache_engine: sfMemcacheCache
+  cache_engine_param:
+    host: 10.125.205.219
+ #   port: 11211
+    prefix: atom
+    storeCacheInfo: true
+    persistent: true
 
   # Enable read only mode. This setting may be overwritten
   # by and environment variable called "ATOM_READ_ONLY"
