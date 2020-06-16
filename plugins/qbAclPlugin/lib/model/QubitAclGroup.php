@@ -23,6 +23,7 @@
  * @package    AccesstoMemory
  * @subpackage acl
  * @author     David Juhasz <david@artefactual.com>
+ * @author     Johan Pieterse <johan.pieterse@sita.co.za>
  */
 class QubitAclGroup extends BaseAclGroup implements Zend_Acl_Role_Interface
 {
@@ -34,6 +35,13 @@ class QubitAclGroup extends BaseAclGroup implements Zend_Acl_Role_Interface
   const EDITOR_ID        = 101;
   const CONTRIBUTOR_ID   = 102;
   const TRANSLATOR_ID    = 103;
+  const SUPER_ID    	 = 120;  //Super user
+  const RESEARCHER_ID  	 = 124;  //Researcher access
+  const SERVICE_PROV_ID	 = 126;  //Service provider access 
+  const PHYSICAL_STOR_ID = 125;  //Physical storage access
+  const REGISTRY_ID  	 = 128;  //Registry access
+  const REPORT_ID    	 = 122;  //View reports
+  const AUDIT_ID    	 = 127;  //Audit Trail reports
 
   public function __toString()
   {
@@ -64,9 +72,17 @@ class QubitAclGroup extends BaseAclGroup implements Zend_Acl_Role_Interface
   public function isProtected()
   {
     return in_array($this->id, array(
-      self::ROOT_ID,
-      self::ANONYMOUS_ID,
-      self::AUTHENTICATED_ID,
-      self::ADMINISTRATOR_ID));
+		self::ROOT_ID,
+		self::ANONYMOUS_ID,
+		self::AUTHENTICATED_ID,
+		self::SUPER_ID,
+		self::REPORT_ID,
+		self::PHYSICAL_STOR_ID,
+		self::RESEARCHER_ID,
+		self::REGISTRY_ID,
+		self::SERVICE_PROV_ID,
+		self::AUDIT_ID.
+		self::ADMINISTRATOR_ID
+  	));
   }
 }
