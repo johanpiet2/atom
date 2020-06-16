@@ -1,43 +1,65 @@
 <?php
 
-abstract class BaseActor extends QubitObject implements ArrayAccess
+abstract class BasePresevationObject extends QubitObject implements ArrayAccess
 {
   const
     DATABASE_NAME = 'propel',
 
-    TABLE_NAME = 'actor',
+    TABLE_NAME = 'presevation_object',
 
-    ID = 'actor.ID',
-    CORPORATE_BODY_IDENTIFIERS = 'actor.CORPORATE_BODY_IDENTIFIERS',
-    ENTITY_TYPE_ID = 'actor.ENTITY_TYPE_ID',
-    DESCRIPTION_STATUS_ID = 'actor.DESCRIPTION_STATUS_ID',
-    DESCRIPTION_DETAIL_ID = 'actor.DESCRIPTION_DETAIL_ID',
-    DESCRIPTION_IDENTIFIER = 'actor.DESCRIPTION_IDENTIFIER',
-    SOURCE_STANDARD = 'actor.SOURCE_STANDARD',
-    ACTOR_IMPORT_ID = 'actor.ACTOR_IMPORT_ID',
-    PARENT_ID = 'actor.PARENT_ID',
-    LFT = 'actor.LFT',
-    RGT = 'actor.RGT',
-    SOURCE_CULTURE = 'actor.SOURCE_CULTURE';
+    ID = 'presevation_object.ID',
+    CONDITION_ID = 'presevation_object.CONDITION_ID',
+	USABILITY_ID = 'presevation_object.USABILITY_ID',
+    MEASURE_ID = 'presevation_object.MEASURE_ID',
+	MEDIUM_ID = 'presevation_object.MEDIUM_ID', 
+	AVAILABILITY_ID = 'presevation_object.AVAILABILITY_ID',
+	HARD_ID = 'presevation_object.HARD_ID',
+	HARD_REASON = 'presevation_object.HARD_REASON',
+	DIGITAL_ID = 'presevation_object.DIGITAL_ID',
+	DIGITAL_REASON = 'presevation_object.DIGITAL_REASON',
+	REFUSAL_ID = 'presevation_object.REFUSAL_ID', 	
+	RESTORATION_ID= 'presevation_object.RESTORATION_ID',   
+    CONSERVATION_ID = 'presevation_object.CONSERVATION_ID',
+	TYPE_ID = 'presevation_object.TYPE_ID',
+	SENSITIVITY_ID = 'presevation_object.SENSITIVITY_ID',
+	PUBLISH_ID = 'presevation_object.PUBLISH_ID',
+	CLASSIFICATION_ID = 'presevation_object.CLASSIFICATION_ID',
+	RESTRICTION_ID = 'presevation_object.RESTRICTION_ID',
+    PARENT_ID = 'presevation_object.PARENT_ID',
+    OBJECT_ID = 'presevation_object.OBJECT_ID',
+    LFT = 'presevation_object.LFT',
+    RGT = 'presevation_object.RGT',
+    SOURCE_CULTURE = 'presevation_object.SOURCE_CULTURE';
 
   public static function addSelectColumns(Criteria $criteria)
   {
     parent::addSelectColumns($criteria);
 
-    $criteria->addJoin(QubitActor::ID, QubitObject::ID);
+    $criteria->addJoin(QubitPresevationObject::ID, QubitObject::ID);
 
-    $criteria->addSelectColumn(QubitActor::ID);
-    $criteria->addSelectColumn(QubitActor::CORPORATE_BODY_IDENTIFIERS);
-    $criteria->addSelectColumn(QubitActor::ENTITY_TYPE_ID);
-    $criteria->addSelectColumn(QubitActor::DESCRIPTION_STATUS_ID);
-    $criteria->addSelectColumn(QubitActor::DESCRIPTION_DETAIL_ID);
-    $criteria->addSelectColumn(QubitActor::DESCRIPTION_IDENTIFIER);
-    $criteria->addSelectColumn(QubitActor::SOURCE_STANDARD);
-    $criteria->addSelectColumn(QubitActor::ACTOR_IMPORT_ID);
-    $criteria->addSelectColumn(QubitActor::PARENT_ID);
-    $criteria->addSelectColumn(QubitActor::LFT);
-    $criteria->addSelectColumn(QubitActor::RGT);
-    $criteria->addSelectColumn(QubitActor::SOURCE_CULTURE);
+    $criteria->addSelectColumn(QubitPresevationObject::ID);
+    $criteria->addSelectColumn(QubitPresevationObject::CONDITION_ID);
+	$criteria->addSelectColumn(QubitPresevationObject::USABILITY_ID);
+	$criteria->addSelectColumn(QubitPresevationObject::MEASURE_ID);
+	$criteria->addSelectColumn(QubitPresevationObject::MEDIUM_ID);
+	$criteria->addSelectColumn(QubitPresevationObject::AVAILABILITY_ID);
+	$criteria->addSelectColumn(QubitPresevationObject::HARD_ID);
+	$criteria->addSelectColumn(QubitPresevationObject::HARD_REASON);
+	$criteria->addSelectColumn(QubitPresevationObject::DIGITAL_ID);
+	$criteria->addSelectColumn(QubitPresevationObject::DIGITAL_REASON);
+	$criteria->addSelectColumn(QubitPresevationObject::REFUSAL_ID);
+	$criteria->addSelectColumn(QubitPresevationObject::RESTORATION_ID);
+	$criteria->addSelectColumn(QubitPresevationObject::CONSERVATION_ID);
+    $criteria->addSelectColumn(QubitPresevationObject::TYPE_ID);
+    $criteria->addSelectColumn(QubitPresevationObject::SENSITIVITY_ID);	
+	$criteria->addSelectColumn(QubitPresevationObject::PUBLISH_ID);
+	$criteria->addSelectColumn(QubitPresevationObject::CLASSIFICATION_ID);
+	$criteria->addSelectColumn(QubitPresevationObject::RESTRICTION_ID);
+    $criteria->addSelectColumn(QubitPresevationObject::PARENT_ID);
+    $criteria->addSelectColumn(QubitPresevationObject::OBJECT_ID);
+    $criteria->addSelectColumn(QubitPresevationObject::LFT);
+    $criteria->addSelectColumn(QubitPresevationObject::RGT);
+    $criteria->addSelectColumn(QubitPresevationObject::SOURCE_CULTURE);
 
     return $criteria;
   }
@@ -46,12 +68,12 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
   {
     if (!isset($options['connection']))
     {
-      $options['connection'] = Propel::getConnection(QubitActor::DATABASE_NAME);
+      $options['connection'] = Propel::getConnection(QubitPresevationObject::DATABASE_NAME);
     }
 
     self::addSelectColumns($criteria);
 
-    return QubitQuery::createFromCriteria($criteria, 'QubitActor', $options);
+    return QubitQuery::createFromCriteria($criteria, 'QubitPresevationObject', $options);
   }
 
   public static function getAll(array $options = array())
@@ -69,7 +91,7 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
   public static function getById($id, array $options = array())
   {
     $criteria = new Criteria;
-    $criteria->add(QubitActor::ID, $id);
+    $criteria->add(QubitPresevationObject::ID, $id);
 
     if (1 == count($query = self::get($criteria, $options)))
     {
@@ -77,30 +99,19 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
     }
   }
 
-	// jjp SITA 07 Jan 2015 - Search per import id
-  public static function getByImportId($id, array $options = array())
-  {
-    $criteria = new Criteria;
-    $criteria->add(QubitActor::ACTOR_IMPORT_ID, $id);
-    if (1 == count($query = self::getOne($criteria, $options)))
-    {
-      return $query;
-    }
-  }
-
   public static function addOrderByPreorder(Criteria $criteria, $order = Criteria::ASC)
   {
     if ($order == Criteria::DESC)
     {
-      return $criteria->addDescendingOrderByColumn(QubitActor::LFT);
+      return $criteria->addDescendingOrderByColumn(QubitPresevationObject::LFT);
     }
 
-    return $criteria->addAscendingOrderByColumn(QubitActor::LFT);
+    return $criteria->addAscendingOrderByColumn(QubitPresevationObject::LFT);
   }
 
   public static function addRootsCriteria(Criteria $criteria)
   {
-    $criteria->add(QubitActor::PARENT_ID);
+    $criteria->add(QubitPresevationObject::PARENT_ID);
 
     return $criteria;
   }
@@ -109,7 +120,7 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
   {
     parent::__construct();
 
-    $this->tables[] = Propel::getDatabaseMap(QubitActor::DATABASE_NAME)->getTable(QubitActor::TABLE_NAME);
+    $this->tables[] = Propel::getDatabaseMap(QubitPresevationObject::DATABASE_NAME)->getTable(QubitPresevationObject::TABLE_NAME);
   }
 
   public function __isset($name)
@@ -130,36 +141,21 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
     {
     }
 
-    if ('actorsRelatedByparentId' == $name)
+    if ('presevationObjectsRelatedByparentId' == $name)
     {
       return true;
     }
 
-    if ('actorI18ns' == $name)
-    {
-      return true;
-    }
-
-    if ('contactInformations' == $name)
-    {
-      return true;
-    }
-
-    if ('events' == $name)
-    {
-      return true;
-    }
-
-    if ('rightss' == $name)
+    if ('presevationObjectI18ns' == $name)
     {
       return true;
     }
 
     try
     {
-      if (!$value = call_user_func_array(array($this->getCurrentactorI18n($options), '__isset'), $args) && !empty($options['cultureFallback']))
+      if (!$value = call_user_func_array(array($this->getCurrentpresevationObjectI18n($options), '__isset'), $args) && !empty($options['cultureFallback']))
       {
-        return call_user_func_array(array($this->getCurrentactorI18n(array('sourceCulture' => true) + $options), '__isset'), $args);
+        return call_user_func_array(array($this->getCurrentpresevationObjectI18n(array('sourceCulture' => true) + $options), '__isset'), $args);
       }
 
       return $value;
@@ -199,96 +195,45 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
     {
     }
 
-    if ('actorsRelatedByparentId' == $name)
+    if ('presevationObjectsRelatedByparentId' == $name)
     {
-      if (!isset($this->refFkValues['actorsRelatedByparentId']))
+      if (!isset($this->refFkValues['presevationObjectsRelatedByparentId']))
       {
         if (!isset($this->id))
         {
-          $this->refFkValues['actorsRelatedByparentId'] = QubitQuery::create();
+          $this->refFkValues['presevationObjectsRelatedByparentId'] = QubitQuery::create();
         }
         else
         {
-          $this->refFkValues['actorsRelatedByparentId'] = self::getactorsRelatedByparentIdById($this->id, array('self' => $this) + $options);
+          $this->refFkValues['presevationObjectsRelatedByparentId'] = self::getpresevationObjectsRelatedByparentIdById($this->id, array('self' => $this) + $options);
         }
       }
 
-      return $this->refFkValues['actorsRelatedByparentId'];
+      return $this->refFkValues['presevationObjectsRelatedByparentId'];
     }
 
-    if ('actorI18ns' == $name)
+    if ('presevationObjectI18ns' == $name)
     {
-      if (!isset($this->refFkValues['actorI18ns']))
+      if (!isset($this->refFkValues['presevationObjectI18ns']))
       {
         if (!isset($this->id))
         {
-          $this->refFkValues['actorI18ns'] = QubitQuery::create();
+          $this->refFkValues['presevationObjectI18ns'] = QubitQuery::create();
         }
         else
         {
-          $this->refFkValues['actorI18ns'] = self::getactorI18nsById($this->id, array('self' => $this) + $options);
+          $this->refFkValues['presevationObjectI18ns'] = self::getpresevationObjectI18nsById($this->id, array('self' => $this) + $options);
         }
       }
 
-      return $this->refFkValues['actorI18ns'];
-    }
-
-    if ('contactInformations' == $name)
-    {
-      if (!isset($this->refFkValues['contactInformations']))
-      {
-        if (!isset($this->id))
-        {
-          $this->refFkValues['contactInformations'] = QubitQuery::create();
-        }
-        else
-        {
-          $this->refFkValues['contactInformations'] = self::getcontactInformationsById($this->id, array('self' => $this) + $options);
-        }
-      }
-
-      return $this->refFkValues['contactInformations'];
-    }
-
-    if ('events' == $name)
-    {
-      if (!isset($this->refFkValues['events']))
-      {
-        if (!isset($this->id))
-        {
-          $this->refFkValues['events'] = QubitQuery::create();
-        }
-        else
-        {
-          $this->refFkValues['events'] = self::geteventsById($this->id, array('self' => $this) + $options);
-        }
-      }
-
-      return $this->refFkValues['events'];
-    }
-
-    if ('rightss' == $name)
-    {
-      if (!isset($this->refFkValues['rightss']))
-      {
-        if (!isset($this->id))
-        {
-          $this->refFkValues['rightss'] = QubitQuery::create();
-        }
-        else
-        {
-          $this->refFkValues['rightss'] = self::getrightssById($this->id, array('self' => $this) + $options);
-        }
-      }
-
-      return $this->refFkValues['rightss'];
+      return $this->refFkValues['presevationObjectI18ns'];
     }
 
     try
     {
-      if (1 > strlen($value = call_user_func_array(array($this->getCurrentactorI18n($options), '__get'), $args)) && !empty($options['cultureFallback']))
+      if (1 > strlen($value = call_user_func_array(array($this->getCurrentpresevationObjectI18n($options), '__get'), $args)) && !empty($options['cultureFallback']))
       {
-        return call_user_func_array(array($this->getCurrentactorI18n(array('sourceCulture' => true) + $options), '__get'), $args);
+        return call_user_func_array(array($this->getCurrentpresevationObjectI18n(array('sourceCulture' => true) + $options), '__get'), $args);
       }
 
       return $value;
@@ -352,7 +297,7 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
 
     call_user_func_array(array($this, 'QubitObject::__set'), $args);
 
-    call_user_func_array(array($this->getCurrentactorI18n($options), '__set'), $args);
+    call_user_func_array(array($this->getCurrentpresevationObjectI18n($options), '__set'), $args);
 
     return $this;
   }
@@ -369,16 +314,16 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
 
     call_user_func_array(array($this, 'QubitObject::__unset'), $args);
 
-    call_user_func_array(array($this->getCurrentactorI18n($options), '__unset'), $args);
+    call_user_func_array(array($this->getCurrentpresevationObjectI18n($options), '__unset'), $args);
 
     return $this;
   }
 
   public function clear()
   {
-    foreach ($this->actorI18ns as $actorI18n)
+    foreach ($this->presevationObjectI18ns as $presevationObjectI18n)
     {
-      $actorI18n->clear();
+      $presevationObjectI18n->clear();
     }
 
     return parent::clear();
@@ -388,11 +333,11 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
   {
     parent::save($connection);
 
-    foreach ($this->actorI18ns as $actorI18n)
+    foreach ($this->presevationObjectI18ns as $presevationObjectI18n)
     {
-      $actorI18n->id = $this->id;
+      $presevationObjectI18n->id = $this->id;
 
-      $actorI18n->save($connection);
+      $presevationObjectI18n->save($connection);
     }
 
     return $this;
@@ -488,145 +433,172 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
     }
 
     $this->clear();
-    if (!property_exists($this, 'disableNestedSetUpdating') || $this->disableNestedSetUpdating !== true)
-    {
-      $this->deleteFromNestedSet($connection);
-    }
+    $this->deleteFromNestedSet($connection);
 
     parent::delete($connection);
 
     return $this;
   }
+//000000000000000000000000000000000000000
+//0000000000000000000000000000000000000000000000
+//000000000000000000000000000000000000000000000000000
 
-  public static function addJoinentityTypeCriteria(Criteria $criteria)
+  public static function addJointypeCriteria(Criteria $criteria)
   {
-    $criteria->addJoin(QubitActor::ENTITY_TYPE_ID, QubitTerm::ID);
+    $criteria->addJoin(QubitPresevationObject::CONDITION_ID, QubitTerm::ID);
 
     return $criteria;
   }
-
-  public static function addJoindescriptionStatusCriteria(Criteria $criteria)
+  
+  public static function addJoinusabilityCriteria(Criteria $criteria)
   {
-    $criteria->addJoin(QubitActor::DESCRIPTION_STATUS_ID, QubitTerm::ID);
+    $criteria->addJoin(QubitPresevationObject::USABILITY_ID, QubitTerm::ID);
 
     return $criteria;
   }
-
-  public static function addJoindescriptionDetailCriteria(Criteria $criteria)
+ 
+  public static function addJoinpresevationmeasureCriteria(Criteria $criteria)
   {
-    $criteria->addJoin(QubitActor::DESCRIPTION_DETAIL_ID, QubitTerm::ID);
+    $criteria->addJoin(QubitPresevationObject::MEASURE_ID, QubitTerm::ID);
 
     return $criteria;
   }
+  
+  public static function addJoinmediumCriteria(Criteria $criteria)
+  {
+    $criteria->addJoin(QubitPresevationObject::MEDIUM_ID, QubitTerm::ID);
 
+    return $criteria;
+  }
+  
+  public static function addJoinavailabilityCriteria(Criteria $criteria)
+  {
+    $criteria->addJoin(QubitPresevationObject::AVAILABILITY_ID, QubitTerm::ID);
+
+    return $criteria;
+  }
+  
+  public static function addJoinhardCriteria(Criteria $criteria)
+  {
+    $criteria->addJoin(QubitPresevationObject::HARD_ID, QubitTerm::ID);
+
+    return $criteria;
+  }
+  
+  public static function addJoindigitalCriteria(Criteria $criteria)
+  {
+    $criteria->addJoin(QubitPresevationObject::DIGITAL_ID, QubitTerm::ID);
+
+    return $criteria;
+  }
+  
+  
+  public static function addJoinrefusalCriteria(Criteria $criteria)
+  {
+    $criteria->addJoin(QubitPresevationObject::REFUSAL_ID, QubitTerm::ID);
+
+    return $criteria;
+  }
+  
+  public static function addJoinrestorationintervetionCriteria(Criteria $criteria)
+  {
+    $criteria->addJoin(QubitPresevationObject::RESTORATION_ID, QubitTerm::ID);
+
+    return $criteria;
+  }
+  
+ public static function addJoinconservationCriteria(Criteria $criteria)
+  {
+    $criteria->addJoin(QubitPresevationObject::CONSERVATION_ID, QubitTerm::ID);
+
+    return $criteria;
+  }
+  
+ public static function addJointypeidCriteria(Criteria $criteria)
+  {
+    $criteria->addJoin(QubitPresevationObject::TYPE_ID, QubitTerm::ID);
+
+    return $criteria;
+  }
+  
+  public static function addJoinsensitivityidCriteria(Criteria $criteria)
+  {
+    $criteria->addJoin(QubitPresevationObject::SENSITIVITY_ID, QubitTerm::ID);
+
+    return $criteria;
+  }
+  
+  public static function addJoinpublishidCriteria(Criteria $criteria)
+  {
+    $criteria->addJoin(QubitPresevationObject::PUBLISH_ID, QubitTerm::ID);
+
+    return $criteria;
+  }
+  
+  public static function addJoinclassificationidCriteria(Criteria $criteria)
+  {
+    $criteria->addJoin(QubitPresevationObject::CLASSIFICATION_ID, QubitTerm::ID);
+
+    return $criteria;
+  }
+  
+  public static function addJoinrestrictionidCriteria(Criteria $criteria)
+  {
+    $criteria->addJoin(QubitPresevationObject::RESTRICTION_ID, QubitTerm::ID);
+
+    return $criteria;
+  }
+    
+  //000000000000000000000000000000000000000000000000000000000000000000000
+  
   public static function addJoinparentCriteria(Criteria $criteria)
   {
-    $criteria->addJoin(QubitActor::PARENT_ID, QubitActor::ID);
+    $criteria->addJoin(QubitPresevationObject::PARENT_ID, QubitPresevationObject::ID);
 
     return $criteria;
   }
 
-  public static function addactorsRelatedByparentIdCriteriaById(Criteria $criteria, $id)
+  public static function addpresevationObjectsRelatedByparentIdCriteriaById(Criteria $criteria, $id)
   {
-    $criteria->add(QubitActor::PARENT_ID, $id);
+    $criteria->add(QubitPresevationObject::PARENT_ID, $id);
 
     return $criteria;
   }
 
-  public static function getactorsRelatedByparentIdById($id, array $options = array())
+  public static function getpresevationObjectsRelatedByparentIdById($id, array $options = array())
   {
     $criteria = new Criteria;
-    self::addactorsRelatedByparentIdCriteriaById($criteria, $id);
+    self::addpresevationObjectsRelatedByparentIdCriteriaById($criteria, $id);
 
-    return QubitActor::get($criteria, $options);
+    return QubitPresevationObject::get($criteria, $options);
   }
 
-  public function addactorsRelatedByparentIdCriteria(Criteria $criteria)
+  public function addpresevationObjectsRelatedByparentIdCriteria(Criteria $criteria)
   {
-    return self::addactorsRelatedByparentIdCriteriaById($criteria, $this->id);
+    return self::addpresevationObjectsRelatedByparentIdCriteriaById($criteria, $this->id);
   }
 
-  public static function addactorI18nsCriteriaById(Criteria $criteria, $id)
+  public static function addpresevationObjectI18nsCriteriaById(Criteria $criteria, $id)
   {
-    $criteria->add(QubitActorI18n::ID, $id);
+    $criteria->add(QubitPresevationObjectI18n::ID, $id);
 
     return $criteria;
   }
 
-  public static function getactorI18nsById($id, array $options = array())
+  public static function getpresevationObjectI18nsById($id, array $options = array())
   {
     $criteria = new Criteria;
-    self::addactorI18nsCriteriaById($criteria, $id);
+    self::addpresevationObjectI18nsCriteriaById($criteria, $id);
 
-    return QubitActorI18n::get($criteria, $options);
+    return QubitPresevationObjectI18n::get($criteria, $options);
   }
 
-  public function addactorI18nsCriteria(Criteria $criteria)
+  public function addpresevationObjectI18nsCriteria(Criteria $criteria)
   {
-    return self::addactorI18nsCriteriaById($criteria, $this->id);
+    return self::addpresevationObjectI18nsCriteriaById($criteria, $this->id);
   }
 
-  public static function addcontactInformationsCriteriaById(Criteria $criteria, $id)
-  {
-    $criteria->add(QubitContactInformation::ACTOR_ID, $id);
-
-    return $criteria;
-  }
-
-  public static function getcontactInformationsById($id, array $options = array())
-  {
-    $criteria = new Criteria;
-    self::addcontactInformationsCriteriaById($criteria, $id);
-
-    return QubitContactInformation::get($criteria, $options);
-  }
-
-  public function addcontactInformationsCriteria(Criteria $criteria)
-  {
-    return self::addcontactInformationsCriteriaById($criteria, $this->id);
-  }
-
-  public static function addeventsCriteriaById(Criteria $criteria, $id)
-  {
-    $criteria->add(QubitEvent::ACTOR_ID, $id);
-
-    return $criteria;
-  }
-
-  public static function geteventsById($id, array $options = array())
-  {
-    $criteria = new Criteria;
-    self::addeventsCriteriaById($criteria, $id);
-
-    return QubitEvent::get($criteria, $options);
-  }
-
-  public function addeventsCriteria(Criteria $criteria)
-  {
-    return self::addeventsCriteriaById($criteria, $this->id);
-  }
-
-  public static function addrightssCriteriaById(Criteria $criteria, $id)
-  {
-    $criteria->add(QubitRights::RIGHTS_HOLDER_ID, $id);
-
-    return $criteria;
-  }
-
-  public static function getrightssById($id, array $options = array())
-  {
-    $criteria = new Criteria;
-    self::addrightssCriteriaById($criteria, $id);
-
-    return QubitRights::get($criteria, $options);
-  }
-
-  public function addrightssCriteria(Criteria $criteria)
-  {
-    return self::addrightssCriteriaById($criteria, $this->id);
-  }
-
-  public function getCurrentactorI18n(array $options = array())
+  public function getCurrentpresevationObjectI18n(array $options = array())
   {
     if (!empty($options['sourceCulture']))
     {
@@ -638,13 +610,13 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
       $options['culture'] = sfPropel::getDefaultCulture();
     }
 
-    $actorI18ns = $this->actorI18ns->indexBy('culture');
-    if (!isset($actorI18ns[$options['culture']]))
+    $presevationObjectI18ns = $this->presevationObjectI18ns->indexBy('culture');
+    if (!isset($presevationObjectI18ns[$options['culture']]))
     {
-      $actorI18ns[$options['culture']] = new QubitActorI18n;
+      $presevationObjectI18ns[$options['culture']] = new QubitPresevationObjectI18n;
     }
 
-    return $actorI18ns[$options['culture']];
+    return $presevationObjectI18ns[$options['culture']];
   }
 
   public function hasChildren()
@@ -654,24 +626,22 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
 
   public function addAncestorsCriteria(Criteria $criteria)
   {
-    return $criteria->add(QubitActor::LFT, $this->lft, Criteria::LESS_THAN)->add(QubitActor::RGT, $this->rgt, Criteria::GREATER_THAN);
+    return $criteria->add(QubitPresevationObject::LFT, $this->lft, Criteria::LESS_THAN)->add(QubitPresevationObject::RGT, $this->rgt, Criteria::GREATER_THAN);
   }
 
   public function addDescendantsCriteria(Criteria $criteria)
   {
-    return $criteria->add(QubitActor::LFT, $this->lft, Criteria::GREATER_THAN)->add(QubitActor::RGT, $this->rgt, Criteria::LESS_THAN);
+    return $criteria->add(QubitPresevationObject::LFT, $this->lft, Criteria::GREATER_THAN)->add(QubitPresevationObject::RGT, $this->rgt, Criteria::LESS_THAN);
   }
 
   protected function updateNestedSet($connection = null)
   {
-// HACK Try to prevent modifying left and right values anywhere except in this
-// method.  Perhaps it would be more logical to use protected visibility for
-// these values?
+
 unset($this->values['lft']);
 unset($this->values['rgt']);
     if (!isset($connection))
     {
-      $connection = Propel::getConnection();
+      $connection = QubitTransactionFilter::getConnection(QubitPresevationObject::DATABASE_NAME);
     }
 
     if (!isset($this->lft) || !isset($this->rgt))
@@ -686,8 +656,8 @@ unset($this->values['rgt']);
     if (null === $parent = $this->__get('parent', array('connection' => $connection)))
     {
       $statement = $connection->prepare('
-        SELECT MAX('.QubitActor::RGT.')
-        FROM '.QubitActor::TABLE_NAME);
+        SELECT MAX('.QubitPresevationObject::RGT.')
+        FROM '.QubitPresevationObject::TABLE_NAME);
       $statement->execute();
       $row = $statement->fetch();
       $max = $row[0];
@@ -712,15 +682,15 @@ unset($this->values['rgt']);
       }
 
       $statement = $connection->prepare('
-        UPDATE '.QubitActor::TABLE_NAME.'
-        SET '.QubitActor::LFT.' = '.QubitActor::LFT.' + ?
-        WHERE '.QubitActor::LFT.' >= ?');
+        UPDATE '.QubitPresevationObject::TABLE_NAME.'
+        SET '.QubitPresevationObject::LFT.' = '.QubitPresevationObject::LFT.' + ?
+        WHERE '.QubitPresevationObject::LFT.' >= ?');
       $statement->execute(array($delta, $parent->rgt));
 
       $statement = $connection->prepare('
-        UPDATE '.QubitActor::TABLE_NAME.'
-        SET '.QubitActor::RGT.' = '.QubitActor::RGT.' + ?
-        WHERE '.QubitActor::RGT.' >= ?');
+        UPDATE '.QubitPresevationObject::TABLE_NAME.'
+        SET '.QubitPresevationObject::RGT.' = '.QubitPresevationObject::RGT.' + ?
+        WHERE '.QubitPresevationObject::RGT.' >= ?');
       $statement->execute(array($delta, $parent->rgt));
 
       if (!isset($this->lft) || !isset($this->rgt))
@@ -742,10 +712,10 @@ unset($this->values['rgt']);
     }
 
     $statement = $connection->prepare('
-      UPDATE '.QubitActor::TABLE_NAME.'
-      SET '.QubitActor::LFT.' = '.QubitActor::LFT.' + ?, '.QubitActor::RGT.' = '.QubitActor::RGT.' + ?
-      WHERE '.QubitActor::LFT.' >= ?
-      AND '.QubitActor::RGT.' <= ?');
+      UPDATE '.QubitPresevationObject::TABLE_NAME.'
+      SET '.QubitPresevationObject::LFT.' = '.QubitPresevationObject::LFT.' + ?, '.QubitPresevationObject::RGT.' = '.QubitPresevationObject::RGT.' + ?
+      WHERE '.QubitPresevationObject::LFT.' >= ?
+      AND '.QubitPresevationObject::RGT.' <= ?');
     $statement->execute(array($shift, $shift, $this->lft, $this->rgt));
 
     $this->deleteFromNestedSet($connection);
@@ -766,21 +736,21 @@ unset($this->values['rgt']);
   {
     if (!isset($connection))
     {
-      $connection = Propel::getConnection();
+      $connection = QubitTransactionFilter::getConnection(QubitPresevationObject::DATABASE_NAME);
     }
 
     $delta = $this->rgt - $this->lft + 1;
 
     $statement = $connection->prepare('
-      UPDATE '.QubitActor::TABLE_NAME.'
-      SET '.QubitActor::LFT.' = '.QubitActor::LFT.' - ?
-      WHERE '.QubitActor::LFT.' >= ?');
+      UPDATE '.QubitPresevationObject::TABLE_NAME.'
+      SET '.QubitPresevationObject::LFT.' = '.QubitPresevationObject::LFT.' - ?
+      WHERE '.QubitPresevationObject::LFT.' >= ?');
     $statement->execute(array($delta, $this->rgt));
 
     $statement = $connection->prepare('
-      UPDATE '.QubitActor::TABLE_NAME.'
-      SET '.QubitActor::RGT.' = '.QubitActor::RGT.' - ?
-      WHERE '.QubitActor::RGT.' >= ?');
+      UPDATE '.QubitPresevationObject::TABLE_NAME.'
+      SET '.QubitPresevationObject::RGT.' = '.QubitPresevationObject::RGT.' - ?
+      WHERE '.QubitPresevationObject::RGT.' >= ?');
     $statement->execute(array($delta, $this->rgt));
 
     return $this;
@@ -913,15 +883,7 @@ unset($this->values['rgt']);
     }
   }
 
-  /**
-   * Adds $delta to all L and R values that are >= $first and <= $last.
-   * '$delta' can also be negative.
-   *
-   * @param int $delta Value to be shifted by, can be negative
-   * @param int $first First node to be shifted
-   * @param int $last Last node to be shifted (optional)
-   * @param PropelPDO $con Connection to use.
-   */
+
   protected function shiftRLValues($delta, $first, $last = null, PropelPDO $con = null)
   {
     if ($con === null)
@@ -931,29 +893,29 @@ unset($this->values['rgt']);
 
     // Shift left column values
     $whereCriteria = new Criteria;
-    $criterion = $whereCriteria->getNewCriterion(QubitActor::LFT, $first, Criteria::GREATER_EQUAL);
+    $criterion = $whereCriteria->getNewCriterion(QubitPresevationObject::LFT, $first, Criteria::GREATER_EQUAL);
     if (null !== $last)
     {
-      $criterion->addAnd($whereCriteria->getNewCriterion(QubitActor::LFT, $last, Criteria::LESS_EQUAL));
+      $criterion->addAnd($whereCriteria->getNewCriterion(QubitPresevationObject::LFT, $last, Criteria::LESS_EQUAL));
     }
     $whereCriteria->add($criterion);
 
     $valuesCriteria = new Criteria;
-    $valuesCriteria->add(QubitActor::LFT, array('raw' => QubitActor::LFT . ' + ?', 'value' => $delta), Criteria::CUSTOM_EQUAL);
+    $valuesCriteria->add(QubitPresevationObject::LFT, array('raw' => QubitPresevationObject::LFT . ' + ?', 'value' => $delta), Criteria::CUSTOM_EQUAL);
 
     BasePeer::doUpdate($whereCriteria, $valuesCriteria, $con);
 
     // Shift right column values
     $whereCriteria = new Criteria;
-    $criterion = $whereCriteria->getNewCriterion(QubitActor::RGT, $first, Criteria::GREATER_EQUAL);
+    $criterion = $whereCriteria->getNewCriterion(QubitPresevationObject::RGT, $first, Criteria::GREATER_EQUAL);
     if (null !== $last)
     {
-      $criterion->addAnd($whereCriteria->getNewCriterion(QubitActor::RGT, $last, Criteria::LESS_EQUAL));
+      $criterion->addAnd($whereCriteria->getNewCriterion(QubitPresevationObject::RGT, $last, Criteria::LESS_EQUAL));
     }
     $whereCriteria->add($criterion);
 
     $valuesCriteria = new Criteria;
-    $valuesCriteria->add(QubitActor::RGT, array('raw' => QubitActor::RGT . ' + ?', 'value' => $delta), Criteria::CUSTOM_EQUAL);
+    $valuesCriteria->add(QubitPresevationObject::RGT, array('raw' => QubitPresevationObject::RGT . ' + ?', 'value' => $delta), Criteria::CUSTOM_EQUAL);
 
     BasePeer::doUpdate($whereCriteria, $valuesCriteria, $con);
   }

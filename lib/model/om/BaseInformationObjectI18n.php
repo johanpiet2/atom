@@ -28,6 +28,10 @@ abstract class BaseInformationObjectI18n implements ArrayAccess
     RULES = 'information_object_i18n.RULES',
     SOURCES = 'information_object_i18n.SOURCES',
     REVISION_HISTORY = 'information_object_i18n.REVISION_HISTORY',
+    VOLUME_NUMBER_IDENTIFIER = 'information_object_i18n.VOLUME_NUMBER_IDENTIFIER',
+    FILE_NUMBER_IDENTIFIER = 'information_object_i18n.FILE_NUMBER_IDENTIFIER',
+    PART_NUMBER_IDENTIFIER = 'information_object_i18n.PART_NUMBER_IDENTIFIER',
+    ITEM_NUMBER_IDENTIFIER = 'information_object_i18n.ITEM_NUMBER_IDENTIFIER',
     ID = 'information_object_i18n.ID',
     CULTURE = 'information_object_i18n.CULTURE';
 
@@ -54,6 +58,10 @@ abstract class BaseInformationObjectI18n implements ArrayAccess
     $criteria->addSelectColumn(QubitInformationObjectI18n::RULES);
     $criteria->addSelectColumn(QubitInformationObjectI18n::SOURCES);
     $criteria->addSelectColumn(QubitInformationObjectI18n::REVISION_HISTORY);
+    $criteria->addSelectColumn(QubitInformationObjectI18n::VOLUME_NUMBER_IDENTIFIER);
+    $criteria->addSelectColumn(QubitInformationObjectI18n::FILE_NUMBER_IDENTIFIER);
+    $criteria->addSelectColumn(QubitInformationObjectI18n::PART_NUMBER_IDENTIFIER);
+    $criteria->addSelectColumn(QubitInformationObjectI18n::ITEM_NUMBER_IDENTIFIER);
     $criteria->addSelectColumn(QubitInformationObjectI18n::ID);
     $criteria->addSelectColumn(QubitInformationObjectI18n::CULTURE);
 
@@ -70,8 +78,8 @@ abstract class BaseInformationObjectI18n implements ArrayAccess
   public static function getFromRow(array $row)
   {
     $keys = array();
-    $keys['id'] = $row[21];
-    $keys['culture'] = $row[22];
+    $keys['id'] = $row[25];
+    $keys['culture'] = $row[26];
 
     $key = serialize($keys);
     if (!isset(self::$informationObjectI18ns[$key]))
@@ -123,6 +131,18 @@ abstract class BaseInformationObjectI18n implements ArrayAccess
     $criteria = new Criteria;
     $criteria->add(QubitInformationObjectI18n::ID, $id);
     $criteria->add(QubitInformationObjectI18n::CULTURE, $culture);
+
+    if (1 == count($query = self::get($criteria, $options)))
+    {
+      return $query[0];
+    }
+  }
+
+	// jjp SITA
+  public static function getById($id, array $options = array())
+  {
+    $criteria = new Criteria;
+    $criteria->add(QubitInformationObjectI18n::ID, $id);
 
     if (1 == count($query = self::get($criteria, $options)))
     {

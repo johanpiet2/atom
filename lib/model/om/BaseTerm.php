@@ -67,6 +67,20 @@ abstract class BaseTerm extends QubitObject implements ArrayAccess
     }
   }
 
+	//SITA JJP XmlImportArchivalDescription
+  public static function getEntityTerm($name)
+  {
+	if (!isset($options['connection']))
+	{
+		$options['connection'] = Propel::getConnection(QubitTerm::DATABASE_NAME);
+	}
+
+	$statement = $options['connection']->prepare('SELECT '.QubitTerm::ID.' FROM '.QubitTermI18n::TABLE_NAME.','.QubitTerm::TABLE_NAME.' WHERE term.id=term_i18n.id AND term_i18n.NAME="'.$name.'"');
+	$statement->execute();
+	$row = $statement->fetch();
+	return $row[0];
+  }
+
   public static function addOrderByPreorder(Criteria $criteria, $order = Criteria::ASC)
   {
     if ($order == Criteria::DESC)
@@ -193,7 +207,6 @@ abstract class BaseTerm extends QubitObject implements ArrayAccess
     {
       return true;
     }
-
     if ('notes' == $name)
     {
       return true;
@@ -626,7 +639,7 @@ abstract class BaseTerm extends QubitObject implements ArrayAccess
 
       return $this->refFkValues['informationObjectsRelatedBydisplayStandardId'];
     }
-
+	
     if ('notes' == $name)
     {
       if (!isset($this->refFkValues['notes']))
@@ -1533,6 +1546,17 @@ abstract class BaseTerm extends QubitObject implements ArrayAccess
   public function addinformationObjectsRelatedBydisplayStandardIdCriteria(Criteria $criteria)
   {
     return self::addinformationObjectsRelatedBydisplayStandardIdCriteriaById($criteria, $this->id);
+  }
+  
+  public static function getByParentId($parentid, array $options = array())
+  {
+    $criteria = new Criteria;
+    $criteria->add(QubitTerm::PARENT_ID, $parentid);
+    $criteria->addJoin(QubitTerm::ID, QubitTermI18n::ID);
+    if (count($query = self::get($criteria, $options)) >= 1)
+    {
+      return $query;
+    }
   }
 
   public static function addnotesCriteriaById(Criteria $criteria, $id)

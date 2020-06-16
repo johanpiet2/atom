@@ -20,6 +20,7 @@ abstract class BaseRepository extends QubitActor implements ArrayAccess
     parent::addSelectColumns($criteria);
 
     $criteria->addJoin(QubitRepository::ID, QubitActor::ID);
+    $criteria->addJoin(QubitActor::ID, QubitActorI18n::ID);
 
     $criteria->addSelectColumn(QubitRepository::ID);
     $criteria->addSelectColumn(QubitRepository::IDENTIFIER);
@@ -40,6 +41,20 @@ abstract class BaseRepository extends QubitActor implements ArrayAccess
     }
 
     self::addSelectColumns($criteria);
+
+	//sort repository by name SITA
+    $sortBy = (isset($options['sortBy'])) ? $options['sortBy'] : 'authorized_form_of_name';
+
+    switch ($sortBy)
+    {
+		case 'authorized_form_of_name':
+			$criteria->addAscendingOrderByColumn('authorized_form_of_name');
+		case 'identifier':
+			$criteria->addAscendingOrderByColumn('identifier');
+		default:
+			$criteria->addAscendingOrderByColumn('authorized_form_of_name');
+       
+	}
 
     return QubitQuery::createFromCriteria($criteria, 'QubitRepository', $options);
   }
@@ -64,6 +79,18 @@ abstract class BaseRepository extends QubitActor implements ArrayAccess
     if (1 == count($query = self::get($criteria, $options)))
     {
       return $query[0];
+    }
+  }
+  
+  // jjp SITA
+  public static function getByIdentifier($identifier, array $options = array())
+  {
+    $criteria = new Criteria;
+    $criteria->add(QubitRepository::IDENTIFIER, $identifier);
+
+    if (1 == count($query = self::getOne($criteria, $options)))
+    {
+      return $query;
     }
   }
 

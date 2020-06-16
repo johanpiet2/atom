@@ -12,7 +12,8 @@ abstract class BaseUser extends QubitActor implements ArrayAccess
     EMAIL = 'user.EMAIL',
     SHA1_PASSWORD = 'user.SHA1_PASSWORD',
     SALT = 'user.SALT',
-    ACTIVE = 'user.ACTIVE';
+    ACTIVE = 'user.ACTIVE',
+    SECURITY_ID = 'user.SECURITY_ID';
 
   public static function addSelectColumns(Criteria $criteria)
   {
@@ -26,6 +27,7 @@ abstract class BaseUser extends QubitActor implements ArrayAccess
     $criteria->addSelectColumn(QubitUser::SHA1_PASSWORD);
     $criteria->addSelectColumn(QubitUser::SALT);
     $criteria->addSelectColumn(QubitUser::ACTIVE);
+    $criteria->addSelectColumn(QubitUser::SECURITY_ID);
 
     return $criteria;
   }
@@ -59,6 +61,17 @@ abstract class BaseUser extends QubitActor implements ArrayAccess
     $criteria = new Criteria;
     $criteria->add(QubitUser::ID, $id);
 
+    if (1 == count($query = self::get($criteria, $options)))
+    {
+      return $query[0];
+    }
+  }
+
+	// jjp SITA 13 Jan 2015 _ Search per Username for updates from import
+  public static function getByUsername($username, array $options = array())
+  {
+    $criteria = new Criteria;
+    $criteria->add(QubitUser::USERNAME, $username);
     if (1 == count($query = self::get($criteria, $options)))
     {
       return $query[0];

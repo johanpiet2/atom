@@ -1,45 +1,58 @@
 <?php
 
-abstract class BaseFunctionI18n implements ArrayAccess
+/*
+**** Author: Tsholo Ramesega  ******
+**** Module: Preservation Object component *****
+**** Date  :01-04-2013   ******
+
+*/
+
+abstract class BaseBookoutObjectI18n implements ArrayAccess
 {
   const
     DATABASE_NAME = 'propel',
 
-    TABLE_NAME = 'function_i18n',
+    TABLE_NAME = 'bookout_object_i18n',
 
-    AUTHORIZED_FORM_OF_NAME = 'function_i18n.AUTHORIZED_FORM_OF_NAME',
-    CLASSIFICATION = 'function_i18n.CLASSIFICATION',
-    DATES = 'function_i18n.DATES',
-    DESCRIPTION = 'function_i18n.DESCRIPTION',
-    HISTORY = 'function_i18n.HISTORY',
-    LEGISLATION = 'function_i18n.LEGISLATION',
-    INSTITUTION_IDENTIFIER = 'function_i18n.INSTITUTION_IDENTIFIER',
-    REVISION_HISTORY = 'function_i18n.REVISION_HISTORY',
-    RULES = 'function_i18n.RULES',
-    SOURCES = 'function_i18n.SOURCES',
-    ID = 'function_i18n.ID',
-    CULTURE = 'function_i18n.CULTURE';
+    NAME = 'bookout_object_i18n.NAME',
+    TIME_PERIOD = 'bookout_object_i18n.TIME_PERIOD',
+    REMARKS = 'bookout_object_i18n.REMARKS',
+	UNIQUE_IDENTIFIER = 'bookout_object_i18n.UNIQUE_IDENTIFIER',
+	STRONG_ROOM = 'bookout_object_i18n.STRONG_ROOM',
+	ROW = 'bookout_object_i18n.ROW',
+	SHELF = 'bookout_object_i18n.SHELF',
+	LOCATION = 'bookout_object_i18n.LOCATION',
+	AVAILABILITY = 'bookout_object_i18n.AVAILABILITY',
+	RECORD_CONDITION = 'bookout_object_i18n.RECORD_CONDITION',	
+	ID = 'bookout_object_i18n.ID',	
+    REQUESTOR_TYPE = 'bookout_object_i18n.REQUESTOR_TYPE',
+    SERVICE_PROVIDER = 'bookout_object_i18n.SERVICE_PROVIDER',
+    OBJECT_ID = 'bookout_object_i18n.OBJECT_ID',
+    CULTURE = 'bookout_object_i18n.CULTURE';
 
   public static function addSelectColumns(Criteria $criteria)
   {
-    $criteria->addSelectColumn(QubitFunctionI18n::AUTHORIZED_FORM_OF_NAME);
-    $criteria->addSelectColumn(QubitFunctionI18n::CLASSIFICATION);
-    $criteria->addSelectColumn(QubitFunctionI18n::DATES);
-    $criteria->addSelectColumn(QubitFunctionI18n::DESCRIPTION);
-    $criteria->addSelectColumn(QubitFunctionI18n::HISTORY);
-    $criteria->addSelectColumn(QubitFunctionI18n::LEGISLATION);
-    $criteria->addSelectColumn(QubitFunctionI18n::INSTITUTION_IDENTIFIER);
-    $criteria->addSelectColumn(QubitFunctionI18n::REVISION_HISTORY);
-    $criteria->addSelectColumn(QubitFunctionI18n::RULES);
-    $criteria->addSelectColumn(QubitFunctionI18n::SOURCES);
-    $criteria->addSelectColumn(QubitFunctionI18n::ID);
-    $criteria->addSelectColumn(QubitFunctionI18n::CULTURE);
+    $criteria->addSelectColumn(QubitBookoutObjectI18n::NAME);
+    $criteria->addSelectColumn(QubitBookoutObjectI18n::TIME_PERIOD);
+    $criteria->addSelectColumn(QubitBookoutObjectI18n::REMARKS);
+	$criteria->addSelectColumn(QubitBookoutObjectI18n::UNIQUE_IDENTIFIER);
+	$criteria->addSelectColumn(QubitBookoutObjectI18n::STRONG_ROOM);
+	$criteria->addSelectColumn(QubitBookoutObjectI18n::ROW);
+	$criteria->addSelectColumn(QubitBookoutObjectI18n::SHELF);
+    $criteria->addSelectColumn(QubitBookoutObjectI18n::LOCATION);
+    $criteria->addSelectColumn(QubitBookoutObjectI18n::AVAILABILITY);
+	$criteria->addSelectColumn(QubitBookoutObjectI18n::RECORD_CONDITION);
+    $criteria->addSelectColumn(QubitBookoutObjectI18n::ID);
+    $criteria->addSelectColumn(QubitBookoutObjectI18n::REQUESTOR_TYPE);
+    $criteria->addSelectColumn(QubitBookoutObjectI18n::SERVICE_PROVIDER);
+    $criteria->addSelectColumn(QubitBookoutObjectI18n::OBJECT_ID);
+    $criteria->addSelectColumn(QubitBookoutObjectI18n::CULTURE);
 
     return $criteria;
   }
 
   protected static
-    $functionI18ns = array();
+    $bookoutObjectI18ns = array();
 
   protected
     $keys = array(),
@@ -49,39 +62,39 @@ abstract class BaseFunctionI18n implements ArrayAccess
   {
     $keys = array();
     $keys['id'] = $row[10];
-    $keys['culture'] = $row[11];
+    $keys['culture'] = $row[14];
 
     $key = serialize($keys);
-    if (!isset(self::$functionI18ns[$key]))
+    if (!isset(self::$bookoutObjectI18ns[$key]))
     {
-      $functionI18n = new QubitFunctionI18n;
+      $bookoutObjectI18n = new QubitBookoutObjectI18n;
 
-      $functionI18n->keys = $keys;
-      $functionI18n->row = $row;
+      $bookoutObjectI18n->keys = $keys;
+      $bookoutObjectI18n->row = $row;
 
-      $functionI18n->new = false;
+      $bookoutObjectI18n->new = false;
 
-      self::$functionI18ns[$key] = $functionI18n;
+      self::$bookoutObjectI18ns[$key] = $bookoutObjectI18n;
     }
 
-    return self::$functionI18ns[$key];
+    return self::$bookoutObjectI18ns[$key];
   }
 
   public static function clearCache()
   {
-    self::$functionI18ns = array();
+    self::$bookoutObjectI18ns = array();
   }
 
   public static function get(Criteria $criteria, array $options = array())
   {
     if (!isset($options['connection']))
     {
-      $options['connection'] = Propel::getConnection(QubitFunctionI18n::DATABASE_NAME);
+      $options['connection'] = Propel::getConnection(QubitBookoutObjectI18n::DATABASE_NAME);
     }
 
     self::addSelectColumns($criteria);
 
-    return QubitQuery::createFromCriteria($criteria, 'QubitFunctionI18n', $options);
+    return QubitQuery::createFromCriteria($criteria, 'QubitBookoutObjectI18n', $options);
   }
 
   public static function getAll(array $options = array())
@@ -96,23 +109,23 @@ abstract class BaseFunctionI18n implements ArrayAccess
     return self::get($criteria, $options)->__get(0, array('defaultValue' => null));
   }
 
-  public static function getByIdAndCulture($id, $culture, array $options = array())
+  public static function getById($id, array $options = array())
   {
     $criteria = new Criteria;
-    $criteria->add(QubitFunctionI18n::ID, $id);
-    $criteria->add(QubitFunctionI18n::CULTURE, $culture);
+    $criteria->add(QubitBookoutObjectI18n::ID, $id);
 
     if (1 == count($query = self::get($criteria, $options)))
     {
       return $query[0];
+//      return $query[0]->service_provider;
     }
   }
 
-//SITA JJP
-  public static function getById($id, array $options = array())
+  public static function getByIdAndCulture($id, $culture, array $options = array())
   {
     $criteria = new Criteria;
-    $criteria->add(QubitFunctionI18n::ID, $id);
+    $criteria->add(QubitBookoutObjectI18n::ID, $id);
+    $criteria->add(QubitBookoutObjectI18n::CULTURE, $culture);
 
     if (1 == count($query = self::get($criteria, $options)))
     {
@@ -124,7 +137,7 @@ abstract class BaseFunctionI18n implements ArrayAccess
   {
     if (!isset($connection))
     {
-      $connection = Propel::getConnection();
+      $connection = QubitTransactionFilter::getConnection(QubitBookoutObjectI18n::DATABASE_NAME);
     }
 
     $affectedRows = 0;
@@ -139,7 +152,7 @@ abstract class BaseFunctionI18n implements ArrayAccess
 
   public function __construct()
   {
-    $this->tables[] = Propel::getDatabaseMap(QubitFunctionI18n::DATABASE_NAME)->getTable(QubitFunctionI18n::TABLE_NAME);
+    $this->tables[] = Propel::getDatabaseMap(QubitBookoutObjectI18n::DATABASE_NAME)->getTable(QubitBookoutObjectI18n::TABLE_NAME);
   }
 
   protected
@@ -167,12 +180,12 @@ abstract class BaseFunctionI18n implements ArrayAccess
 
       if (!isset($options['connection']))
       {
-        $options['connection'] = Propel::getConnection(QubitFunctionI18n::DATABASE_NAME);
+        $options['connection'] = Propel::getConnection(QubitBookoutObjectI18n::DATABASE_NAME);
       }
 
       $criteria = new Criteria;
-      $criteria->add(QubitFunctionI18n::ID, $this->id);
-      $criteria->add(QubitFunctionI18n::CULTURE, $this->culture);
+      $criteria->add(QubitBookoutObjectI18n::ID, $this->id);
+      $criteria->add(QubitBookoutObjectI18n::CULTURE, $this->culture);
 
       call_user_func(array(get_class($this), 'addSelectColumns'), $criteria);
 
@@ -278,29 +291,16 @@ abstract class BaseFunctionI18n implements ArrayAccess
     {
       foreach ($table->getColumns() as $column)
       {
-        // Foreign key column name
-        $nameId = $name.'Id';
-
-        // Set local column values
-        if ($name === $column->getPhpName())
+        if ($name == $column->getPhpName())
         {
           $this->values[$name] = $value;
         }
 
-        // If this is a foreign key column then get primary key from related table
-        else if ($nameId === $column->getPhpName())
+        if ("{$name}Id" == $column->getPhpName())
         {
-          if(!empty($value))
-          {
-            $relatedTable = $column->getTable()->getDatabaseMap()->getTable($column->getRelatedTableName());
+          $relatedTable = $column->getTable()->getDatabaseMap()->getTable($column->getRelatedTableName());
 
-            $this->values[$nameId] = $value->__get($relatedTable->getColumn($column->getRelatedColumnName())->getPhpName(), $options);
-          }
-          else
-          {
-            // If $value is null, then don't try and fetch related object for primary key
-            $this->values[$nameId] = null;
-          }
+          $this->values["{$name}Id"] = $value->__get($relatedTable->getColumn($column->getRelatedColumnName())->getPhpName(), $options);
         }
 
         $offset++;
@@ -387,11 +387,6 @@ abstract class BaseFunctionI18n implements ArrayAccess
           $this->row[$offset] = $this->values[$column->getPhpName()];
         }
 
-        if ($this->new && $column->isPrimaryKey())
-        {
-          $this->keys[$column->getPhpName()] = $this->values[$column->getPhpName()];
-        }
-
         $offset++;
       }
     }
@@ -445,7 +440,7 @@ abstract class BaseFunctionI18n implements ArrayAccess
   {
     if (!isset($connection))
     {
-      $connection = Propel::getConnection();
+      $connection = QubitTransactionFilter::getConnection(QubitBookoutObjectI18n::DATABASE_NAME);
     }
 
     $offset = 0;
@@ -497,7 +492,7 @@ abstract class BaseFunctionI18n implements ArrayAccess
   {
     if (!isset($connection))
     {
-      $connection = Propel::getConnection();
+      $connection = QubitTransactionFilter::getConnection(QubitBookoutObjectI18n::DATABASE_NAME);
     }
 
     $offset = 0;
@@ -550,8 +545,8 @@ abstract class BaseFunctionI18n implements ArrayAccess
     }
 
     $criteria = new Criteria;
-    $criteria->add(QubitFunctionI18n::ID, $this->id);
-    $criteria->add(QubitFunctionI18n::CULTURE, $this->culture);
+    $criteria->add(QubitBookoutObjectI18n::ID, $this->id);
+    $criteria->add(QubitBookoutObjectI18n::CULTURE, $this->culture);
 
     self::doDelete($criteria, $connection);
 
@@ -591,9 +586,9 @@ abstract class BaseFunctionI18n implements ArrayAccess
 
 	}
 
-  public static function addJoinfunctionCriteria(Criteria $criteria)
+  public static function addJoinbookoutObjectCriteria(Criteria $criteria)
   {
-    $criteria->addJoin(QubitFunctionI18n::ID, QubitFunction::ID);
+    $criteria->addJoin(QubitBookoutObjectI18n::ID, QubitBookoutObject::ID);
 
     return $criteria;
   }

@@ -9,19 +9,29 @@ abstract class BaseInformationObject extends QubitObject implements ArrayAccess
 
     ID = 'information_object.ID',
     IDENTIFIER = 'information_object.IDENTIFIER',
+	PARTNO = 'information_object.PARTNO',		
     OAI_LOCAL_IDENTIFIER = 'information_object.OAI_LOCAL_IDENTIFIER',
     LEVEL_OF_DESCRIPTION_ID = 'information_object.LEVEL_OF_DESCRIPTION_ID',
     COLLECTION_TYPE_ID = 'information_object.COLLECTION_TYPE_ID',
     REPOSITORY_ID = 'information_object.REPOSITORY_ID',
+    REGISTRY_ID = 'information_object.REGISTRY_ID',
     PARENT_ID = 'information_object.PARENT_ID',
     DESCRIPTION_STATUS_ID = 'information_object.DESCRIPTION_STATUS_ID',
     DESCRIPTION_DETAIL_ID = 'information_object.DESCRIPTION_DETAIL_ID',
     DESCRIPTION_IDENTIFIER = 'information_object.DESCRIPTION_IDENTIFIER',
     SOURCE_STANDARD = 'information_object.SOURCE_STANDARD',
     DISPLAY_STANDARD_ID = 'information_object.DISPLAY_STANDARD_ID',
+	FORMAT_ID = 'information_object.FORMAT_ID',
+	SIZE_ID = 'information_object.SIZE_ID',
+	TYP_ID = 'information_object.TYP_ID',
+	EQUIPMENT_ID = 'information_object.EQUIPMENT_ID',	
     LFT = 'information_object.LFT',
     RGT = 'information_object.RGT',
-    SOURCE_CULTURE = 'information_object.SOURCE_CULTURE';
+    SOURCE_CULTURE = 'information_object.SOURCE_CULTURE',
+	SHELF = 'information_object.SHELF',
+	ROW = 'information_object.ROW',
+	BIN = 'information_object.BIN',
+	IMPORT_ID = 'information_object.IMPORT_ID';
 
   public static function addSelectColumns(Criteria $criteria)
   {
@@ -31,19 +41,29 @@ abstract class BaseInformationObject extends QubitObject implements ArrayAccess
 
     $criteria->addSelectColumn(QubitInformationObject::ID);
     $criteria->addSelectColumn(QubitInformationObject::IDENTIFIER);
+	$criteria->addSelectColumn(QubitInformationObject::PARTNO);		
     $criteria->addSelectColumn(QubitInformationObject::OAI_LOCAL_IDENTIFIER);
     $criteria->addSelectColumn(QubitInformationObject::LEVEL_OF_DESCRIPTION_ID);
     $criteria->addSelectColumn(QubitInformationObject::COLLECTION_TYPE_ID);
     $criteria->addSelectColumn(QubitInformationObject::REPOSITORY_ID);
+    $criteria->addSelectColumn(QubitInformationObject::REGISTRY_ID);
     $criteria->addSelectColumn(QubitInformationObject::PARENT_ID);
     $criteria->addSelectColumn(QubitInformationObject::DESCRIPTION_STATUS_ID);
     $criteria->addSelectColumn(QubitInformationObject::DESCRIPTION_DETAIL_ID);
     $criteria->addSelectColumn(QubitInformationObject::DESCRIPTION_IDENTIFIER);
     $criteria->addSelectColumn(QubitInformationObject::SOURCE_STANDARD);
     $criteria->addSelectColumn(QubitInformationObject::DISPLAY_STANDARD_ID);
+	$criteria->addSelectColumn(QubitInformationObject::FORMAT_ID);
+	$criteria->addSelectColumn(QubitInformationObject::SIZE_ID);
+	$criteria->addSelectColumn(QubitInformationObject::TYP_ID);
+	$criteria->addSelectColumn(QubitInformationObject::EQUIPMENT_ID);	
     $criteria->addSelectColumn(QubitInformationObject::LFT);
     $criteria->addSelectColumn(QubitInformationObject::RGT);
     $criteria->addSelectColumn(QubitInformationObject::SOURCE_CULTURE);
+    $criteria->addSelectColumn(QubitInformationObject::SHELF);
+    $criteria->addSelectColumn(QubitInformationObject::ROW);
+    $criteria->addSelectColumn(QubitInformationObject::BIN);
+    $criteria->addSelectColumn(QubitInformationObject::IMPORT_ID);
 
     return $criteria;
   }
@@ -57,7 +77,27 @@ abstract class BaseInformationObject extends QubitObject implements ArrayAccess
 
     self::addSelectColumns($criteria);
 
-    return QubitQuery::createFromCriteria($criteria, 'QubitInformationObject', $options);
+	// SITA Hack to fix slow response
+	//SITA slow load on edit 17 January 2020
+	if (strpos($criteria->toString(),"WHERE information_object.LFT<:p1 AND information_object.RGT>:p2"))
+	{
+		if (!strpos($criteria->toString(),"SELECT COUNT"))
+		{
+			$criteria->addForceIndex("information_object", "information_object_FI_18");
+		}
+ 	}
+
+	return QubitQuery::createFromCriteria($criteria, 'QubitInformationObject', $options);
+  }
+
+  public static function getSITA(Criteria $criteria, array $options = array())
+  {
+    if (!isset($options['connection']))
+    {
+      $options['connection'] = Propel::getConnection(QubitInformationObject::DATABASE_NAME);
+    }
+
+	return QubitQuery::createFromCriteria($criteria, 'QubitInformationObject', $options);
   }
 
   public static function getAll(array $options = array())
@@ -81,6 +121,46 @@ abstract class BaseInformationObject extends QubitObject implements ArrayAccess
     {
       return $query[0];
     }
+  }
+
+  // jjp SITA
+  public static function getByImportId($importId, array $options = array())
+  {
+    $criteria = new Criteria;
+    $criteria->add(QubitInformationObject::IMPORT_ID, $importId);
+
+    if (1 == count($query = self::getOne($criteria, $options)))
+    {
+      return $query;
+    }
+  }
+
+  // jjp SITA
+  public static function getByIdentifier($identifier, array $options = array())
+  {
+    $criteria = new Criteria;
+    $criteria->add(QubitInformationObject::IDENTIFIER, $identifier);
+    if (1 == count($query = self::getOne($criteria, $options)))
+    {
+      return $query;
+    }
+  }
+
+  // jjp SITA
+  public static function getByCriteria($criteria, array $options = array())
+  {
+	  $query = self::getOne($criteria, $options);
+//    if (1 == count($query = self::getOne($criteria, $options)))
+//    {
+      return $query;
+//    }
+  }
+
+  // jjp SITA
+  public static function getByCriteriaAll($criteria, array $options = array())
+  {
+	$query = self::get($criteria, $options);
+	return $query;
   }
 
   public static function addOrderByPreorder(Criteria $criteria, $order = Criteria::ASC)
@@ -262,9 +342,9 @@ abstract class BaseInformationObject extends QubitObject implements ArrayAccess
           $this->addAncestorsCriteria($criteria);
           $this->addOrderByPreorder($criteria);
           $this->values['ancestors'] = self::get($criteria, array('self' => $this) + $options);
+
         }
       }
-
       return $this->values['ancestors'];
     }
 
@@ -496,6 +576,26 @@ abstract class BaseInformationObject extends QubitObject implements ArrayAccess
     $criteria->addJoin(QubitInformationObject::DISPLAY_STANDARD_ID, QubitTerm::ID);
 
     return $criteria;
+  }
+
+  public static function adddigitalObjectsCriteriaById(Criteria $criteria, $id)
+  {
+    $criteria->add(QubitDigitalObject::INFORMATION_OBJECT_ID, $id);
+
+    return $criteria;
+  }
+
+  public static function getdigitalObjectsById($id, array $options = array())
+  {
+    $criteria = new Criteria;
+    self::adddigitalObjectsCriteriaById($criteria, $id);
+
+    return QubitDigitalObject::get($criteria, $options);
+  }
+
+  public function adddigitalObjectsCriteria(Criteria $criteria)
+  {
+    return self::adddigitalObjectsCriteriaById($criteria, $this->id);
   }
 
   public static function addinformationObjectsRelatedByparentIdCriteriaById(Criteria $criteria, $id)

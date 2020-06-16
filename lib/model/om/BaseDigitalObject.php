@@ -77,6 +77,17 @@ abstract class BaseDigitalObject extends QubitObject implements ArrayAccess
     }
   }
 
+	//SITA JJP
+  public static function getByParentId($id, array $options = array())
+  {
+    $criteria = new Criteria;
+    $criteria->add(QubitDigitalObject::PARENT_ID, $id);
+    if (1 == count($query = self::getOne($criteria, $options)))
+    {
+      return $query;
+    }
+  }
+
   public function __construct()
   {
     parent::__construct();

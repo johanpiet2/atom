@@ -106,6 +106,17 @@ abstract class BaseRightsI18n implements ArrayAccess
     }
   }
 
+  public static function getById($id, array $options = array())
+  {
+    $criteria = new Criteria;
+    $criteria->add(QubitRightsHolderI18n::ID, $id);
+
+    if (1 == count($query = self::get($criteria, $options)))
+    {
+      return $query[0];
+    }
+  }
+
   public static function doDelete(Criteria $criteria, $connection = null)
   {
     if (!isset($connection))

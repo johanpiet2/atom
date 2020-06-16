@@ -1,43 +1,40 @@
 <?php
 
-abstract class BaseActor extends QubitObject implements ArrayAccess
+/*
+**** Author: Tsholo Ramesega  ******
+**** Module: Preservation Object component *****
+**** Date  :01-02-2014   ******
+**** Email  :tsholofelo.ramesega@sita.co.za  *****
+*/
+
+abstract class BaseBookinObject extends QubitObject implements ArrayAccess
 {
   const
     DATABASE_NAME = 'propel',
 
-    TABLE_NAME = 'actor',
+    TABLE_NAME = 'bookin_object',
 
-    ID = 'actor.ID',
-    CORPORATE_BODY_IDENTIFIERS = 'actor.CORPORATE_BODY_IDENTIFIERS',
-    ENTITY_TYPE_ID = 'actor.ENTITY_TYPE_ID',
-    DESCRIPTION_STATUS_ID = 'actor.DESCRIPTION_STATUS_ID',
-    DESCRIPTION_DETAIL_ID = 'actor.DESCRIPTION_DETAIL_ID',
-    DESCRIPTION_IDENTIFIER = 'actor.DESCRIPTION_IDENTIFIER',
-    SOURCE_STANDARD = 'actor.SOURCE_STANDARD',
-    ACTOR_IMPORT_ID = 'actor.ACTOR_IMPORT_ID',
-    PARENT_ID = 'actor.PARENT_ID',
-    LFT = 'actor.LFT',
-    RGT = 'actor.RGT',
-    SOURCE_CULTURE = 'actor.SOURCE_CULTURE';
+    ID = 'bookin_object.ID',
+    REQUESTOR_ID = 'bookin_object.REQUESTOR_ID',
+	RECEIVER_ID = 'bookin_object.RECEIVER_ID',
+    PARENT_ID = 'bookin_object.PARENT_ID',
+    LFT = 'bookin_object.LFT',
+    RGT = 'bookin_object.RGT',
+    SOURCE_CULTURE = 'bookin_object.SOURCE_CULTURE';
 
   public static function addSelectColumns(Criteria $criteria)
   {
     parent::addSelectColumns($criteria);
 
-    $criteria->addJoin(QubitActor::ID, QubitObject::ID);
+    $criteria->addJoin(QubitBookinObject::ID, QubitObject::ID);
 
-    $criteria->addSelectColumn(QubitActor::ID);
-    $criteria->addSelectColumn(QubitActor::CORPORATE_BODY_IDENTIFIERS);
-    $criteria->addSelectColumn(QubitActor::ENTITY_TYPE_ID);
-    $criteria->addSelectColumn(QubitActor::DESCRIPTION_STATUS_ID);
-    $criteria->addSelectColumn(QubitActor::DESCRIPTION_DETAIL_ID);
-    $criteria->addSelectColumn(QubitActor::DESCRIPTION_IDENTIFIER);
-    $criteria->addSelectColumn(QubitActor::SOURCE_STANDARD);
-    $criteria->addSelectColumn(QubitActor::ACTOR_IMPORT_ID);
-    $criteria->addSelectColumn(QubitActor::PARENT_ID);
-    $criteria->addSelectColumn(QubitActor::LFT);
-    $criteria->addSelectColumn(QubitActor::RGT);
-    $criteria->addSelectColumn(QubitActor::SOURCE_CULTURE);
+    $criteria->addSelectColumn(QubitBookinObject::ID);
+    $criteria->addSelectColumn(QubitBookinObject::REQUESTOR_ID);
+	$criteria->addSelectColumn(QubitBookinObject::RECEIVER_ID);
+    $criteria->addSelectColumn(QubitBookinObject::PARENT_ID);
+    $criteria->addSelectColumn(QubitBookinObject::LFT);
+    $criteria->addSelectColumn(QubitBookinObject::RGT);
+    $criteria->addSelectColumn(QubitBookinObject::SOURCE_CULTURE);
 
     return $criteria;
   }
@@ -46,12 +43,12 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
   {
     if (!isset($options['connection']))
     {
-      $options['connection'] = Propel::getConnection(QubitActor::DATABASE_NAME);
+      $options['connection'] = Propel::getConnection(QubitBookinObject::DATABASE_NAME);
     }
 
     self::addSelectColumns($criteria);
 
-    return QubitQuery::createFromCriteria($criteria, 'QubitActor', $options);
+    return QubitQuery::createFromCriteria($criteria, 'QubitBookinObject', $options);
   }
 
   public static function getAll(array $options = array())
@@ -69,7 +66,7 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
   public static function getById($id, array $options = array())
   {
     $criteria = new Criteria;
-    $criteria->add(QubitActor::ID, $id);
+    $criteria->add(QubitBookinObject::ID, $id);
 
     if (1 == count($query = self::get($criteria, $options)))
     {
@@ -77,30 +74,19 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
     }
   }
 
-	// jjp SITA 07 Jan 2015 - Search per import id
-  public static function getByImportId($id, array $options = array())
-  {
-    $criteria = new Criteria;
-    $criteria->add(QubitActor::ACTOR_IMPORT_ID, $id);
-    if (1 == count($query = self::getOne($criteria, $options)))
-    {
-      return $query;
-    }
-  }
-
   public static function addOrderByPreorder(Criteria $criteria, $order = Criteria::ASC)
   {
     if ($order == Criteria::DESC)
     {
-      return $criteria->addDescendingOrderByColumn(QubitActor::LFT);
+      return $criteria->addDescendingOrderByColumn(QubitBookinObject::LFT);
     }
 
-    return $criteria->addAscendingOrderByColumn(QubitActor::LFT);
+    return $criteria->addAscendingOrderByColumn(QubitBookinObject::LFT);
   }
 
   public static function addRootsCriteria(Criteria $criteria)
   {
-    $criteria->add(QubitActor::PARENT_ID);
+    $criteria->add(QubitBookinObject::PARENT_ID);
 
     return $criteria;
   }
@@ -109,7 +95,7 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
   {
     parent::__construct();
 
-    $this->tables[] = Propel::getDatabaseMap(QubitActor::DATABASE_NAME)->getTable(QubitActor::TABLE_NAME);
+    $this->tables[] = Propel::getDatabaseMap(QubitBookinObject::DATABASE_NAME)->getTable(QubitBookinObject::TABLE_NAME);
   }
 
   public function __isset($name)
@@ -130,36 +116,21 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
     {
     }
 
-    if ('actorsRelatedByparentId' == $name)
+    if ('bookinObjectsRelatedByparentId' == $name)
     {
       return true;
     }
 
-    if ('actorI18ns' == $name)
-    {
-      return true;
-    }
-
-    if ('contactInformations' == $name)
-    {
-      return true;
-    }
-
-    if ('events' == $name)
-    {
-      return true;
-    }
-
-    if ('rightss' == $name)
+    if ('bookinObjectI18ns' == $name)
     {
       return true;
     }
 
     try
     {
-      if (!$value = call_user_func_array(array($this->getCurrentactorI18n($options), '__isset'), $args) && !empty($options['cultureFallback']))
+      if (!$value = call_user_func_array(array($this->getCurrentbookinObjectI18n($options), '__isset'), $args) && !empty($options['cultureFallback']))
       {
-        return call_user_func_array(array($this->getCurrentactorI18n(array('sourceCulture' => true) + $options), '__isset'), $args);
+        return call_user_func_array(array($this->getCurrentbookinObjectI18n(array('sourceCulture' => true) + $options), '__isset'), $args);
       }
 
       return $value;
@@ -199,96 +170,45 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
     {
     }
 
-    if ('actorsRelatedByparentId' == $name)
+    if ('bookinObjectsRelatedByparentId' == $name)
     {
-      if (!isset($this->refFkValues['actorsRelatedByparentId']))
+      if (!isset($this->refFkValues['bookinObjectsRelatedByparentId']))
       {
         if (!isset($this->id))
         {
-          $this->refFkValues['actorsRelatedByparentId'] = QubitQuery::create();
+          $this->refFkValues['bookinObjectsRelatedByparentId'] = QubitQuery::create();
         }
         else
         {
-          $this->refFkValues['actorsRelatedByparentId'] = self::getactorsRelatedByparentIdById($this->id, array('self' => $this) + $options);
+          $this->refFkValues['bookinObjectsRelatedByparentId'] = self::getbookinObjectsRelatedByparentIdById($this->id, array('self' => $this) + $options);
         }
       }
 
-      return $this->refFkValues['actorsRelatedByparentId'];
+      return $this->refFkValues['bookinObjectsRelatedByparentId'];
     }
 
-    if ('actorI18ns' == $name)
+    if ('bookinObjectI18ns' == $name)
     {
-      if (!isset($this->refFkValues['actorI18ns']))
+      if (!isset($this->refFkValues['bookinObjectI18ns']))
       {
         if (!isset($this->id))
         {
-          $this->refFkValues['actorI18ns'] = QubitQuery::create();
+          $this->refFkValues['bookinObjectI18ns'] = QubitQuery::create();
         }
         else
         {
-          $this->refFkValues['actorI18ns'] = self::getactorI18nsById($this->id, array('self' => $this) + $options);
+          $this->refFkValues['bookinObjectI18ns'] = self::getbookinObjectI18nsById($this->id, array('self' => $this) + $options);
         }
       }
 
-      return $this->refFkValues['actorI18ns'];
-    }
-
-    if ('contactInformations' == $name)
-    {
-      if (!isset($this->refFkValues['contactInformations']))
-      {
-        if (!isset($this->id))
-        {
-          $this->refFkValues['contactInformations'] = QubitQuery::create();
-        }
-        else
-        {
-          $this->refFkValues['contactInformations'] = self::getcontactInformationsById($this->id, array('self' => $this) + $options);
-        }
-      }
-
-      return $this->refFkValues['contactInformations'];
-    }
-
-    if ('events' == $name)
-    {
-      if (!isset($this->refFkValues['events']))
-      {
-        if (!isset($this->id))
-        {
-          $this->refFkValues['events'] = QubitQuery::create();
-        }
-        else
-        {
-          $this->refFkValues['events'] = self::geteventsById($this->id, array('self' => $this) + $options);
-        }
-      }
-
-      return $this->refFkValues['events'];
-    }
-
-    if ('rightss' == $name)
-    {
-      if (!isset($this->refFkValues['rightss']))
-      {
-        if (!isset($this->id))
-        {
-          $this->refFkValues['rightss'] = QubitQuery::create();
-        }
-        else
-        {
-          $this->refFkValues['rightss'] = self::getrightssById($this->id, array('self' => $this) + $options);
-        }
-      }
-
-      return $this->refFkValues['rightss'];
+      return $this->refFkValues['bookinObjectI18ns'];
     }
 
     try
     {
-      if (1 > strlen($value = call_user_func_array(array($this->getCurrentactorI18n($options), '__get'), $args)) && !empty($options['cultureFallback']))
+      if (1 > strlen($value = call_user_func_array(array($this->getCurrentbookinObjectI18n($options), '__get'), $args)) && !empty($options['cultureFallback']))
       {
-        return call_user_func_array(array($this->getCurrentactorI18n(array('sourceCulture' => true) + $options), '__get'), $args);
+        return call_user_func_array(array($this->getCurrentbookinObjectI18n(array('sourceCulture' => true) + $options), '__get'), $args);
       }
 
       return $value;
@@ -352,7 +272,7 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
 
     call_user_func_array(array($this, 'QubitObject::__set'), $args);
 
-    call_user_func_array(array($this->getCurrentactorI18n($options), '__set'), $args);
+    call_user_func_array(array($this->getCurrentbookinObjectI18n($options), '__set'), $args);
 
     return $this;
   }
@@ -369,30 +289,30 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
 
     call_user_func_array(array($this, 'QubitObject::__unset'), $args);
 
-    call_user_func_array(array($this->getCurrentactorI18n($options), '__unset'), $args);
+    call_user_func_array(array($this->getCurrentbookinObjectI18n($options), '__unset'), $args);
 
     return $this;
   }
 
   public function clear()
   {
-    foreach ($this->actorI18ns as $actorI18n)
+    foreach ($this->bookinObjectI18ns as $bookinObjectI18n)
     {
-      $actorI18n->clear();
+      $bookinObjectI18n->clear();
     }
 
-    return parent::clear();
+    return parent::clear(); 
   }
 
   public function save($connection = null)
   {
     parent::save($connection);
 
-    foreach ($this->actorI18ns as $actorI18n)
+    foreach ($this->bookinObjectI18ns as $bookinObjectI18n)
     {
-      $actorI18n->id = $this->id;
+      $bookinObjectI18n->id = $this->id;
 
-      $actorI18n->save($connection);
+      $bookinObjectI18n->save($connection);
     }
 
     return $this;
@@ -488,145 +408,76 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
     }
 
     $this->clear();
-    if (!property_exists($this, 'disableNestedSetUpdating') || $this->disableNestedSetUpdating !== true)
-    {
-      $this->deleteFromNestedSet($connection);
-    }
+    $this->deleteFromNestedSet($connection);
 
     parent::delete($connection);
 
     return $this;
   }
 
-  public static function addJoinentityTypeCriteria(Criteria $criteria)
+  public static function addJoinrequestorCriteria(Criteria $criteria)
   {
-    $criteria->addJoin(QubitActor::ENTITY_TYPE_ID, QubitTerm::ID);
+    $criteria->addJoin(QubitBookinObject::REQUESTOR_ID, QubitTerm::ID);
 
     return $criteria;
   }
-
-  public static function addJoindescriptionStatusCriteria(Criteria $criteria)
+  
+  
+  public static function addJoinreceiverCriteria(Criteria $criteria)
   {
-    $criteria->addJoin(QubitActor::DESCRIPTION_STATUS_ID, QubitTerm::ID);
-
-    return $criteria;
-  }
-
-  public static function addJoindescriptionDetailCriteria(Criteria $criteria)
-  {
-    $criteria->addJoin(QubitActor::DESCRIPTION_DETAIL_ID, QubitTerm::ID);
+    $criteria->addJoin(QubitBookinObject::RECEIVER_ID, QubitTerm::ID);
 
     return $criteria;
   }
 
   public static function addJoinparentCriteria(Criteria $criteria)
   {
-    $criteria->addJoin(QubitActor::PARENT_ID, QubitActor::ID);
+    $criteria->addJoin(QubitBookinObject::PARENT_ID, QubitBookinObject::ID);
 
     return $criteria;
   }
 
-  public static function addactorsRelatedByparentIdCriteriaById(Criteria $criteria, $id)
+  public static function addbookinObjectsRelatedByparentIdCriteriaById(Criteria $criteria, $id)
   {
-    $criteria->add(QubitActor::PARENT_ID, $id);
+    $criteria->add(QubitBookinObject::PARENT_ID, $id);
 
     return $criteria;
   }
 
-  public static function getactorsRelatedByparentIdById($id, array $options = array())
+  public static function getbookinObjectsRelatedByparentIdById($id, array $options = array())
   {
     $criteria = new Criteria;
-    self::addactorsRelatedByparentIdCriteriaById($criteria, $id);
+    self::addbookinObjectsRelatedByparentIdCriteriaById($criteria, $id);
 
-    return QubitActor::get($criteria, $options);
+    return QubitBookinObject::get($criteria, $options);
   }
 
-  public function addactorsRelatedByparentIdCriteria(Criteria $criteria)
+  public function addbookinObjectsRelatedByparentIdCriteria(Criteria $criteria)
   {
-    return self::addactorsRelatedByparentIdCriteriaById($criteria, $this->id);
+    return self::addbookinObjectsRelatedByparentIdCriteriaById($criteria, $this->id);
   }
 
-  public static function addactorI18nsCriteriaById(Criteria $criteria, $id)
+  public static function addbookinObjectI18nsCriteriaById(Criteria $criteria, $id)
   {
-    $criteria->add(QubitActorI18n::ID, $id);
+    $criteria->add(QubitBookinObjectI18n::ID, $id);
 
     return $criteria;
   }
 
-  public static function getactorI18nsById($id, array $options = array())
+  public static function getbookinObjectI18nsById($id, array $options = array())
   {
     $criteria = new Criteria;
-    self::addactorI18nsCriteriaById($criteria, $id);
+    self::addbookinObjectI18nsCriteriaById($criteria, $id);
 
-    return QubitActorI18n::get($criteria, $options);
+    return QubitBookinObjectI18n::get($criteria, $options);
   }
 
-  public function addactorI18nsCriteria(Criteria $criteria)
+  public function addbookinObjectI18nsCriteria(Criteria $criteria)
   {
-    return self::addactorI18nsCriteriaById($criteria, $this->id);
+    return self::addbookinObjectI18nsCriteriaById($criteria, $this->id);
   }
 
-  public static function addcontactInformationsCriteriaById(Criteria $criteria, $id)
-  {
-    $criteria->add(QubitContactInformation::ACTOR_ID, $id);
-
-    return $criteria;
-  }
-
-  public static function getcontactInformationsById($id, array $options = array())
-  {
-    $criteria = new Criteria;
-    self::addcontactInformationsCriteriaById($criteria, $id);
-
-    return QubitContactInformation::get($criteria, $options);
-  }
-
-  public function addcontactInformationsCriteria(Criteria $criteria)
-  {
-    return self::addcontactInformationsCriteriaById($criteria, $this->id);
-  }
-
-  public static function addeventsCriteriaById(Criteria $criteria, $id)
-  {
-    $criteria->add(QubitEvent::ACTOR_ID, $id);
-
-    return $criteria;
-  }
-
-  public static function geteventsById($id, array $options = array())
-  {
-    $criteria = new Criteria;
-    self::addeventsCriteriaById($criteria, $id);
-
-    return QubitEvent::get($criteria, $options);
-  }
-
-  public function addeventsCriteria(Criteria $criteria)
-  {
-    return self::addeventsCriteriaById($criteria, $this->id);
-  }
-
-  public static function addrightssCriteriaById(Criteria $criteria, $id)
-  {
-    $criteria->add(QubitRights::RIGHTS_HOLDER_ID, $id);
-
-    return $criteria;
-  }
-
-  public static function getrightssById($id, array $options = array())
-  {
-    $criteria = new Criteria;
-    self::addrightssCriteriaById($criteria, $id);
-
-    return QubitRights::get($criteria, $options);
-  }
-
-  public function addrightssCriteria(Criteria $criteria)
-  {
-    return self::addrightssCriteriaById($criteria, $this->id);
-  }
-
-  public function getCurrentactorI18n(array $options = array())
+  public function getCurrentbookinObjectI18n(array $options = array())
   {
     if (!empty($options['sourceCulture']))
     {
@@ -638,13 +489,13 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
       $options['culture'] = sfPropel::getDefaultCulture();
     }
 
-    $actorI18ns = $this->actorI18ns->indexBy('culture');
-    if (!isset($actorI18ns[$options['culture']]))
+    $bookinObjectI18ns = $this->bookinObjectI18ns->indexBy('culture');
+    if (!isset($bookinObjectI18ns[$options['culture']]))
     {
-      $actorI18ns[$options['culture']] = new QubitActorI18n;
+      $bookinObjectI18ns[$options['culture']] = new QubitBookinObjectI18n;
     }
 
-    return $actorI18ns[$options['culture']];
+    return $bookinObjectI18ns[$options['culture']];
   }
 
   public function hasChildren()
@@ -654,12 +505,12 @@ abstract class BaseActor extends QubitObject implements ArrayAccess
 
   public function addAncestorsCriteria(Criteria $criteria)
   {
-    return $criteria->add(QubitActor::LFT, $this->lft, Criteria::LESS_THAN)->add(QubitActor::RGT, $this->rgt, Criteria::GREATER_THAN);
+    return $criteria->add(QubitBookinObject::LFT, $this->lft, Criteria::LESS_THAN)->add(QubitBookinObject::RGT, $this->rgt, Criteria::GREATER_THAN);
   }
 
   public function addDescendantsCriteria(Criteria $criteria)
   {
-    return $criteria->add(QubitActor::LFT, $this->lft, Criteria::GREATER_THAN)->add(QubitActor::RGT, $this->rgt, Criteria::LESS_THAN);
+    return $criteria->add(QubitBookinObject::LFT, $this->lft, Criteria::GREATER_THAN)->add(QubitBookinObject::RGT, $this->rgt, Criteria::LESS_THAN);
   }
 
   protected function updateNestedSet($connection = null)
@@ -671,7 +522,7 @@ unset($this->values['lft']);
 unset($this->values['rgt']);
     if (!isset($connection))
     {
-      $connection = Propel::getConnection();
+      $connection = QubitTransactionFilter::getConnection(QubitBookinObject::DATABASE_NAME);
     }
 
     if (!isset($this->lft) || !isset($this->rgt))
@@ -686,8 +537,8 @@ unset($this->values['rgt']);
     if (null === $parent = $this->__get('parent', array('connection' => $connection)))
     {
       $statement = $connection->prepare('
-        SELECT MAX('.QubitActor::RGT.')
-        FROM '.QubitActor::TABLE_NAME);
+        SELECT MAX('.QubitBookinObject::RGT.')
+        FROM '.QubitBookinObject::TABLE_NAME);
       $statement->execute();
       $row = $statement->fetch();
       $max = $row[0];
@@ -712,15 +563,15 @@ unset($this->values['rgt']);
       }
 
       $statement = $connection->prepare('
-        UPDATE '.QubitActor::TABLE_NAME.'
-        SET '.QubitActor::LFT.' = '.QubitActor::LFT.' + ?
-        WHERE '.QubitActor::LFT.' >= ?');
+        UPDATE '.QubitBookinObject::TABLE_NAME.'
+        SET '.QubitBookinObject::LFT.' = '.QubitBookinObject::LFT.' + ?
+        WHERE '.QubitBookinObject::LFT.' >= ?');
       $statement->execute(array($delta, $parent->rgt));
 
       $statement = $connection->prepare('
-        UPDATE '.QubitActor::TABLE_NAME.'
-        SET '.QubitActor::RGT.' = '.QubitActor::RGT.' + ?
-        WHERE '.QubitActor::RGT.' >= ?');
+        UPDATE '.QubitBookinObject::TABLE_NAME.'
+        SET '.QubitBookinObject::RGT.' = '.QubitBookinObject::RGT.' + ?
+        WHERE '.QubitBookinObject::RGT.' >= ?');
       $statement->execute(array($delta, $parent->rgt));
 
       if (!isset($this->lft) || !isset($this->rgt))
@@ -742,10 +593,10 @@ unset($this->values['rgt']);
     }
 
     $statement = $connection->prepare('
-      UPDATE '.QubitActor::TABLE_NAME.'
-      SET '.QubitActor::LFT.' = '.QubitActor::LFT.' + ?, '.QubitActor::RGT.' = '.QubitActor::RGT.' + ?
-      WHERE '.QubitActor::LFT.' >= ?
-      AND '.QubitActor::RGT.' <= ?');
+      UPDATE '.QubitBookinObject::TABLE_NAME.'
+      SET '.QubitBookinObject::LFT.' = '.QubitBookinObject::LFT.' + ?, '.QubitBookinObject::RGT.' = '.QubitBookinObject::RGT.' + ?
+      WHERE '.QubitBookinObject::LFT.' >= ?
+      AND '.QubitBookinObject::RGT.' <= ?');
     $statement->execute(array($shift, $shift, $this->lft, $this->rgt));
 
     $this->deleteFromNestedSet($connection);
@@ -766,21 +617,21 @@ unset($this->values['rgt']);
   {
     if (!isset($connection))
     {
-      $connection = Propel::getConnection();
+      $connection = QubitTransactionFilter::getConnection(QubitBookinObject::DATABASE_NAME);
     }
 
     $delta = $this->rgt - $this->lft + 1;
 
     $statement = $connection->prepare('
-      UPDATE '.QubitActor::TABLE_NAME.'
-      SET '.QubitActor::LFT.' = '.QubitActor::LFT.' - ?
-      WHERE '.QubitActor::LFT.' >= ?');
+      UPDATE '.QubitBookinObject::TABLE_NAME.'
+      SET '.QubitBookinObject::LFT.' = '.QubitBookinObject::LFT.' - ?
+      WHERE '.QubitBookinObject::LFT.' >= ?');
     $statement->execute(array($delta, $this->rgt));
 
     $statement = $connection->prepare('
-      UPDATE '.QubitActor::TABLE_NAME.'
-      SET '.QubitActor::RGT.' = '.QubitActor::RGT.' - ?
-      WHERE '.QubitActor::RGT.' >= ?');
+      UPDATE '.QubitBookinObject::TABLE_NAME.'
+      SET '.QubitBookinObject::RGT.' = '.QubitBookinObject::RGT.' - ?
+      WHERE '.QubitBookinObject::RGT.' >= ?');
     $statement->execute(array($delta, $this->rgt));
 
     return $this;
@@ -931,29 +782,29 @@ unset($this->values['rgt']);
 
     // Shift left column values
     $whereCriteria = new Criteria;
-    $criterion = $whereCriteria->getNewCriterion(QubitActor::LFT, $first, Criteria::GREATER_EQUAL);
+    $criterion = $whereCriteria->getNewCriterion(QubitBookinObject::LFT, $first, Criteria::GREATER_EQUAL);
     if (null !== $last)
     {
-      $criterion->addAnd($whereCriteria->getNewCriterion(QubitActor::LFT, $last, Criteria::LESS_EQUAL));
+      $criterion->addAnd($whereCriteria->getNewCriterion(QubitBookinObject::LFT, $last, Criteria::LESS_EQUAL));
     }
     $whereCriteria->add($criterion);
 
     $valuesCriteria = new Criteria;
-    $valuesCriteria->add(QubitActor::LFT, array('raw' => QubitActor::LFT . ' + ?', 'value' => $delta), Criteria::CUSTOM_EQUAL);
+    $valuesCriteria->add(QubitBookinObject::LFT, array('raw' => QubitBookinObject::LFT . ' + ?', 'value' => $delta), Criteria::CUSTOM_EQUAL);
 
     BasePeer::doUpdate($whereCriteria, $valuesCriteria, $con);
 
     // Shift right column values
     $whereCriteria = new Criteria;
-    $criterion = $whereCriteria->getNewCriterion(QubitActor::RGT, $first, Criteria::GREATER_EQUAL);
+    $criterion = $whereCriteria->getNewCriterion(QubitBookinObject::RGT, $first, Criteria::GREATER_EQUAL);
     if (null !== $last)
     {
-      $criterion->addAnd($whereCriteria->getNewCriterion(QubitActor::RGT, $last, Criteria::LESS_EQUAL));
+      $criterion->addAnd($whereCriteria->getNewCriterion(QubitBookinObject::RGT, $last, Criteria::LESS_EQUAL));
     }
     $whereCriteria->add($criterion);
 
     $valuesCriteria = new Criteria;
-    $valuesCriteria->add(QubitActor::RGT, array('raw' => QubitActor::RGT . ' + ?', 'value' => $delta), Criteria::CUSTOM_EQUAL);
+    $valuesCriteria->add(QubitBookinObject::RGT, array('raw' => QubitBookinObject::RGT . ' + ?', 'value' => $delta), Criteria::CUSTOM_EQUAL);
 
     BasePeer::doUpdate($whereCriteria, $valuesCriteria, $con);
   }

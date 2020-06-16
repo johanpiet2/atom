@@ -1,45 +1,50 @@
 <?php
 
-abstract class BaseFunctionI18n implements ArrayAccess
+/*
+**** Author: JJP  ******
+**** Module: Preservation Object component *****
+**** Date  :01-04-2013   ******
+
+*/
+
+abstract class BaseAccessObjectI18n implements ArrayAccess
 {
   const
     DATABASE_NAME = 'propel',
 
-    TABLE_NAME = 'function_i18n',
+    TABLE_NAME = 'access_object_i18n',
 
-    AUTHORIZED_FORM_OF_NAME = 'function_i18n.AUTHORIZED_FORM_OF_NAME',
-    CLASSIFICATION = 'function_i18n.CLASSIFICATION',
-    DATES = 'function_i18n.DATES',
-    DESCRIPTION = 'function_i18n.DESCRIPTION',
-    HISTORY = 'function_i18n.HISTORY',
-    LEGISLATION = 'function_i18n.LEGISLATION',
-    INSTITUTION_IDENTIFIER = 'function_i18n.INSTITUTION_IDENTIFIER',
-    REVISION_HISTORY = 'function_i18n.REVISION_HISTORY',
-    RULES = 'function_i18n.RULES',
-    SOURCES = 'function_i18n.SOURCES',
-    ID = 'function_i18n.ID',
-    CULTURE = 'function_i18n.CULTURE';
+    NAME = 'access_object_i18n.NAME',
+    ID = 'access_object_i18n.ID',
+ 	REFUSAL_ID = 'access_object_i18n.REFUSAL_ID', 	
+	SENSITIVITY_ID = 'access_object_i18n.SENSITIVITY_ID',
+	PUBLISH_ID = 'access_object_i18n.PUBLISH_ID',
+	CLASSIFICATION_ID = 'access_object_i18n.CLASSIFICATION_ID',
+	RESTRICTION_ID = 'access_object_i18n.RESTRICTION_ID',
+    RESTRICTION_CONDITION = 'access_object_i18n.RESTRICTION_CONDITION',
+	PUBLISHED = 'access_object_i18n.PUBLISHED',
+	OBJECT_ID = 'access_object_i18n.OBJECT_ID',
+    CULTURE = 'access_object_i18n.CULTURE';
 
   public static function addSelectColumns(Criteria $criteria)
   {
-    $criteria->addSelectColumn(QubitFunctionI18n::AUTHORIZED_FORM_OF_NAME);
-    $criteria->addSelectColumn(QubitFunctionI18n::CLASSIFICATION);
-    $criteria->addSelectColumn(QubitFunctionI18n::DATES);
-    $criteria->addSelectColumn(QubitFunctionI18n::DESCRIPTION);
-    $criteria->addSelectColumn(QubitFunctionI18n::HISTORY);
-    $criteria->addSelectColumn(QubitFunctionI18n::LEGISLATION);
-    $criteria->addSelectColumn(QubitFunctionI18n::INSTITUTION_IDENTIFIER);
-    $criteria->addSelectColumn(QubitFunctionI18n::REVISION_HISTORY);
-    $criteria->addSelectColumn(QubitFunctionI18n::RULES);
-    $criteria->addSelectColumn(QubitFunctionI18n::SOURCES);
-    $criteria->addSelectColumn(QubitFunctionI18n::ID);
-    $criteria->addSelectColumn(QubitFunctionI18n::CULTURE);
+    $criteria->addSelectColumn(QubitAccessObjectI18n::NAME);
+    $criteria->addSelectColumn(QubitAccessObjectI18n::ID);
+	$criteria->addSelectColumn(QubitAccessObjectI18n::REFUSAL_ID);
+    $criteria->addSelectColumn(QubitAccessObjectI18n::SENSITIVITY_ID);	
+	$criteria->addSelectColumn(QubitAccessObjectI18n::PUBLISH_ID);
+	$criteria->addSelectColumn(QubitAccessObjectI18n::CLASSIFICATION_ID);
+	$criteria->addSelectColumn(QubitAccessObjectI18n::RESTRICTION_ID);
+    $criteria->addSelectColumn(QubitAccessObjectI18n::RESTRICTION_CONDITION);
+	$criteria->addSelectColumn(QubitAccessObjectI18n::PUBLISHED);
+    $criteria->addSelectColumn(QubitAccessObjectI18n::OBJECT_ID);
+    $criteria->addSelectColumn(QubitAccessObjectI18n::CULTURE);
 
     return $criteria;
   }
 
   protected static
-    $functionI18ns = array();
+    $accessObjectI18ns = array();
 
   protected
     $keys = array(),
@@ -48,40 +53,40 @@ abstract class BaseFunctionI18n implements ArrayAccess
   public static function getFromRow(array $row)
   {
     $keys = array();
-    $keys['id'] = $row[10];
-    $keys['culture'] = $row[11];
+    $keys['id'] = $row[1];
+    $keys['culture'] = $row[10];
 
     $key = serialize($keys);
-    if (!isset(self::$functionI18ns[$key]))
+    if (!isset(self::$accessObjectI18ns[$key]))
     {
-      $functionI18n = new QubitFunctionI18n;
+      $accessObjectI18n = new QubitAccessObjectI18n;
 
-      $functionI18n->keys = $keys;
-      $functionI18n->row = $row;
+      $accessObjectI18n->keys = $keys;
+      $accessObjectI18n->row = $row;
 
-      $functionI18n->new = false;
+      $accessObjectI18n->new = false;
 
-      self::$functionI18ns[$key] = $functionI18n;
+      self::$accessObjectI18ns[$key] = $accessObjectI18n;
     }
 
-    return self::$functionI18ns[$key];
+    return self::$accessObjectI18ns[$key];
   }
 
   public static function clearCache()
   {
-    self::$functionI18ns = array();
+    self::$accessObjectI18ns = array();
   }
 
   public static function get(Criteria $criteria, array $options = array())
   {
     if (!isset($options['connection']))
     {
-      $options['connection'] = Propel::getConnection(QubitFunctionI18n::DATABASE_NAME);
+      $options['connection'] = Propel::getConnection(QubitAccessObjectI18n::DATABASE_NAME);
     }
 
     self::addSelectColumns($criteria);
 
-    return QubitQuery::createFromCriteria($criteria, 'QubitFunctionI18n', $options);
+    return QubitQuery::createFromCriteria($criteria, 'QubitAccessObjectI18n', $options);
   }
 
   public static function getAll(array $options = array())
@@ -99,8 +104,8 @@ abstract class BaseFunctionI18n implements ArrayAccess
   public static function getByIdAndCulture($id, $culture, array $options = array())
   {
     $criteria = new Criteria;
-    $criteria->add(QubitFunctionI18n::ID, $id);
-    $criteria->add(QubitFunctionI18n::CULTURE, $culture);
+    $criteria->add(QubitAccessObjectI18n::ID, $id);
+    $criteria->add(QubitAccessObjectI18n::CULTURE, $culture);
 
     if (1 == count($query = self::get($criteria, $options)))
     {
@@ -108,11 +113,10 @@ abstract class BaseFunctionI18n implements ArrayAccess
     }
   }
 
-//SITA JJP
   public static function getById($id, array $options = array())
   {
     $criteria = new Criteria;
-    $criteria->add(QubitFunctionI18n::ID, $id);
+    $criteria->add(QubitAccessObjectI18n::ID, $id);
 
     if (1 == count($query = self::get($criteria, $options)))
     {
@@ -124,7 +128,7 @@ abstract class BaseFunctionI18n implements ArrayAccess
   {
     if (!isset($connection))
     {
-      $connection = Propel::getConnection();
+      $connection = QubitTransactionFilter::getConnection(QubitAccessObjectI18n::DATABASE_NAME);
     }
 
     $affectedRows = 0;
@@ -139,7 +143,7 @@ abstract class BaseFunctionI18n implements ArrayAccess
 
   public function __construct()
   {
-    $this->tables[] = Propel::getDatabaseMap(QubitFunctionI18n::DATABASE_NAME)->getTable(QubitFunctionI18n::TABLE_NAME);
+    $this->tables[] = Propel::getDatabaseMap(QubitAccessObjectI18n::DATABASE_NAME)->getTable(QubitAccessObjectI18n::TABLE_NAME);
   }
 
   protected
@@ -167,12 +171,12 @@ abstract class BaseFunctionI18n implements ArrayAccess
 
       if (!isset($options['connection']))
       {
-        $options['connection'] = Propel::getConnection(QubitFunctionI18n::DATABASE_NAME);
+        $options['connection'] = Propel::getConnection(QubitAccessObjectI18n::DATABASE_NAME);
       }
 
       $criteria = new Criteria;
-      $criteria->add(QubitFunctionI18n::ID, $this->id);
-      $criteria->add(QubitFunctionI18n::CULTURE, $this->culture);
+      $criteria->add(QubitAccessObjectI18n::ID, $this->id);
+      $criteria->add(QubitAccessObjectI18n::CULTURE, $this->culture);
 
       call_user_func(array(get_class($this), 'addSelectColumns'), $criteria);
 
@@ -278,29 +282,16 @@ abstract class BaseFunctionI18n implements ArrayAccess
     {
       foreach ($table->getColumns() as $column)
       {
-        // Foreign key column name
-        $nameId = $name.'Id';
-
-        // Set local column values
-        if ($name === $column->getPhpName())
+        if ($name == $column->getPhpName())
         {
           $this->values[$name] = $value;
         }
 
-        // If this is a foreign key column then get primary key from related table
-        else if ($nameId === $column->getPhpName())
+        if ("{$name}Id" == $column->getPhpName())
         {
-          if(!empty($value))
-          {
-            $relatedTable = $column->getTable()->getDatabaseMap()->getTable($column->getRelatedTableName());
+          $relatedTable = $column->getTable()->getDatabaseMap()->getTable($column->getRelatedTableName());
 
-            $this->values[$nameId] = $value->__get($relatedTable->getColumn($column->getRelatedColumnName())->getPhpName(), $options);
-          }
-          else
-          {
-            // If $value is null, then don't try and fetch related object for primary key
-            $this->values[$nameId] = null;
-          }
+          $this->values["{$name}Id"] = $value->__get($relatedTable->getColumn($column->getRelatedColumnName())->getPhpName(), $options);
         }
 
         $offset++;
@@ -387,11 +378,6 @@ abstract class BaseFunctionI18n implements ArrayAccess
           $this->row[$offset] = $this->values[$column->getPhpName()];
         }
 
-        if ($this->new && $column->isPrimaryKey())
-        {
-          $this->keys[$column->getPhpName()] = $this->values[$column->getPhpName()];
-        }
-
         $offset++;
       }
     }
@@ -445,7 +431,7 @@ abstract class BaseFunctionI18n implements ArrayAccess
   {
     if (!isset($connection))
     {
-      $connection = Propel::getConnection();
+      $connection = QubitTransactionFilter::getConnection(QubitAccessObjectI18n::DATABASE_NAME);
     }
 
     $offset = 0;
@@ -497,7 +483,7 @@ abstract class BaseFunctionI18n implements ArrayAccess
   {
     if (!isset($connection))
     {
-      $connection = Propel::getConnection();
+      $connection = QubitTransactionFilter::getConnection(QubitAccessObjectI18n::DATABASE_NAME);
     }
 
     $offset = 0;
@@ -550,8 +536,8 @@ abstract class BaseFunctionI18n implements ArrayAccess
     }
 
     $criteria = new Criteria;
-    $criteria->add(QubitFunctionI18n::ID, $this->id);
-    $criteria->add(QubitFunctionI18n::CULTURE, $this->culture);
+    $criteria->add(QubitAccessObjectI18n::ID, $this->id);
+    $criteria->add(QubitAccessObjectI18n::CULTURE, $this->culture);
 
     self::doDelete($criteria, $connection);
 
@@ -591,9 +577,9 @@ abstract class BaseFunctionI18n implements ArrayAccess
 
 	}
 
-  public static function addJoinfunctionCriteria(Criteria $criteria)
+  public static function addJoinaccessObjectCriteria(Criteria $criteria)
   {
-    $criteria->addJoin(QubitFunctionI18n::ID, QubitFunction::ID);
+    $criteria->addJoin(QubitAccessObjectI18n::ID, QubitAccessObject::ID);
 
     return $criteria;
   }
