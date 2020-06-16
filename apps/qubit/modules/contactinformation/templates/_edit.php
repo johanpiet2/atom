@@ -136,7 +136,7 @@ content
         <div id="contactInformationRelation_Tab1">
 
           <?php echo $form->primaryContact
-            ->label(__('Primary contract'))
+            ->label(__('Primary contact'))
             ->renderRow() ?>
 
 		  <!-- jjp SITA -->

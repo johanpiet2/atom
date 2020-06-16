@@ -46,10 +46,10 @@ class DigitalObjectImageflowComponent extends sfComponent
     $criteria = new Criteria;
     $criteria->addJoin(QubitInformationObject::ID, QubitDigitalObject::OBJECT_ID);
     
-    //SITA removed to display the multiple images
+    //SITA removed to display multiple images
     //$criteria->add(QubitInformationObject::LFT, $this->resource->lft, Criteria::GREATER_THAN);
     //$criteria->add(QubitInformationObject::RGT, $this->resource->rgt, Criteria::LESS_THAN);
-
+ 
     $criteria->add(QubitInformationObject::LFT, $this->resource->lft, Criteria::GREATER_EQUAL);
     $criteria->add(QubitInformationObject::RGT, $this->resource->rgt, Criteria::LESS_EQUAL);
 
@@ -58,7 +58,12 @@ class DigitalObjectImageflowComponent extends sfComponent
     {
       $criteria->setLimit($this->limit);
     }
-
+ $fp = fopen('/var/www/html/atom/log/debug.txt','a');
+ 
+ fwrite($fp,"test");
+fwrite($fp,$criteria->toString());
+  fclose($fp);
+ 
     // Hide drafts
     $criteria = QubitAcl::addFilterDraftsCriteria($criteria);
 
@@ -90,7 +95,7 @@ class DigitalObjectImageflowComponent extends sfComponent
         }
       }
 
-      $this->thumbnails[] = $thumbnail;
+      $this->thumbnails[] = $thumbnail; 
     }
 
     // Get total number of descendant digital objects

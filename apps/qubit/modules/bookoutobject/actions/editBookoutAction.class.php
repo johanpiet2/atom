@@ -32,7 +32,8 @@ class BookoutObjectEditBookoutAction extends DefaultEditAction {
 		'unique_identifier', 
 		'record_condition', 
 		'requestor_type',
-		'availability');
+		'availability',
+		'cbReceipt');
 	
 	protected function earlyExecute() {
 		$this->resource = new QubitBookoutObject;
@@ -46,7 +47,7 @@ class BookoutObjectEditBookoutAction extends DefaultEditAction {
 		
 		// Check user authorization
 		if (!QubitAcl::check($this->resource, 'bookOut')) {
-			QubitAcl::forwardUnauthorized();
+			//QubitAcl::forwardUnauthorized();
 		}
 		
 		foreach (QubitRelation::getRelationsBySubjectId($this->resource->id) as $item2) {
@@ -220,6 +221,13 @@ class BookoutObjectEditBookoutAction extends DefaultEditAction {
 				
 				break;
 			
+		    case 'cbReceipt':
+				$this->form->setDefault($name, true);
+				$this->form->setValidator($name, new sfValidatorBoolean);
+				$this->form->setWidget($name, new sfWidgetFormInputCheckbox);
+
+		        break;
+
 			default:
 				
 				return parent::addField($name);
@@ -313,13 +321,16 @@ class BookoutObjectEditBookoutAction extends DefaultEditAction {
 			$this->form->bind($request->getPostParameters());
 			if ($this->form->isValid()) {
 				$this->processForm();
-				
-				
+
 				$bookOut = QubitBookoutObject::getById($this->resource->id);
 				$this->resource->time_period  = $this->form->getValue('time_period');
 				$this->resource->remarks      = "Re-book Out: " . $this->form->getValue('remarks');
 				$this->resource->save();
-				$this->redirect(array($this->informationObj,'module' => 'informationobject'));
+				if ($this->form->getValue('cbReceipt') != 1) {
+					$this->redirect(array($this->informationObj, 'module' => 'informationobject'));
+				} else {
+					$this->redirect(array($this->informationObj, 'module' => 'bookoutobject', 'action' => 'receipt', 'source' => $this->bookoutObject ));
+				}
 			}
 		}
 	}

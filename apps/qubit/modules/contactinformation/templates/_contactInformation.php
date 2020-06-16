@@ -4,7 +4,6 @@
     <div class="field">
       <h3>&nbsp;</h3>
       <div class="agent">
-        <?php echo render_value_inline($contactInformation->contactPerson) ?>
         <?php echo render_value($contactInformation->contactPerson) ?>
 		<?php if (!empty($contactInformation->position)): ?>
         	<?php echo " - " . render_value($contactInformation->position) ?>

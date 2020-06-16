@@ -34,51 +34,9 @@ class BookoutObjectReceiptAction extends sfAction
         $criteria->addJoin(QubitBookoutObject::ID, QubitBookoutObjectI18n::ID);
         $criteria->add(QubitBookoutObject::ID, $request->source);
         
-        $this->bookOutObject = self::doSelect($criteria);
-
 	    $this->pager = new QubitPager('QubitBookoutObject');
 	    $this->pager->setCriteria($criteria);
 	    $this->pager->setMaxPerPage(1);
 	    $this->pager->setPage(1);
-
-    }
-    
-    public static function doSelect(Criteria $criteria, PropelPDO $con = null)
-    {
-        $dbMap = Propel::getDatabaseMap($criteria->getDbName());
-        $db    = Propel::getDB($criteria->getDbName());
-        
-        if ($con === null) {
-            $con = Propel::getConnection($criteria->getDbName(), Propel::CONNECTION_READ);
-        }
-        
-        $stmt = null;
-        
-        if ($criteria->isUseTransaction())
-            $con->beginTransaction();
-        
-        try {
-            
-            $params = array();
-            $sql    = BasePeer::createSelectSql($criteria, $params);
-            
-            $stmt = $con->prepare($sql);
-            BasePeer::populateStmtValues($stmt, $params, $dbMap, $db);
-            
-            $stmt->execute();
-            
-            if ($criteria->isUseTransaction())
-                $con->commit();
-            
-        }
-        catch (Exception $e) {
-            if ($stmt)
-                $stmt = null; // close
-            if ($criteria->isUseTransaction())
-                $con->rollBack();
-            Propel::log($e->getMessage(), Propel::LOG_ERR);
-            throw new PropelException($e);
-        }
-        return $stmt;
     }
 }

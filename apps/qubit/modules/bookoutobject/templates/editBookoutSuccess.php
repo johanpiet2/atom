@@ -88,6 +88,11 @@
 						</td>
 					</tr>
 				</table>
+				<div id='divReceipt'> 
+					<tr>
+				        <td><p style="color:#424242"><input type="checkbox" name="cbReceipt" value="1" checked="checked" />Print passout</td>
+					</tr>
+				</div>
 			</fieldset>
 		</section>
 		<section class="actions">
