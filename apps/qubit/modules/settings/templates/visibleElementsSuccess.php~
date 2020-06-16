@@ -15,23 +15,6 @@
     <div id="content">
 
       <fieldset class="collapsible collapsed">
-        <legend><?php echo __('Global') ?></legend>
-
-        <?php foreach (array(
-          'global_login_button' => __('Login button')) as $key => $value): ?>
-
-          <div class="form-item form-item-checkbox">
-            <?php echo $form[$key] ?>
-            <?php echo $form[$key]
-              ->label($value)
-              ->renderLabel() ?>
-          </div>
-
-        <?php endforeach; ?>
-
-      </fieldset>
-
-      <fieldset class="collapsible collapsed">
         <legend><?php echo __('ISAD template - area headings') ?></legend>
 
         <?php foreach (array(
@@ -125,7 +108,6 @@
           'rad_immediate_source' => __('Immediate source of acquisition'),
           'rad_general_notes' => __('General note(s)'),
           'rad_conservation_notes' => __('Conservation note(s)'),
-          'rad_rights_notes' => __('Rights note(s)'),
           'rad_control_description_identifier' => __('Description identifier'),
           'rad_control_institution_identifier' => __('Institution identifier'),
           'rad_control_rules_conventions' => __('Rules or conventions'),
@@ -149,12 +131,11 @@
 
       <fieldset class="collapsible collapsed">
 
-        <legend><?php echo __('%1% metadata area', array('%1%' => sfConfig::get('app_ui_label_digitalobject'))) ?></legend>
+        <legend><?php echo __('Digital object metadata area') ?></legend>
 
         <?php foreach (array(
           'digital_object_url' => __('URL'),
           'digital_object_file_name' => __('File name'),
-          'digital_object_geolocation' => __('Latitude and longitude'),
           'digital_object_media_type' => __('Media type'),
           'digital_object_mime_type' => __('MIME type'),
           'digital_object_file_size' => __('File size'),
@@ -189,46 +170,9 @@
         <legend><?php echo __('Preservation') ?></legend>
 
         <div class="form-item form-item-checkbox">
-          <?php echo $form['presevation'] ?>
-          <?php echo $form['presevation']
+          <?php echo $form['preservation'] ?>
+          <?php echo $form['preservation']
             ->label('Preservation')
-            ->renderLabel() ?>
-        </div>
-
-      </fieldset>
-
-      <fieldset class="collapsible collapsed">
-
-        <legend><?php echo __('Access') ?></legend>
-
-        <div class="form-item form-item-checkbox">
-          <?php echo $form['access'] ?>
-          <?php echo $form['access']
-            ->label('Access')
-            ->renderLabel() ?>
-        </div>
-
-      </fieldset>
-      <fieldset class="collapsible collapsed">
-
-        <legend><?php echo __('Book Out') ?></legend>
-
-        <div class="form-item form-item-checkbox">
-          <?php echo $form['bookout'] ?>
-          <?php echo $form['bookout']
-            ->label('Book Out')
-            ->renderLabel() ?>
-        </div>
-
-      </fieldset>
-      <fieldset class="collapsible collapsed">
-
-        <legend><?php echo __('Book In') ?></legend>
-
-        <div class="form-item form-item-checkbox">
-          <?php echo $form['bookin'] ?>
-          <?php echo $form['bookin']
-            ->label('Book In')
             ->renderLabel() ?>
         </div>
 

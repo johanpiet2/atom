@@ -1,0 +1,193 @@
+<?php
+
+/*
+ * This file is part of the Access to Memory (AtoM) software.
+ *
+ * Access to Memory (AtoM) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Access to Memory (AtoM) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Access to Memory (AtoM).  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
+ * Security
+ *
+ * @package    AccesstoMemory
+ * @subpackage settings
+ * @author     
+ */
+
+class SettingsLdapAction extends sfAction
+{
+  public function execute($request)
+  {
+    $this->ldapForm = new SettingsLdapForm;
+
+    // Handle POST data (form submit)
+    if ($request->isMethod('post'))
+    {
+      QubitCache::getInstance()->removePattern('settings:i18n:*');
+
+      // Handle ldap form submission
+      if (null !== $request->ldap)
+      {
+        $this->ldapForm->bind($request->ldap);
+        if ($this->ldapForm->isValid())
+        {
+          // Do update and redirect to avoid repeat submit wackiness
+          $this->updateLdapSettings($this->ldapForm);
+          $this->redirect('settings/ldap');
+        }
+      }
+    }
+
+    $this->populateLdapForm($this->ldapForm);
+  }
+
+  /**
+   * Populate the security form
+   */
+  protected function populateLdapForm()
+  {
+    $ldap_method = QubitSetting::getByName('ldap_method');
+    $ldap_account_suffix = QubitSetting::getByName('ldap_account_suffix');
+    $ldap_base_dn = QubitSetting::getByName('ldap_base_dn');
+    $ldap_domain_controllers = QubitSetting::getByName('ldap_domain_controllers');
+    $ldap_domain_port = QubitSetting::getByName('ldap_domain_port');
+    $ldap_user_group = QubitSetting::getByName('ldap_user_group');
+
+    $this->ldapForm->setDefaults(array(
+      'ldap_method' => (isset($ldap_method)) ? intval($ldap_method->getValue(array('sourceCulture'=>true))) : 1,
+      'ldap_account_suffix' => (isset($ldap_account_suffix)) ? $ldap_account_suffix->getValue(array('sourceCulture'=>true)) : "@sita.co.za",
+      'ldap_base_dn' => (isset($ldap_base_dn)) ? $ldap_base_dn->getValue(array('sourceCulture'=>true)) : "OU=Users,OU=IFMS,OU=Centurion,DC=sita,DC=co,DC=za",
+      'ldap_domain_controllers' => (isset($ldap_domain_controllers)) ? $ldap_domain_controllers->getValue(array('sourceCulture'=>true)) : "ldap://scendc001.sita.co.za/",
+      'ldap_domain_port' => (isset($ldap_domain_port)) ? $ldap_domain_port->getValue(array('sourceCulture'=>true)) : "389",
+      'ldap_user_group' => (isset($ldap_user_group)) ? $ldap_user_group->getValue(array('sourceCulture'=>true)) : "OU=Users,OU=IFMS,OU=Centurion,DC=sita,DC=co,DC=za"
+    ));
+  }
+
+  /**
+   * Update the LDAP settings
+   */
+  protected function updateLdapSettings()
+  {
+    $thisForm = $this->ldapForm;
+    // ldap_method LDAP/Internal/Both
+    $setting = QubitSetting::getByName('ldap_method');
+    if (isset($setting))
+    {
+		// Force sourceCulture update to prevent discrepency in settings between cultures
+		$setting->setValue($thisForm->getValue('ldap_method'), array('sourceCulture' => true));
+		$setting->scope = "ldap";
+		$setting->save();
+    }
+    else
+    {
+    	$setting = new QubitSetting;
+		$setting->name = "ldap_method";
+		$setting->scope = "ldap";
+		$setting->setValue($thisForm->getValue('ldap_method'), array('sourceCulture' => true));
+		$setting->save();
+    }
+
+    // ldap_account_suffix
+    $setting = QubitSetting::getByName('ldap_account_suffix');
+    if (isset($setting))
+    {
+		// Force sourceCulture update to prevent discrepency in settings between cultures
+		$setting->setValue($thisForm->getValue('ldap_account_suffix'), array('sourceCulture' => true));
+		$setting->scope = "ldap";
+		$setting->save();
+    }
+    else
+    {
+    	$setting = new QubitSetting;
+		$setting->name = "ldap_account_suffix";
+		$setting->scope = "ldap";
+		$setting->setValue($thisForm->getValue('ldap_account_suffix'), array('sourceCulture' => true));
+		$setting->save();
+    }
+    // ldap_base_dn
+    $setting = QubitSetting::getByName('ldap_base_dn');
+    if (isset($setting))
+    {
+		// Force sourceCulture update to prevent discrepency in settings between cultures
+		$setting->setValue($thisForm->getValue('ldap_base_dn'), array('sourceCulture' => true));
+		$setting->scope = "ldap";
+		$setting->save();
+    }
+    else
+    {
+    	$setting = new QubitSetting;
+		$setting->name = "ldap_base_dn";
+		$setting->scope = "ldap";
+		$setting->setValue($thisForm->getValue('ldap_base_dn'), array('sourceCulture' => true));
+		$setting->save();
+    }
+
+    // ldap_domain_controllers
+    $setting = QubitSetting::getByName('ldap_domain_controllers');
+    if (isset($setting))
+    {
+		// Force sourceCulture update to prevent discrepency in settings between cultures
+		$setting->setValue($thisForm->getValue('ldap_domain_controllers'), array('sourceCulture' => true));
+		$setting->scope = "ldap";
+		$setting->save();
+    }
+    else
+    {
+    	$setting = new QubitSetting;
+		$setting->name = "ldap_domain_controllers";
+		$setting->scope = "ldap";
+		$setting->setValue($thisForm->getValue('ldap_domain_controllers'), array('sourceCulture' => true));
+		$setting->save();
+    }
+
+    // ldap_domain_port
+    $setting = QubitSetting::getByName('ldap_domain_port');
+    if (isset($setting))
+    {
+		// Force sourceCulture update to prevent discrepency in settings between cultures
+		$setting->setValue($thisForm->getValue('ldap_domain_port'), array('sourceCulture' => true));
+		$setting->scope = "ldap";
+		$setting->save();
+    }
+    else
+    {
+    	$setting = new QubitSetting;
+		$setting->name = "ldap_domain_port";
+		$setting->scope = "ldap";
+		$setting->setValue($thisForm->getValue('ldap_domain_port'), array('sourceCulture' => true));
+		$setting->save();
+    }
+
+    // ldap_user_group
+    $setting = QubitSetting::getByName('ldap_user_group');
+    if (isset($setting))
+    {
+		// Force sourceCulture update to prevent discrepency in settings between cultures
+		$setting->setValue($thisForm->getValue('ldap_user_group'), array('sourceCulture' => true));
+		$setting->scope = "ldap";
+		$setting->save();
+    }
+    else
+    {
+    	$setting = new QubitSetting;
+		$setting->name = "ldap_user_group";
+		$setting->scope = "ldap";
+		$setting->setValue($thisForm->getValue('ldap_user_group'), array('sourceCulture' => true));
+		$setting->save();
+    }
+
+    return $this;
+  }
+
+}

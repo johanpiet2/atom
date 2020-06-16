@@ -102,8 +102,10 @@ class SettingsGlobalAction extends sfAction
 	//SITA
     $openSystem = QubitSetting::getByName('open_system');
     $concatIdentifier = QubitSetting::getByName('concatenate_identifier');
+    $concatOverwrite = QubitSetting::getByName('concatenate_overwrite');
     $multiDigitalLinked = QubitSetting::getByName('multi_digital_linked');
     $multiDigitalLinkedDisplay = QubitSetting::getByName('multi_digital_linked_display');
+    $maxRowReport = QubitSetting::getByName('max_row_report');
 
     // Set defaults for global form
     $this->globalForm->setDefaults(array(
@@ -134,8 +136,11 @@ class SettingsGlobalAction extends sfAction
       //SITA
       'open_system' => (isset($openSystem)) ? intval($openSystem->getValue(array('sourceCulture'=>true))) : 0,
       'concatenate_identifier' => (isset($concatIdentifier)) ? intval($concatIdentifier->getValue(array('sourceCulture'=>true))) : 0,
+      'concatenate_overwrite' => (isset($concatOverwrite)) ? intval($concatOverwrite->getValue(array('sourceCulture'=>true))) : 0,
       'multi_digital_linked' => (isset($multiDigitalLinked)) ? intval($multiDigitalLinked->getValue(array('sourceCulture'=>true))) : 0,
       'multi_digital_linked_display' => (isset($multiDigitalLinkedDisplay)) ? intval($multiDigitalLinkedDisplay->getValue(array('sourceCulture'=>true))) : 0,
+	  'max_row_report' => (isset($maxRowReport)) ? intval($maxRowReport->getValue(array('sourceCulture'=>true))) : 1000,
+
     ));
   }
 
@@ -148,9 +153,9 @@ class SettingsGlobalAction extends sfAction
 
     if (null !== $generateReportsAsPubUser = $thisForm->getValue('generate_reports_as_pub_user'))
     {
-      $setting = QubitSetting::getByName('generate_reports_as_pub_user');
-      $setting->setValue($generateReportsAsPubUser, array('sourceCulture' => true));
-      $setting->save();
+		$setting = QubitSetting::getByName('generate_reports_as_pub_user');
+		$setting->setValue($generateReportsAsPubUser, array('sourceCulture' => true));
+		$setting->save();
     }
 
     // Check for updates
@@ -417,6 +422,18 @@ class SettingsGlobalAction extends sfAction
     $setting->setValue($concatIdentifier, array('sourceCulture' => true));
     $setting->save();
 
+	// Concatenate overwrite identifier
+    $concatOverwrite = $thisForm->getValue('concatenate_overwrite');
+
+    if (null === $setting = QubitSetting::getByName('concatenate_overwrite'))
+    {
+      $setting = new QubitSetting;
+      $setting->name = 'concatenate_overwrite';
+    }
+
+    $setting->setValue($concatOverwrite, array('sourceCulture' => true));
+    $setting->save();
+
     // Link multiple digital objects to Archival Description SITA One instance
     $multiDigitalLinked = $thisForm->getValue('multi_digital_linked');
 
@@ -437,6 +454,17 @@ class SettingsGlobalAction extends sfAction
       $setting->name = 'multi_digital_linked_display';
     }
     $setting->setValue($multiDigitalLinkedDisplay, array('sourceCulture' => true));
+    $setting->save();
+
+    // Display maximum number of rows per report
+    $maxRowReport = $thisForm->getValue('max_row_report');
+
+    if (null === $setting = QubitSetting::getByName('max_row_report'))
+    {
+      $setting = new QubitSetting;
+      $setting->name = 'max_row_report';
+    }
+    $setting->setValue($maxRowReport, array('sourceCulture' => true));
     $setting->save();
 
     return $this;
