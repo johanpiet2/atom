@@ -31,7 +31,6 @@ class digitalObjectLoadTask extends sfBaseTask
 
   private $curObjNum = 0;
   private $totalObjCount = 0;
-  private $skippedCount = 0;
 
   /**
    * @see sfTask
@@ -46,9 +45,7 @@ class digitalObjectLoadTask extends sfBaseTask
       new sfCommandOption('application', null, sfCommandOption::PARAMETER_OPTIONAL, 'The application name', true),
       new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'cli'),
       new sfCommandOption('connection', null, sfCommandOption::PARAMETER_REQUIRED, 'The connection name', 'propel'),
-      new sfCommandOption('link-source', 's', sfCommandOption::PARAMETER_NONE, 'Link source', null),
       new sfCommandOption('path', 'p', sfCommandOption::PARAMETER_OPTIONAL, 'Path prefix for digital objects', null),
-      new sfCommandOption('limit', 'l', sfCommandOption::PARAMETER_OPTIONAL, 'Limit number of digital objects imported to n', null),
       new sfCommandOption('index', 'i', sfCommandOption::PARAMETER_NONE, 'Update search index (defaults to false)', null),
     ));
 
@@ -77,11 +74,6 @@ EOF;
       throw new sfException('You must specify a valid filename');
     }
 
-    if (isset($options['limit']) && !is_numeric($options['limit']))
-    {
-      throw new sfException('Limit must be a number');
-    }
-
     if ($options['index'])
     {
       QubitSearch::enable();
@@ -91,7 +83,7 @@ EOF;
       QubitSearch::disable();
     }
 
-    $this->logSection('digital-object', "Load digital objects from {$arguments['filename']}...");
+    $this->logSection("Load digital objects from {$arguments['filename']}...");
 
     // Get header (first) row
     $header = fgetcsv($fh, 1000);
@@ -158,7 +150,7 @@ EOF;
 
     // Set up prepared query based on identifier type
     $sql = 'SELECT io.id, do.id FROM '.QubitInformationObject::TABLE_NAME.' io
-      LEFT JOIN '.QubitDigitalObject::TABLE_NAME.' do ON io.id = do.object_id';
+      LEFT JOIN '.QubitDigitalObject::TABLE_NAME.' do ON io.id = do.information_object_id';
 
     if ($idType == 'id')
     {
@@ -170,17 +162,10 @@ EOF;
     }
 
     $ioQuery = QubitPdo::prepare($sql);
-    $importedCount = 0;
 
     // Loop through $digitalObject hash and add digital objects to db
     foreach ($digitalObjects as $key => $item)
     {
-      // Stop importing if we've reached the limit
-      if (isset($options['limit']) && ($importedCount >= $options['limit']))
-      {
-        break;
-      }
-
       // No information_object_id specified, try looking up id via identifier
       if (!$ioQuery->execute(array($key)))
       {
@@ -197,8 +182,7 @@ EOF;
         // Skip if this information object already has a digital object attached
         if ($results[1] !== null)
         {
-          $this->log(sprintf("Information object $idType: %s already has a digital object. Skipping.", $key));
-          $this->skippedCount++;
+          $this->log(sprintf('Information object $idType: %s already has a digital object. Skipping.', $key));
 
           continue;
         }
@@ -220,20 +204,18 @@ EOF;
           self::addDigitalObject($informationObject->id, $item[$i], $options);
         }
       }
-
-      $importedCount++;
     }
 
-    $this->logSection('digital-object', 'Successfully Loaded '.self::$count.' digital objects.');
+    $this->logSection('Successfully Loaded '.self::$count.' digital objects.');
 
     // Warn user to manually update search index
     if (!$options['index'])
     {
-      $this->logSection('digital-object', 'Please update the search index manually to reflect any changes');
+      $this->logSection('Please update the search index manually to reflect any changes');
     }
   }
 
-  protected function addDigitalObject($objectId, $path, $options = array())
+  protected function addDigitalObject($ioId, $path, $options = array())
   {
     $this->curObjNum++;
 
@@ -242,41 +224,22 @@ EOF;
       $path = $options['path'].$path;
     }
 
-    $filename = basename($path);
-
-    $remainingImportCount = $this->totalObjCount - $this->skippedCount - $importedCount;
-    $message = "Loading '$filename' " . "({$this->curObjNum} of {$remainingImportCount} remaining";
-
-    if (isset($options['limit']))
+    // read file contents
+    if (false === $content = file_get_contents($path))
     {
-      $message .= ": limited to {$options['limit']} imports";
-    }
-    $message .= ")";
+      $this->log("Couldn't read file '$path'");
 
-    $this->log("(" . strftime("%h %d, %r") . ") ". $message);
+      return;
+    }
+
+    $filename = basename($path);
+    $this->log("(" . strftime("%h %d, %r") . ") Loading '$filename' " . "({$this->curObjNum} of {$this->totalObjCount})");
 
     // Create digital object
     $do = new QubitDigitalObject;
-    $do->objectId = $objectId;
-
-    if ($options['link-source'])
-    {
-      $do->importFromFile($path);
-    }
-    else
-    {
-      // Read file contents
-      if (false === $content = file_get_contents($path))
-      {
-        $this->log("Couldn't read file '$path'");
-
-        return;
-      }
-
-      $do->usageId = QubitTerm::MASTER_ID;
-      $do->assets[] = new QubitAsset($filename, $content);
-    }
-
+    $do->informationObjectId = $ioId;
+    $do->usageId = QubitTerm::MASTER_ID;
+    $do->assets[] = new QubitAsset($filename, $content);
     $do->save($options['conn']);
 
     self::$count++;
