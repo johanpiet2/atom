@@ -1,0 +1,135 @@
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--                                                                       -->
+<!--                                                                       -->
+<!--                                                                       -->
+<!--                                                                       -->
+<!--                                                                       -->
+<!--                       ACCESSION 					                   -->
+<!--                       DOCUMENT TYPE DEFINITION                        -->
+<!--                             VERSION 2015                              -->
+<!--                                                                       -->
+<!--                                                                       -->
+<!--                                                                       -->
+<!--                                                                       -->
+<!--                                                                       -->
+<!--                                                                       -->
+<!--                                                                       -->
+<!--                                                                       -->
+<!--                       Prepared and Maintained by the                  -->
+<!--     				 State Information Technology Agency               -->
+<!--                    			  and                     		   	   -->
+<!--        National Archives and Records Services of South Africa    	   -->
+<!--                                                                       -->
+<!--                                                                       -->
+<!--                                                                       -->
+<!--                                                                       -->
+<!--                                                                       -->
+<!--                                                                       -->
+<!--                                                                       -->
+<!--                                                                       -->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--                                                                       -->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--                            INTRODUCTION                               -->
+<!--                                                                       -->
+<!--       Name:    Encoded Archival Description Document Type Definition  -->
+<!--                  File name: ead.dtd                                   -->
+<!--                  Version: 2002                                        -->
+<!--                  Version date: 20021204                               -->
+<!--                                                                       -->
+<!--       Editor:  Johan Pieterse                                         -->
+<!--                State Information Technology Agency    				   -->
+<!--                South Africa                                 		   -->
+<!--                                                                       -->
+<!--       Purpose: To encode that class of archival finding aids known as -->
+<!--                                                                       -->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--                          VERSION HISTORY                              -->
+<!--                                                                       -->
+<!--  ALPHA 0.1                                                            -->
+<!--    Johan Pieterse, editor                                             -->
+<!--    State Information Technology Agency    				   			   -->
+<!--    Date: 2015-01                                                      -->
+<!--                                                                       -->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--                                                                       -->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!-- CHANGES TO VERSION 1.0
+
+  The following conventions are used for brevity and clarity: element names
+  are represented in angle brackets, e.g., <admininfo>; attribute names are
+  preceded by @. <c#> is used to represent <c01>-<c12>. NMTOKEN values from
+  attributes type lists are given in double quotes, e.g., "singlequote".
+
+  NO DESCRIPTION OF CHANGE
+
+  1. Related change(s): None.
+                                                                           -->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--                                                                       -->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--              CHANGE HISTORY (POST VERSION 2015)                       -->
+<!--                                                                       -->
+<!--  NUM  YYYYMMDD     DESCRIPTION OF CHANGE
+                                                                           -->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--                                                                       -->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--
+    PART I
+    CONDITIONAL SECTION CONTROL
+     A. Deprecated Elements
+     B. XML Namespace Attribute
+     C. Tabular Elements and Attributes
+                                                                           -->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+
+<!ELEMENT accession (accessioninfo*)>
+<!ELEMENT accessioninfo (accessionname*,accessionnumber*,accessionid*,accessiondetail?,accessionaddress?,accessionarchival?)>
+<!ELEMENT accessionaddress (primarycontact?,contactperson?,email?,fax?,telephone?, cell?,website?,streetaddress?,city?,region?,countrycode?,postalcode,postaladdress?, postalcity?,postalregion?,postalcountrycode?,postalpostcode?, latitude?,longitude?)> 
+<!ELEMENT accessiondetail (accessionactorid?,accessionactorname?,entityTypeId?,archivalhistory?,datesOfExistence?, places?,legalStatus?,functions?,mandates?,internalStructures?,generalContext?,rules,sources?, revisionHistory?,descriptionIdentifier?,corporateBodyIdentifiers?,acquisitiondate?, sourceofacquisition?,locationinformation?,acquisitiontype?,resourcetype?,title?,creatorsid?,creators?,donorid?,donor?,scopeandcontent?, appraisal?,physicalcharacteristics?,receivedextentunits?,processingstatus?,processingpriority?,processingnotes?,culture?)> 
+<!ELEMENT accessionarchival (accessionarchivalid?,accessionarchivalname?)> 
+<!ELEMENT accessionname (#PCDATA)>
+<!ELEMENT accessionnumber (#PCDATA)>
+<!ELEMENT accessionid (#PCDATA)>
+<!ELEMENT primarycontact (#PCDATA)> 
+<!ELEMENT contactperson (#PCDATA)> 
+<!ELEMENT email (#PCDATA)> 
+<!ELEMENT fax (#PCDATA)> 
+<!ELEMENT telephone (#PCDATA)> 
+<!ELEMENT cell (#PCDATA)> 
+<!ELEMENT website (#PCDATA)> 
+<!ELEMENT streetaddress (#PCDATA)> 
+<!ELEMENT city (#PCDATA)> 
+<!ELEMENT region (#PCDATA)> 
+<!ELEMENT countrycode (#PCDATA)> 
+<!ELEMENT postalcode (#PCDATA)> 
+<!ELEMENT postaladdress (#PCDATA)> 
+<!ELEMENT postalcity (#PCDATA)> 
+<!ELEMENT postalregion (#PCDATA)> 
+<!ELEMENT postalcountrycode (#PCDATA)> 
+<!ELEMENT postalpostcode (#PCDATA)> 
+<!ELEMENT latitude (#PCDATA)> 
+<!ELEMENT longitude (#PCDATA)> 
+
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--
+    END accession DOCUMENT TYPE DEFINITION
+    (accession DTD)
+                                                                           -->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
+<!--:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::-->
