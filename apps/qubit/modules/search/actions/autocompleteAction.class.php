@@ -95,7 +95,28 @@ class SearchAutocompleteAction extends sfAction
         $queryBool->addMust(new \Elastica\Query\Term($item['term_filter']));
       }
 
-      if (isset($request->repos) && ctype_digit($request->repos) && 'QubitInformationObject' == $item['type'])
+/*      if (isset($request->repos)) @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@SITA To Fix
+      {
+	//need to fix global search
+		  // Show only Repositories linked to user - Administrator can see all JJP SITA One Instance
+		  // Start
+		  if ((!$this->context->user->isAdministrator()) && (QubitSetting::getByName('open_system') == '0')) {
+			  $repositories = new QubitUser;
+			  if (0 < count($userRepos = $repositories->getRepositoriesById($this->context->user->getAttribute('user_id')))) {
+			      // Combined subquery
+			      $allReposQueryBool = new \Elastica\Query\BoolQuery;
+			      foreach ($userRepos as $userRepo) {
+			        $allReposQueryBool->addShould(new \Elastica\Query\Term(array('_id' => $userRepo)));
+			      }
+				$queryBool->addMust($allReposQueryBool);
+			  } else {
+				// if not logged in do not show any repositories
+				$queryBool->addMust(new \Elastica\Query\Term(array('_id' => '0000')));
+			  }
+		  }
+		  // End
+		}
+ */     if (isset($request->repos) && ctype_digit($request->repos) && 'QubitInformationObject' == $item['type'])
       {
         $queryBool->addMust(new \Elastica\Query\Term(array('repository.id' => $request->repos)));
 
@@ -116,6 +137,7 @@ class SearchAutocompleteAction extends sfAction
       $query->setQuery($queryBool);
       $search->setQuery($query);
       $mSearch->addSearch($search);
+      
     }
 
     $resultSets = $mSearch->search();
