@@ -75,7 +75,6 @@ class ActorEditAction extends DefaultEditAction
     $this->contactInformationEditComponent = new ContactInformationEditComponent($this->context, 'contactinformation', 'editContactInformation');
     $this->contactInformationEditComponent->resource = $this->resource;
     $this->contactInformationEditComponent->execute($this->request);
-
   }
 
   protected function addField($name)
@@ -168,7 +167,7 @@ class ActorEditAction extends DefaultEditAction
 
           break;
 
-      default:
+		default:
 
         return parent::addField($name);
     }
