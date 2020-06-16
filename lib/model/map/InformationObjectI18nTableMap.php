@@ -57,6 +57,10 @@ class InformationObjectI18nTableMap extends TableMap {
 		$this->addColumn('RULES', 'rules', 'LONGVARCHAR', false, null, null);
 		$this->addColumn('SOURCES', 'sources', 'LONGVARCHAR', false, null, null);
 		$this->addColumn('REVISION_HISTORY', 'revisionHistory', 'LONGVARCHAR', false, null, null);
+		$this->addColumn('VOLUME_NUMBER_IDENTIFIER', 'volumeNumberIdentifier', 'VARCHAR', false, 50, null);
+		$this->addColumn('FILE_NUMBER_IDENTIFIER', 'fileNumberIdentifier', 'VARCHAR', false, 50, null);
+		$this->addColumn('PART_NUMBER_IDENTIFIER', 'partNumberIdentifier', 'VARCHAR', false, 50, null);
+		$this->addColumn('ITEM_NUMBER_IDENTIFIER', 'itemNumberIdentifier', 'VARCHAR', false, 50, null);
 		$this->addForeignPrimaryKey('ID', 'id', 'INTEGER' , 'information_object', 'ID', true, null, null);
 		$this->addPrimaryKey('CULTURE', 'culture', 'VARCHAR', true, 7, null);
 		// validators

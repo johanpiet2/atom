@@ -37,8 +37,18 @@ class PhysicalObjectI18nTableMap extends TableMap {
 		$this->setUseIdGenerator(false);
 		// columns
 		$this->addColumn('NAME', 'name', 'VARCHAR', false, 1024, null);
+		$this->addColumn('REPOSITORY_ID', 'repositoryId', 'INTEGER', true, null, null);
 		$this->addColumn('DESCRIPTION', 'description', 'LONGVARCHAR', false, null, null);
-		$this->addColumn('LOCATION', 'location', 'LONGVARCHAR', false, null, null);
+		$this->addColumn('LOCATION', 'location', 'LONGVARCHAR', false, null, null);		
+		$this->addColumn('UNIQUEIDENTIFIER', 'uniqueIdentifier', 'LONGVARCHAR', false, null, null);		
+ 		$this->addColumn('DESCRIPTIONTITLE', 'descriptionTitle', 'LONGVARCHAR', false, null, null);
+		$this->addColumn('PERIODCOVERED', 'periodCovered', 'LONGVARCHAR', false, null, null);
+		$this->addColumn('EXTENT', 'extent', 'LONGVARCHAR', false, null, null);				
+		$this->addColumn('FINDINGAIDS', 'findingAids', 'LONGVARCHAR', false, null, null);
+		$this->addColumn('ACCRUALSPACE', 'accrualSpace', 'LONGVARCHAR', false, null, null); 
+		$this->addColumn('SHELF', 'shelf', 'LONGVARCHAR', false, null, null); 
+		$this->addColumn('ROWNUMBER', 'rowNumber', 'LONGVARCHAR', false, null, null); 		
+		$this->addColumn('FORMS', 'forms', 'LONGVARCHAR', false, null, null);   
 		$this->addForeignPrimaryKey('ID', 'id', 'INTEGER' , 'physical_object', 'ID', true, null, null);
 		$this->addPrimaryKey('CULTURE', 'culture', 'VARCHAR', true, 7, null);
 		// validators

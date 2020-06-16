@@ -38,7 +38,11 @@ class ContactInformationI18nTableMap extends TableMap {
 		// columns
 		$this->addColumn('CONTACT_TYPE', 'contactType', 'VARCHAR', false, 1024, null);
 		$this->addColumn('CITY', 'city', 'VARCHAR', false, 1024, null);
+		//jjp SITA 17 Dec 2014 - Added Postal address
+		$this->addColumn('POSTAL_CITY', 'postalCity', 'VARCHAR', false, 1024, null);
 		$this->addColumn('REGION', 'region', 'VARCHAR', false, 1024, null);
+		//jjp SITA 17 Dec 2014 - Added Postal address
+		$this->addColumn('POSTAL_REGION', 'postalRegion', 'VARCHAR', false, 1024, null);
 		$this->addColumn('NOTE', 'note', 'LONGVARCHAR', false, null, null);
 		$this->addForeignPrimaryKey('ID', 'id', 'INTEGER' , 'contact_information', 'ID', true, null, null);
 		$this->addPrimaryKey('CULTURE', 'culture', 'VARCHAR', true, 7, null);

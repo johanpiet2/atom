@@ -38,14 +38,22 @@ class ContactInformationTableMap extends TableMap {
 		// columns
 		$this->addForeignKey('ACTOR_ID', 'actorId', 'INTEGER', 'actor', 'ID', true, null, null);
 		$this->addColumn('PRIMARY_CONTACT', 'primaryContact', 'BOOLEAN', false, null, null);
+		$this->addColumn('TITLE', 'title', 'VARCHAR', false, 255, null);
 		$this->addColumn('CONTACT_PERSON', 'contactPerson', 'VARCHAR', false, 1024, null);
+		$this->addColumn('POSITION', 'position', 'VARCHAR', false, 255, null);
 		$this->addColumn('STREET_ADDRESS', 'streetAddress', 'LONGVARCHAR', false, null, null);
 		$this->addColumn('WEBSITE', 'website', 'VARCHAR', false, 1024, null);
 		$this->addColumn('EMAIL', 'email', 'VARCHAR', false, 255, null);
 		$this->addColumn('TELEPHONE', 'telephone', 'VARCHAR', false, 255, null);
 		$this->addColumn('FAX', 'fax', 'VARCHAR', false, 255, null);
+		//jjp SITA 17 Dec 2014 - Added Cell Number
+		$this->addColumn('CELL', 'cell', 'VARCHAR', false, 255, null);
 		$this->addColumn('POSTAL_CODE', 'postalCode', 'VARCHAR', false, 255, null);
 		$this->addColumn('COUNTRY_CODE', 'countryCode', 'VARCHAR', false, 255, null);
+		//jjp SITA 17 Dec 2014 - Added Postal Address
+		$this->addColumn('POSTAL_ADDRESS', 'postalAddress', 'LONGVARCHAR', false, null, null);
+		$this->addColumn('POSTAL_POST_CODE', 'postalPostCode', 'VARCHAR', false, 255, null);
+		$this->addColumn('POSTAL_COUNTRY_CODE', 'postalCountryCode', 'VARCHAR', false, 255, null);
 		$this->addColumn('LONGITUDE', 'longitude', 'FLOAT', false, null, null);
 		$this->addColumn('LATITUDE', 'latitude', 'FLOAT', false, null, null);
 		$this->addColumn('CREATED_AT', 'createdAt', 'TIMESTAMP', true, null, null);
