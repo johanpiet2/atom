@@ -160,8 +160,9 @@ class QubitActor extends BaseActor
     $context = sfContext::getInstance();
     $env = $context->getConfiguration()->getEnvironment();
 
+	// to many to save JJP
     // Save related event objects
-    foreach ($this->events as $event)
+/*    foreach ($this->events as $event)
     {
       $event->indexOnSave = false;
 
@@ -188,7 +189,7 @@ class QubitActor extends BaseActor
       $event->actor = $this;
       $event->save();
     }
-
+*/
     // Update asynchronously the saved IOs ids, two jobs may
     // be launched in here as creation events require updating
     // the descendants but other events don't.

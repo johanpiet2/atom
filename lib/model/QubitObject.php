@@ -97,7 +97,6 @@ class QubitObject extends BaseObject implements Zend_Acl_Resource_Interface
   public function save($connection = null)
   {
     parent::save($connection);
-
     // Save updated objectTermRelations
     foreach ($this->objectTermRelationsRelatedByobjectId as $relation)
     {

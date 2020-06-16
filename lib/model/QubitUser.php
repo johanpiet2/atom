@@ -203,7 +203,7 @@ class QubitUser extends BaseUser
    * Get an array of QubitRepository objects where the current user has been
    * added explicit access via its own user of any of its groups
    *
-   * @return QubitUser
+   * @return QubitUser repositories
    */
   public function getRepositories()
   {
@@ -269,4 +269,74 @@ class QubitUser extends BaseUser
 
     return $repositories;
   }
+
+  /**
+   * Get an array of QubitRepository objects where the current user has been
+   * added explicit access via its own user or any of its groups
+   *
+   * JJP SITA One Instance
+   * @return array of repository id's linked to user
+   */
+  public function getRepositoriesById($rID)
+  {
+    // Get user's groups
+    $userGroups = array();
+    if (0 < count($aclUserGroups = $this->aclUserGroups))
+    {
+      foreach ($aclUserGroups as $aclUserGroup)
+      {
+        $userGroups[] = $aclUserGroup->groupId;
+      }
+    }
+    else
+    {
+      // User is *always* part of authenticated group
+      $userGroups = array(QubitAclGroup::AUTHENTICATED_ID);
+    }
+
+    // Get access control permissions
+    $criteria = new Criteria;
+    $criteria->addJoin(QubitAclPermission::OBJECT_ID, QubitObject::ID, Criteria::LEFT_JOIN);
+    $c1 = $criteria->getNewCriterion(QubitAclPermission::USER_ID, $rID);
+
+    // Add group criteria
+    if (1 == count($userGroups))
+    {
+      $c2 = $criteria->getNewCriterion(QubitAclPermission::GROUP_ID, $userGroups[0]);
+    }
+    else
+    {
+      $c2 = $criteria->getNewCriterion(QubitAclPermission::GROUP_ID, $userGroups, Criteria::IN);
+    }
+    $c1->addOr($c2);
+
+    // Add information object criteria
+    $c3 = $criteria->getNewCriterion(QubitObject::CLASS_NAME, 'QubitRepository');
+    $c1->addAnd($c3);
+    $criteria->add($c1);
+
+    // Sort
+    $criteria->addAscendingOrderByColumn(QubitAclPermission::CONSTANTS);
+    $criteria->addAscendingOrderByColumn(QubitAclPermission::OBJECT_ID);
+    $criteria->addAscendingOrderByColumn(QubitAclPermission::USER_ID);
+    $criteria->addAscendingOrderByColumn(QubitAclPermission::GROUP_ID);
+
+    // Build ACL
+    $repositories = array();
+    if (0 < count($permissions = QubitAclPermission::get($criteria)))
+    {
+      foreach ($permissions as $item)
+      {
+        if (null !== $constant = $item->objectId)
+        {
+	    	//echo "constant".$constant."<br>";
+			if (($key = array_search($constant, $repositories)) === false) {
+		        $repositories[] = $constant;
+			} 
+        }
+      }
+    }
+    return $repositories;
+  }
+
 }

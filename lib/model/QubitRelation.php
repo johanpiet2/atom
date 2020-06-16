@@ -215,6 +215,27 @@ class QubitRelation extends BaseRelation
   }
 
   /**
+   * Get related "object" (semantic) QubitObjects
+   *
+   * @param string  $className type of objects to return
+   * @param integer $subjectId primary key of "subject" QubitObject
+   * @param array   $options list of options to pass to QubitQuery
+   * @return QubitQuery collection of QubitObjects
+   * JJP SITA
+   */
+  public static function getObjectsBySubjectId($subjectId, $options = array())
+  {
+    $criteria = new Criteria;
+    $criteria->add(QubitRelation::SUBJECT_ID, $subjectId);
+    if (isset($options['typeId']))
+    {
+      $criteria->add(QubitRelation::TYPE_ID, $options['typeId']);
+    }
+
+    return QubitRelation::get($criteria);
+  }
+
+  /**
    * Get opposite vertex of relation
    *
    * @param integer $referenceId primary key of reference object
