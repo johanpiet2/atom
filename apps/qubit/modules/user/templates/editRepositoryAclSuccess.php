@@ -20,7 +20,7 @@
           <?php echo get_component('aclGroup', 'aclTable', array('object' => QubitRepository::getById($key), 'permissions' => $item, 'actions' => $basicActions)) ?>
         </div>
       <?php endforeach; ?>
-
+ 
       <div class="form-item">
         <label for="addRepositoryLink"><?php echo __('Add permissions by %1%', array('%1%' => lcfirst(sfConfig::get('app_ui_label_repository')))) ?></label>
         <a id="addRepositoryLink" href="javascript:myDialog.show()"><?php echo __('Add %1%', array('%1%' => lcfirst(sfConfig::get('app_ui_label_repository')))) ?></a>

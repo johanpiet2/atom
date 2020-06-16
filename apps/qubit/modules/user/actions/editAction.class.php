@@ -171,6 +171,16 @@ class UserEditAction extends DefaultEditAction
 					$choices[$item->id] = $item->getName(array('cultureFallback' => true));
 				}
   			} 
+			else if ($item->getName(array('cultureFallback' => true)) == 'audittrail') { //only allow administrator to add audittrail (to many rights for normal user)
+				if ($this->context->user->isAdministrator()) {
+					$choices[$item->id] = $item->getName(array('cultureFallback' => true));
+				}
+  			} 
+			else if ($item->getName(array('cultureFallback' => true)) == 'reporting') { //only allow administrator to add reporting (to many rights for normal user)
+				if ($this->context->user->isAdministrator()) {
+					$choices[$item->id] = $item->getName(array('cultureFallback' => true));
+				}
+  			} 
   			else {
   				$choices[$item->id] = $item->getName(array('cultureFallback' => true));
   			}

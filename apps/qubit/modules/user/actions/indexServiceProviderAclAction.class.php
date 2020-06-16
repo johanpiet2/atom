@@ -29,7 +29,7 @@ class UserIndexServiceProviderAclAction extends sfAction
     }
 
     // Except for administrators, only allow users to see their own profile
-    if (!$this->context->user->isAdministrator())
+    if ((!$this->context->user->isAdministrator()) && (!$this->context->user->isSuperUser()))
     {
       if ($this->resource->id != $this->context->user->getAttribute('user_id'))
       {

@@ -42,7 +42,15 @@ class UserListAction extends sfAction
       $criteria->add($c1);
     }
 
-    $criteria->addAscendingOrderByColumn(QubitUser::USERNAME);
+	if ((!$this->context->user->isAdministrator()) && ($this->context->user->isSuperUser())) {
+		$repos = new QubitUser;
+		$this->userRepos = $repos->getRepositoriesById($this->context->user->getAttribute('user_id'));
+		QubitUser::addSelectColumns($criteria);
+		$criteria->addJoin(QubitAclPermission::USER_ID, QubitUser::ID, Criteria::LEFT_JOIN);
+		$criteria->add(QubitAclPermission::OBJECT_ID, $this->userRepos, Criteria::IN);
+	}
+	$criteria->addGroupByColumn(QubitUser::USERNAME);
+	$criteria->addAscendingOrderByColumn(QubitUser::USERNAME);
 
     switch ($request->filter)
     {
@@ -55,12 +63,12 @@ class UserListAction extends sfAction
       default:
         $criteria->add(QubitUser::ACTIVE, 1);
     }
-
+//echo $criteria->toString();
     $this->pager = new QubitPager('QubitUser');
     $this->pager->setCriteria($criteria);
     $this->pager->setMaxPerPage($request->limit);
     $this->pager->setPage($request->page);
 
-    $this->users = $this->pager->getResults();
+	$this->users = $this->pager->getResults();
   }
 }

@@ -29,7 +29,7 @@
       </th>
     </tr>
   </thead><tbody>
-    <?php foreach ($users as $item): ?>
+    <?php foreach ($pager->getResults() as $item): ?>
 <?php    
 	// Super User - Show only Users linked to Super User's Repositories - Administrator can see all JJP SITA One Instance
 	// super user cannot change their own permissions
