@@ -178,18 +178,21 @@ DROP TABLE IF EXISTS `audit`;
 
 CREATE TABLE IF NOT EXISTS `audit` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `field_key` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `record_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `user_action` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  `db_table` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `db_query` longtext COLLATE utf8_unicode_ci NOT NULL,
-  `user` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `field_key` varchar(50) NOT NULL,
+  `record_id` varchar(50) NOT NULL,
+  `secondary_key` varchar(50),
+  `secondary_value` varchar(50),
+  `action` varchar(20) NOT NULL,
+  `db_table` varchar(255) NOT NULL,
+  `db_query` longtext NOT NULL,
+  `user` varchar(100) NOT NULL,
   `action_date_time` datetime NOT NULL,
   PRIMARY KEY (`id`),
 	INDEX `audit_object_FI_1` (`record_id`),
-	INDEX `audit_object_FI_2` (`action_date_time`)
+	INDEX `audit_object_FI_2` (`action_date_time`),
+	INDEX `audit_object_FI_3` (`user`)
 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB;
 
 #-----------------------------------------------------------------------------
 #-- bookout_object
@@ -734,6 +737,7 @@ CREATE TABLE `information_object`
     INDEX `information_object_FI_15` (`rgt`),
     INDEX `information_object_FI_16` (`identifier`),
     INDEX `information_object_FI_17` (`parent_id`, `lft`, `rgt`),
+	INDEX `information_object_FI_18` (`lft`, `rgt`),
     INDEX `information_object_FI_19` (`id`, `lft`, `rgt`)
 )Engine=InnoDB;
 
@@ -1827,10 +1831,10 @@ CREATE TABLE `term`
 		REFERENCES `object` (`id`)
 		ON DELETE CASCADE,
 	INDEX `term_FI_2` (`taxonomy_id`),
-	CONSTRAINT `term_FK_2`
-		FOREIGN KEY (`taxonomy_id`)
-		REFERENCES `taxonomy` (`id`)
-		ON DELETE CASCADE,
+	CONSTRAINT `term_FK_2` Fail create site
+	FOREIGN KEY (`taxonomy_id`)
+	REFERENCES `taxonomy` (`id`)
+	ON DELETE CASCADE,
 	INDEX `term_FI_3` (`parent_id`),
 	CONSTRAINT `term_FK_3`
 		FOREIGN KEY (`parent_id`)
@@ -1855,6 +1859,17 @@ CREATE TABLE `term_i18n`
 		REFERENCES `term` (`id`)
 		ON DELETE CASCADE
 )Engine=InnoDB;
+
+#-----------------------------------------------------------------------------
+#-- toIndexBatch
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `toIndexBatch`;
+
+
+CREATE TABLE `toIndexBatch`  ( `offsetB` char(20), `limitB` char(20) )Engine=InnoDB;
+
+
 
 #-----------------------------------------------------------------------------
 #-- user
@@ -1928,6 +1943,14 @@ CREATE TABLE `researcher`
 (
 	`id` INTEGER  NOT NULL,PRIMARY KEY (`id`),	
 	`repository_id` INTEGER
+)Engine=InnoDB;
+
+DROP TABLE IF EXISTS `toIndexBatch`;
+
+CREATE TABLE `toIndexBatch` 
+(
+	`offsetB` char(20),	
+	`limitB` char(20)
 )Engine=InnoDB;
 
 # This restores the fkey checks, after having unset them earlier
