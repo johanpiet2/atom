@@ -61,11 +61,15 @@ class SettingsGlobalForm extends sfForm
       'generate_reports_as_pub_user' => new sfWidgetFormSelectRadio(array('choices' => array(1 => 'yes', 0 => 'no')), array('class' => 'radio')),
       'cache_xml_on_save' => new sfWidgetFormSelectRadio(array('choices' => array(1 => 'yes', 0 => 'no')), array('class' => 'radio')),
       'clipboard_save_max_age' => new sfWidgetFormInput,
+
       //SITA One Instance
       'open_system' => new sfWidgetFormSelectRadio(array('choices' => array(1 => 'yes', 0 => 'no')), array('class' => 'radio')),
       'concatenate_identifier' => new sfWidgetFormSelectRadio(array('choices' => array(1 => 'yes', 0 => 'no')), array('class' => 'radio')),
+      'concatenate_overwrite' => new sfWidgetFormSelectRadio(array('choices' => array(1 => 'yes', 0 => 'no')), array('class' => 'radio')),
       'multi_digital_linked' => new sfWidgetFormSelectRadio(array('choices' => array(1 => 'yes', 0 => 'no')), array('class' => 'radio')),
       'multi_digital_linked_display' => new sfWidgetFormSelectRadio(array('choices' => array(1 => 'yes', 0 => 'no')), array('class' => 'radio')),
+      'max_row_report' => new sfWidgetFormInput,
+      'csv_delimiter' => new sfWidgetFormInput,
     ));
 
     // Add labels
@@ -100,8 +104,11 @@ class SettingsGlobalForm extends sfForm
       //SITA One Instance
       'open_system' => $this->i18n->__('View all Repositories and Authority Records'),
       'concatenate_identifier' => $this->i18n->__('Concatenate Identifier'),
+      'concatenate_overwrite' => $this->i18n->__('Concatenate Overwrite Identifier'),
       'multi_digital_linked' => $this->i18n->__('Link multiple digital objects to a single Archival Description'),
       'multi_digital_linked_display' => $this->i18n->__('Display multiple linked digital objects to a single Archival Description'),
+      'max_row_report' => $this->i18n->__('On reporting, the system will return this number of rows'),
+      'csv_delimiter' => $this->i18n->__('CSV Import File Delimiter'),
     ));
 
     // Add helper text
@@ -129,9 +136,11 @@ class SettingsGlobalForm extends sfForm
       //SITA One Instance
       'open_system' => $this->i18n->__('Choose whether in the Single Instance environment all users can see all Repositories/Authority Reords or only the Repositories/Authority Reords linked to their profile'),
       'concatenate_identifier' => $this->i18n->__('Choose whether to concatenate Volume, File, Part and Item number into Identifier? Empty fields will be replaced by #'),
+      'concatenate_overwrite' => $this->i18n->__('Choose whether to overwrite concatenated Volume, File, Part and Item number into Identifier? If not selected and Identifier has data, the data will be kept and not replaced with concateneted data.'),
       'multi_digital_linked' => $this->i18n->__('Choose whether to enable linking of multiple digital objects to a single Archival Description'),
       'multi_digital_linked_display' => $this->i18n->__('Choose whether to display multiple linked digital objects to a single Archival Description'),
-
+      'max_row_report' => $this->i18n->__('Choose the number of rows to display when initiating a report. -1 to display all rows. Caution this can take a long time to complete.'),
+      'csv_delimiter' => $this->i18n->__('Add the delimiter used in CSV import file. If left empty a comma will be used'),
     ));
 
     // Hits per page validator
@@ -176,8 +185,11 @@ class SettingsGlobalForm extends sfForm
       //SITA One Instance
     $this->validatorSchema['open_system'] = new sfValidatorInteger(array('required' => false));
     $this->validatorSchema['concatenate_identifier'] = new sfValidatorInteger(array('required' => false));
+    $this->validatorSchema['concatenate_overwrite'] = new sfValidatorInteger(array('required' => false));
     $this->validatorSchema['multi_digital_linked'] = new sfValidatorInteger(array('required' => false));
     $this->validatorSchema['multi_digital_linked_display'] = new sfValidatorInteger(array('required' => false));
+    $this->validatorSchema['max_row_report'] = new sfValidatorInteger(array('required' => false));
+    $this->validatorSchema['csv_delimiter'] = new sfValidatorString(array('required' => false));
 
     // Set decorator
     $decorator = new QubitWidgetFormSchemaFormatterList($this->widgetSchema);
