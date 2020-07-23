@@ -25,11 +25,12 @@
  * @author     Peter Van Garderen <peter@artefactual.com>
  * @author     Jack Bates <jack@nottheoilrig.com>
  * @author     David Juhasz <david@artefactual.com>
+ * @author     Johan Pieterse <johan.pieterse@sita.co.za>
  */
 
 class SettingsGlobalAction extends sfAction
 {
-  public function execute($request)
+  public function execute($request) 
   {
     $this->globalForm = new SettingsGlobalForm;
 
@@ -96,6 +97,16 @@ class SettingsGlobalAction extends sfAction
     $generateReportsAsPubUser = QubitSetting::getByName('generate_reports_as_pub_user');
     $enableInstitutionalScoping = QubitSetting::getByName('enable_institutional_scoping');
     $cacheXmlOnSave = QubitSetting::getByName('cache_xml_on_save');
+    $clipboardSaveMaxAge = QubitSetting::getByName('clipboard_save_max_age');
+    
+	//SITA
+    $openSystem = QubitSetting::getByName('open_system');
+    $concatIdentifier = QubitSetting::getByName('concatenate_identifier');
+    $concatOverwrite = QubitSetting::getByName('concatenate_overwrite');
+    $multiDigitalLinked = QubitSetting::getByName('multi_digital_linked');
+    $multiDigitalLinkedDisplay = QubitSetting::getByName('multi_digital_linked_display');
+    $maxRowReport = QubitSetting::getByName('max_row_report');
+    $csvDelimiter = QubitSetting::getByName('csv_delimiter');
 
     // Set defaults for global form
     $this->globalForm->setDefaults(array(
@@ -121,6 +132,16 @@ class SettingsGlobalAction extends sfAction
       'generate_reports_as_pub_user' => (isset($generateReportsAsPubUser)) ? $generateReportsAsPubUser->getValue(array('sourceCulture'=>true)) : 1,
       'enable_institutional_scoping' => (isset($enableInstitutionalScoping)) ? intval($enableInstitutionalScoping->getValue(array('sourceCulture'=>true))) : 0,
       'cache_xml_on_save' => (isset($cacheXmlOnSave)) ? intval($cacheXmlOnSave->getValue(array('sourceCulture'=>true))) : 0,
+      'clipboard_save_max_age' => (isset($clipboardSaveMaxAge)) ? intval($clipboardSaveMaxAge->getValue(array('sourceCulture'=>true))) : 0,
+      
+      //SITA
+      'open_system' => (isset($openSystem)) ? intval($openSystem->getValue(array('sourceCulture'=>true))) : 0,
+      'concatenate_identifier' => (isset($concatIdentifier)) ? intval($concatIdentifier->getValue(array('sourceCulture'=>true))) : 0,
+      'concatenate_overwrite' => (isset($concatOverwrite)) ? intval($concatOverwrite->getValue(array('sourceCulture'=>true))) : 0,
+      'multi_digital_linked' => (isset($multiDigitalLinked)) ? intval($multiDigitalLinked->getValue(array('sourceCulture'=>true))) : 0,
+      'multi_digital_linked_display' => (isset($multiDigitalLinkedDisplay)) ? intval($multiDigitalLinkedDisplay->getValue(array('sourceCulture'=>true))) : 0,
+	  'max_row_report' => (isset($maxRowReport)) ? intval($maxRowReport->getValue(array('sourceCulture'=>true))) : 1000,
+      'csv_delimiter' => (isset($csvDelimiter)) ? $csvDelimiter->getValue(array('sourceCulture'=>true)) : '|',
     ));
   }
 
@@ -133,9 +154,9 @@ class SettingsGlobalAction extends sfAction
 
     if (null !== $generateReportsAsPubUser = $thisForm->getValue('generate_reports_as_pub_user'))
     {
-      $setting = QubitSetting::getByName('generate_reports_as_pub_user');
-      $setting->setValue($generateReportsAsPubUser, array('sourceCulture' => true));
-      $setting->save();
+		$setting = QubitSetting::getByName('generate_reports_as_pub_user');
+		$setting->setValue($generateReportsAsPubUser, array('sourceCulture' => true));
+		$setting->save();
     }
 
     // Check for updates
@@ -364,6 +385,99 @@ class SettingsGlobalAction extends sfAction
     }
 
     $setting->setValue($cacheXmlOnSave, array('sourceCulture' => true));
+    $setting->save();
+
+    // Saved clipboard maximum age
+    $clipboardSaveMaxAge = $thisForm->getValue('clipboard_save_max_age');
+
+    if (null === $setting = QubitSetting::getByName('clipboard_save_max_age'))
+    {
+      $setting = new QubitSetting;
+      $setting->name = 'clipboard_save_max_age';
+    }
+
+    $setting->setValue($clipboardSaveMaxAge, array('sourceCulture' => true));
+    $setting->save();
+
+    // Show all repositories and authority records SITA One instance
+    $openSystem = $thisForm->getValue('open_system');
+
+    if (null === $setting = QubitSetting::getByName('open_system'))
+    {
+      $setting = new QubitSetting;
+      $setting->name = 'open_system';
+    }
+
+    $setting->setValue($openSystem, array('sourceCulture' => true));
+    $setting->save();
+
+    // Concatenate identifier
+    $concatIdentifier = $thisForm->getValue('concatenate_identifier');
+
+    if (null === $setting = QubitSetting::getByName('concatenate_identifier'))
+    {
+      $setting = new QubitSetting;
+      $setting->name = 'concatenate_identifier';
+    }
+
+    $setting->setValue($concatIdentifier, array('sourceCulture' => true));
+    $setting->save();
+
+	// Concatenate overwrite identifier
+    $concatOverwrite = $thisForm->getValue('concatenate_overwrite');
+
+    if (null === $setting = QubitSetting::getByName('concatenate_overwrite'))
+    {
+      $setting = new QubitSetting;
+      $setting->name = 'concatenate_overwrite';
+    }
+
+    $setting->setValue($concatOverwrite, array('sourceCulture' => true));
+    $setting->save();
+
+    // Link multiple digital objects to Archival Description SITA One instance
+    $multiDigitalLinked = $thisForm->getValue('multi_digital_linked');
+
+    if (null === $setting = QubitSetting::getByName('multi_digital_linked'))
+    {
+      $setting = new QubitSetting;
+      $setting->name = 'multi_digital_linked';
+    }
+    $setting->setValue($multiDigitalLinked, array('sourceCulture' => true));
+    $setting->save();
+
+    // Display multiple link digital objects to Archival Description SITA One instance
+    $multiDigitalLinkedDisplay = $thisForm->getValue('multi_digital_linked_display');
+
+    if (null === $setting = QubitSetting::getByName('multi_digital_linked_display'))
+    {
+      $setting = new QubitSetting;
+      $setting->name = 'multi_digital_linked_display';
+    }
+    $setting->setValue($multiDigitalLinkedDisplay, array('sourceCulture' => true));
+    $setting->save();
+
+    // Display maximum number of rows per report
+    $maxRowReport = $thisForm->getValue('max_row_report');
+
+    if (null === $setting = QubitSetting::getByName('max_row_report'))
+    {
+      $setting = new QubitSetting;
+      $setting->name = 'max_row_report';
+    }
+    $setting->setValue($maxRowReport, array('sourceCulture' => true));
+    $setting->save();
+
+    // CSV import file delimiter
+    $csvDelimiter = $thisForm->getValue('csv_delimiter');
+
+    if (null === $setting = QubitSetting::getByName('csv_delimiter'))
+    {
+      $setting = new QubitSetting;
+      $setting->name = 'csv_delimiter';
+    }
+
+    $setting->setValue($csvDelimiter, array('sourceCulture' => true));
     $setting->save();
 
     return $this;
