@@ -24,6 +24,7 @@
  * @package    symfony
  * @subpackage task
  * @author     David Juhasz <david@artefactual.com>
+ * @author	   Johan Pieterse <johan.pieterse@sita.co.za>
  */
 class importDipObjectsTask extends arBaseTask
 {
@@ -200,7 +201,14 @@ EOF;
 
     // Build hash on information_object key, with value being an array if information
     // object has multiple digital objects attached
-    while ($row = fgetcsv($fh, 1000))
+	// added delimiter selection via global properties
+	$csvDelimiter = QubitSetting::getByName('csv_delimiter');
+	if ($csvDelimiter == "") {
+		$csvDelimiter = ",";
+	} else if ($csvDelimiter == null)
+		$csvDelimiter = ",";		
+	}
+    while ($row = fgetcsv($fh, 1000, $csvDelimiter))
     {
       $filename = $this->getRowColumnValue('filename', $row);
       $filepath = $objectsPath .'/'. $filename;
@@ -257,8 +265,15 @@ EOF;
    */
   protected function processCsvHeaderRow($fh)
   {
+	// added delimiter selection via global properties	  
+	$csvDelimiter = QubitSetting::getByName('csv_delimiter');
+	if ($csvDelimiter == "") {
+		$csvDelimiter = ",";
+	} else if ($csvDelimiter == null)
+		$csvDelimiter = ",";		
+	}
     // Storage order of columns in CSV header row
-    $this->columnNames = fgetcsv($fh, 1000);
+    $this->columnNames = fgetcsv($fh, 1000, $csvDelimiter);
 
     // Make sure there isn't both an "identifier" and "slug" column in the CSV header row
     $identifierExists = in_array('identifier', $this->columnNames);
