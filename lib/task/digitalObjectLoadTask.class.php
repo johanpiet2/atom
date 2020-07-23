@@ -23,7 +23,7 @@
  * @package    symfony
  * @subpackage task
  * @author     David Juhasz <david@artefactual.com>
- * @author	   Johan Pieterse <johan.pieterse@sita.co.za>
+ * @author	   Johan Pieterse <johan.pieterse@sita.co.za> 
  */
 class digitalObjectLoadTask extends sfBaseTask
 {
@@ -87,11 +87,11 @@ EOF;
     $this->logSection("Load digital objects from {$arguments['filename']}...");
 
     // Get header (first) row
-	// added delimiter selection via global properties	  
+	// added delimiter selection via global properties
 	$csvDelimiter = QubitSetting::getByName('csv_delimiter');
 	if ($csvDelimiter == "") {
 		$csvDelimiter = ",";
-	} else if ($csvDelimiter == null)
+	} elseif ($csvDelimiter == null) {
 		$csvDelimiter = ",";		
 	}
     $header = fgetcsv($fh, 1000, $csvDelimiter);
