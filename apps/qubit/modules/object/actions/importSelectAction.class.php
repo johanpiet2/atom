@@ -264,7 +264,14 @@ class ObjectImportSelectAction extends DefaultEditAction
 
     // Get first row of possible CSV file
     $fh = fopen($fileName, 'rb');
-    $firstCsvRow = fgetcsv($fh, 60000);
+	$csvDelimiter = QubitSetting::getByName('csv_delimiter');
+	if ($csvDelimiter == "") {
+		$csvDelimiter = ",";
+	} else if ($csvDelimiter == null)
+		$csvDelimiter = ",";		
+	}
+    
+    $firstCsvRow = fgetcsv($fh, 60000, $csvDelimiter);
 
     // Count valid columns found
     foreach ($firstCsvRow as $column)
