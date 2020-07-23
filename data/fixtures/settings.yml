@@ -868,12 +868,18 @@ QubitSetting:
   QubitSetting_concatIdentifier:
     name: concatenate_identifier
     value: 1
+  QubitSetting_concatOverwrite:
+    name: concatenate_overwrite
+    value: 0
   QubitSetting_multiDigitalLinked:
     name: multi_digital_linked
     value: 0
   QubitSetting_multiDigitalLinkedDisplay:
     name: multi_digital_linked_display
     value: 0
+  QubitSetting_csvDelimiter:
+    name: csv_delimiter
+    value: ,
   QubitSetting_accessionMask:
     name: accession_mask
     value: '%Y-%m-%d/#i'
@@ -1062,6 +1068,22 @@ QubitSetting:
     value: 1
   Qubit_Settings_visibleElements_physicalStorage:
     name: physical_storage
+    scope: element_visibility
+    value: 1
+  Qubit_Settings_visibleElements_presevation:
+    name: presevation
+    scope: element_visibility
+    value: 1
+  Qubit_Settings_visibleElements_access:
+    name: access
+    scope: element_visibility
+    value: 1
+  Qubit_Settings_visibleElements_bookout:
+    name: bookout
+    scope: element_visibility
+    value: 1
+  Qubit_Settings_visibleElements_bookin:
+    name: bookout
     scope: element_visibility
     value: 1
   Qubit_Settings_visibleElements_radTitleResponsibilityArea:
