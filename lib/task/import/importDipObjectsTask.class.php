@@ -24,7 +24,6 @@
  * @package    symfony
  * @subpackage task
  * @author     David Juhasz <david@artefactual.com>
- * @author	   Johan Pieterse <johan.pieterse@sita.co.za>
  */
 class importDipObjectsTask extends arBaseTask
 {
@@ -182,7 +181,7 @@ EOF;
    *
    * @param resource $fh  File pointer resource for CSV file
    * @param string $objectsPath  Path to DIP object files
-   *
+   * 
    * @return array  Hash with hash key being unique value and hash value(s)
    *                being original object filenames
    */
@@ -205,7 +204,7 @@ EOF;
 	$csvDelimiter = QubitSetting::getByName('csv_delimiter');
 	if ($csvDelimiter == "") {
 		$csvDelimiter = ",";
-	} else if ($csvDelimiter == null)
+	} elseif ($csvDelimiter == null) {
 		$csvDelimiter = ",";		
 	}
     while ($row = fgetcsv($fh, 1000, $csvDelimiter))
@@ -265,14 +264,14 @@ EOF;
    */
   protected function processCsvHeaderRow($fh)
   {
-	// added delimiter selection via global properties	  
+    // Storage order of columns in CSV header row
+	// added delimiter selection via global properties
 	$csvDelimiter = QubitSetting::getByName('csv_delimiter');
 	if ($csvDelimiter == "") {
 		$csvDelimiter = ",";
-	} else if ($csvDelimiter == null)
+	} elseif ($csvDelimiter == null) {
 		$csvDelimiter = ",";		
 	}
-    // Storage order of columns in CSV header row
     $this->columnNames = fgetcsv($fh, 1000, $csvDelimiter);
 
     // Make sure there isn't both an "identifier" and "slug" column in the CSV header row
