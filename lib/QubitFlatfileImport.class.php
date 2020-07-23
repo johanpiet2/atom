@@ -502,7 +502,7 @@ class QubitFlatfileImport
    * Pull data from a csv file and process each row
    *
    * @param resource $fh  file handler for file containing CSV data
-   * @param integer $skipRows  number of rows to skip (optional)
+   * @param integer $skipRows  number of rows to skip (optional) 
    *
    * @return void
    */
@@ -514,7 +514,7 @@ class QubitFlatfileImport
 	$csvDelimiter = QubitSetting::getByName('csv_delimiter');
 	if ($csvDelimiter == "") {
 		$csvDelimiter = ",";
-	} else if ($csvDelimiter == null)
+	} elseif ($csvDelimiter == null) {
 		$csvDelimiter = ",";		
 	}
     $this->status['skippedRows'] = $skipRows;
@@ -555,7 +555,7 @@ class QubitFlatfileImport
 	$csvDelimiter = QubitSetting::getByName('csv_delimiter');
 	if ($csvDelimiter == "") {
 		$csvDelimiter = ",";
-	} else if ($csvDelimiter == null)
+	} elseif ($csvDelimiter == null) {
 		$csvDelimiter = ",";		
 	}
     while ($item = fgetcsv($fh, 60000, $csvDelimiter))
