@@ -23,6 +23,7 @@
  * @package    symfony
  * @subpackage task
  * @author     Mike Cantelon <mike@artefactual.com>
+ * @author	   Johan Pieterse <johan.pieterse@sita.co.za>
  */
 class csvDigitalObjectPathsCheckTask extends arBaseTask
 {
@@ -113,13 +114,20 @@ EOF;
     $fh = fopen($filepath, 'r');
 
     // Determine column index number using specified name
-    $header = fgetcsv($fh, 60000);
+	// added delimiter selection via global properties	  
+	$csvDelimiter = QubitSetting::getByName('csv_delimiter');
+	if ($csvDelimiter == "") {
+		$csvDelimiter = ",";
+	} else if ($csvDelimiter == null)
+		$csvDelimiter = ",";		
+	}
+    $header = fgetcsv($fh, 60000, $csvDelimiter);
     if (false === $imageColumnIndex = array_search($columnName, $header))
     {
       throw new sfException('Column name not found in header.');
     }
 
-    while ($row = fgetcsv($fh, 60000))
+    while ($row = fgetcsv($fh, 60000, $csvDelimiter))
     {
       array_push($values, $row[$imageColumnIndex]);
     }
