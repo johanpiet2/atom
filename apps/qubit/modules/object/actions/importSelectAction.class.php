@@ -264,13 +264,13 @@ class ObjectImportSelectAction extends DefaultEditAction
 
     // Get first row of possible CSV file
     $fh = fopen($fileName, 'rb');
+	// added delimiter selection via global properties
 	$csvDelimiter = QubitSetting::getByName('csv_delimiter');
 	if ($csvDelimiter == "") {
 		$csvDelimiter = ",";
-	} else if ($csvDelimiter == null)
+	} elseif ($csvDelimiter == null) {
 		$csvDelimiter = ",";		
 	}
-    
     $firstCsvRow = fgetcsv($fh, 60000, $csvDelimiter);
 
     // Count valid columns found
