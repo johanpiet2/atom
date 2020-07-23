@@ -23,6 +23,7 @@
  * @package    symfony
  * @subpackage library
  * @author     Mike Cantelon <mike@artefactual.com>
+ * @author	   Johan Pieterse <johan.pieterse@sita.co.za>
  */
 class QubitFlatfileImport
 {
@@ -509,8 +510,15 @@ class QubitFlatfileImport
   {
     $this->handleByteOrderMark($fh);
 
+	// added delimiter selection via global properties
+	$csvDelimiter = QubitSetting::getByName('csv_delimiter');
+	if ($csvDelimiter == "") {
+		$csvDelimiter = ",";
+	} else if ($csvDelimiter == null)
+		$csvDelimiter = ",";		
+	}
     $this->status['skippedRows'] = $skipRows;
-    $this->columnNames = fgetcsv($fh, 60000);
+    $this->columnNames = fgetcsv($fh, 60000, $csvDelimiter);
 
     if ($this->columnNames === false)
     {
@@ -543,7 +551,14 @@ class QubitFlatfileImport
     $timerStarted = false;
 
     // import each row
-    while ($item = fgetcsv($fh, 60000))
+	// added delimiter selection via global properties
+	$csvDelimiter = QubitSetting::getByName('csv_delimiter');
+	if ($csvDelimiter == "") {
+		$csvDelimiter = ",";
+	} else if ($csvDelimiter == null)
+		$csvDelimiter = ",";		
+	}
+    while ($item = fgetcsv($fh, 60000, $csvDelimiter))
     {
       if ($this->status['rows'] >= $skipRows)
       {
