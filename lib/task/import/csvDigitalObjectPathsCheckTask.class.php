@@ -114,11 +114,11 @@ EOF;
     $fh = fopen($filepath, 'r');
 
     // Determine column index number using specified name
-	// added delimiter selection via global properties	  
+	// added delimiter selection via global properties
 	$csvDelimiter = QubitSetting::getByName('csv_delimiter');
 	if ($csvDelimiter == "") {
 		$csvDelimiter = ",";
-	} else if ($csvDelimiter == null)
+	} elseif ($csvDelimiter == null) {
 		$csvDelimiter = ",";		
 	}
     $header = fgetcsv($fh, 60000, $csvDelimiter);
