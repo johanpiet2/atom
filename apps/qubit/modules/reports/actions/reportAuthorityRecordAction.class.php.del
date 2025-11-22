@@ -1,0 +1,19 @@
+<?php
+
+class reportsreportAuthorityRecordAction extends sfAction
+{
+    public function execute($request)
+    {
+        // Permission check
+        if (
+            !$this->context->user->isAdministrator()
+            && !$this->context->user->isSuperUser()
+            && !$this->context->user->isAuditUser()
+        ) {
+            QubitAcl::forwardUnauthorized();
+        }
+
+        // Just pass the URL to the template - the standalone report does all the work
+        return sfView::SUCCESS;
+    }
+}

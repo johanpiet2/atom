@@ -1,0 +1,793 @@
+<?php decorate_with('layout_2col'); ?>
+
+<?php
+// Framework v2: Initialize TermService for term lookups (NO MORE QubitTerm!)
+$termService = new \AtomExtensions\Services\TermService('en');
+?>
+
+<?php slot('title'); ?>
+  <h1 class="multiline">
+    <?php echo image_tag('/images/icons-large/icon-new.png', ['width' => '42', 'height' => '42']); ?>
+    <?php echo __('Browse Archival Description'); ?>
+  </h1>
+<?php end_slot(); ?>
+
+<?php slot('styles'); ?>
+  <style>
+    /* Compact table cells */
+    .info-report-table table.table-sm td,
+    .info-report-table table.table-sm th {
+      padding: .25rem .5rem;
+      font-size: .8rem;
+      vertical-align: top;
+    }
+
+    /* Column toggle labels + make checkboxes always visible */
+    .info-report-table .column-toggles label {
+      margin-right: .5rem;
+      white-space: nowrap;
+      font-size: .8rem;
+    }
+
+    .info-report-table .info-report-col-toggle {
+      display: inline-block !important;
+      margin-right: .15rem;
+    }
+
+    /* Narrow date fields in sidebar */
+    .info-report-sidebar .info-report-date {
+      max-width: 180px;
+      width: 100%;
+    }
+
+    /* Extra safety: only shrink date fields on this report */
+    body.reports.reportInformationObject #sidebar input[type="date"] {
+      max-width: 220px;
+    }
+
+    /* Toolbar buttons under search */
+    .info-report-toolbar {
+      margin-top: .5rem;
+    }
+
+    .info-report-toolbar .btn {
+      margin-right: .25rem;
+      margin-top: .25rem;
+    }
+
+    /* Fullscreen mode: hide sidebar, let main take full width */
+    body.info-report-fullscreen #sidebar {
+      display: none;
+    }
+
+    body.info-report-fullscreen #main-column,
+    body.info-report-fullscreen #content,
+    body.info-report-fullscreen .content-container {
+      flex: 0 0 100%;
+      max-width: 100%;
+      width: 100%;
+    }
+
+    /* Let the table breathe in fullscreen */
+    body.info-report-fullscreen .info-report-table {
+      max-height: calc(100vh - 220px);
+    }
+  </style>
+<?php end_slot(); ?>
+
+<?php slot('sidebar'); ?>
+
+  <?php echo $form->renderGlobalErrors(); ?>
+
+  <section class="sidebar-widget info-report-sidebar">
+
+    <div class="mb-2">
+      <?php echo link_to(
+        __('Back to reports'),
+        ['module' => 'reports', 'action' => 'reportSelect'],
+        ['class' => 'btn btn-sm btn-secondary', 'title' => __('Back to reports')]
+      ); ?>
+    </div>
+
+    <h4 class="h6 mb-3"><?php echo __('Filter options'); ?></h4>
+
+    <div>
+      <?php echo $form->renderFormTag(
+        url_for(['module' => 'reports', 'action' => 'reportInformationObject']),
+        ['method' => 'get', 'class' => 'form']
+      ); ?>
+
+        <?php echo $form->renderHiddenFields(); ?>
+
+        <div id="divTypeOfReport" style="display:none">
+          <?php echo $form->className->label('Types of Reports')->renderRow(); ?>
+        </div>
+
+        <div id="div3" class="mb-3">
+          <table class="table table-sm mb-2" style="width:auto;">
+            <tr>
+              <td><strong><?php echo __('Include'); ?></strong></td>
+            </tr>
+            <tr>
+              <td>
+                <p class="mb-1" style="color:#424242">
+                  <input type="checkbox" name="cbPreservationObject" value="true"
+                    <?php echo isset($_GET['cbPreservationObject']) ? 'checked="checked"' : ''; ?>>
+                  <?php echo __('Preservation'); ?>
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <p class="mb-1" style="color:#424242">
+                  <input type="checkbox" name="cbAccessObject" value="true"
+                    <?php echo isset($_GET['cbAccessObject']) ? 'checked="checked"' : ''; ?>>
+                  <?php echo __('Access'); ?>
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <p class="mb-0" style="color:#424242">
+                  <input type="checkbox" name="cbPhysicalStorageObject" value="true"
+                    <?php echo isset($_GET['cbPhysicalStorageObject']) ? 'checked="checked"' : ''; ?>>
+                  <?php echo __('Physical Storage'); ?>
+                </p>
+              </td>
+            </tr>
+          </table>
+
+          <?php echo $form->publicationStatus
+            ->label(__('Publication status (%1% only)', ['%1%' => sfConfig::get('app_ui_label_informationobject')]))
+            ->renderRow(); ?>
+
+          <?php echo $form->levelOfDescription
+            ->label(__('Level of description'))
+            ->renderRow(); ?>
+
+          <?php if (sfConfig::get('app_multi_repository')) { ?>
+            <?php echo $form->repositories
+              ->label(__('Repository'))
+              ->renderRow(); ?>
+          <?php } ?>
+        </div>
+
+        <div class="mb-2">
+          <?php echo render_field(
+            $form->dateStart->label(__('Date Start')),
+            null,
+            [
+              'type'  => 'date',
+              'class' => 'form-control form-control-sm info-report-date',
+            ]
+          ); ?>
+        </div>
+
+        <div class="mb-2">
+          <?php echo render_field(
+            $form->dateEnd->label(__('Date End')),
+            null,
+            [
+              'type'  => 'date',
+              'class' => 'form-control form-control-sm info-report-date',
+            ]
+          ); ?>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label d-block"><?php echo __('Date of'); ?></label>
+          <div class="small">
+            <?php echo $form['dateOf']->render(); ?>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-sm btn-primary">
+          <?php echo __('Search'); ?>
+        </button>
+
+        <div class="info-report-toolbar mt-2">
+          <a href="#"
+             id="info-report-fullscreen-btn"
+             class="btn btn-sm btn-outline-secondary"
+             title="<?php echo __('Toggle full screen'); ?>">
+            <i class="fas fa-expand" aria-hidden="true"></i>
+            <?php echo __('Full screen'); ?>
+          </a>
+
+          <a href="#"
+             id="info-report-export-btn"
+             class="btn btn-sm btn-outline-secondary"
+             title="<?php echo __('Export visible columns to CSV'); ?>">
+            <i class="fas fa-file-export" aria-hidden="true"></i>
+            <?php echo __('Export CSV'); ?>
+          </a>
+        </div>
+
+      </form>
+    </div>
+  </section>
+
+<?php end_slot(); ?>
+
+<?php slot('content'); ?>
+
+<?php
+  // Build column config (for toggles) based on current options
+  $dateOf = $form->getValue('dateOf');
+  $columnConfig = [
+    'identifier'               => __('Identifier'),
+    'title'                    => __('Title'),
+    'alt_title'                => __('Alternate Title'),
+    'extent_medium'            => __('Extent And Medium'),
+    'archival_history'         => __('Archival History'),
+    'acquisition'              => __('Acquisition'),
+    'scope_content'            => __('Scope And Content'),
+    'appraisal'                => __('Appraisal'),
+    'accruals'                 => __('Accruals'),
+    'arrangement'              => __('Arrangement'),
+    'access_conditions'        => __('Access Conditions'),
+    'reproduction_conditions'  => __('Reproduction Conditions'),
+    'physical_characteristics' => __('Physical Characteristics'),
+    'finding_aids'             => __('Finding Aids'),
+    'location_originals'       => __('Location Of Originals'),
+    'location_copies'          => __('Location Of Copies'),
+    'related_units'            => __('Related Units Of Description'),
+    'institution_responsible'  => __('Institution Responsible Identifier'),
+    'rules'                    => __('Rules'),
+    'sources'                  => __('Sources'),
+    'revision_history'         => __('Revision History'),
+    'culture'                  => __('Culture'),
+  ];
+
+  if (isset($_GET['cbPreservationObject'])) {
+    $columnConfig['pres_usability']   = __('Usability');
+    $columnConfig['pres_measure']     = __('Measure');
+    $columnConfig['pres_availability']= __('Available');
+    $columnConfig['pres_restoration'] = __('Restoration');
+    $columnConfig['pres_method']      = __('Method of Storage');
+    $columnConfig['pres_type']        = __('Archive Type');
+  }
+
+  if (isset($_GET['cbAccessObject'])) {
+    $columnConfig['acc_refusal']        = __('Refusal');
+    $columnConfig['acc_sensitive']      = __('Sensitive');
+    $columnConfig['acc_publish']        = __('Publish');
+    $columnConfig['acc_classification'] = __('Classification');
+    $columnConfig['acc_restriction']    = __('Restriction');
+  }
+
+  if (isset($_GET['cbPhysicalStorageObject'])) {
+    $columnConfig['phys_strong_room'] = __('Strong Room');
+    $columnConfig['phys_unique_id']   = __('Unique Identifier');
+    $columnConfig['phys_location']    = __('Location');
+  }
+
+  if ('QubitInformationObject' == $className && 0 < sfConfig::get('app_multi_repository')) {
+    $columnConfig['repository'] = __('Repository');
+  }
+
+  $columnConfig['timestamp'] = ('CREATED_AT' != $dateOf) ? __('Updated') : __('Created');
+?>
+
+<div class="mb-2 small info-report-table column-toggles">
+  <strong><?php echo __('Columns'); ?>:</strong>
+  <?php foreach ($columnConfig as $key => $label) { ?>
+    <label>
+      <input
+        type="checkbox"
+        class="info-report-col-toggle"
+        data-col-key="<?php echo $key; ?>"
+        checked="checked"
+      />
+      <?php echo $label; ?>
+    </label>
+  <?php } ?>
+</div>
+
+<div class="table-responsive info-report-table" style="max-height: 450px; overflow: auto;">
+  <table class="table table-bordered table-striped table-sm mb-0">
+    <thead>
+      <tr>
+        <th style="width:110px" class="text-nowrap" data-col-key="identifier">
+          <?php echo __('Identifier'); ?>
+        </th>
+        <th style="width:250px" data-col-key="title">
+          <?php echo __('Title'); ?>
+        </th>
+        <th style="width:200px" data-col-key="alt_title">
+          <?php echo __('Alternate Title'); ?>
+        </th>
+        <th style="width:200px" data-col-key="extent_medium">
+          <?php echo __('Extent And Medium'); ?>
+        </th>
+        <th style="width:200px" data-col-key="archival_history">
+          <?php echo __('Archival History'); ?>
+        </th>
+        <th style="width:200px" data-col-key="acquisition">
+          <?php echo __('Acquisition'); ?>
+        </th>
+        <th style="width:200px" data-col-key="scope_content">
+          <?php echo __('Scope And Content'); ?>
+        </th>
+        <th style="width:200px" data-col-key="appraisal">
+          <?php echo __('Appraisal'); ?>
+        </th>
+        <th style="width:200px" data-col-key="accruals">
+          <?php echo __('Accruals'); ?>
+        </th>
+        <th style="width:200px" data-col-key="arrangement">
+          <?php echo __('Arrangement'); ?>
+        </th>
+        <th style="width:200px" data-col-key="access_conditions">
+          <?php echo __('Access Conditions'); ?>
+        </th>
+        <th style="width:200px" data-col-key="reproduction_conditions">
+          <?php echo __('Reproduction Conditions'); ?>
+        </th>
+        <th style="width:200px" data-col-key="physical_characteristics">
+          <?php echo __('Physical Characteristics'); ?>
+        </th>
+        <th style="width:200px" data-col-key="finding_aids">
+          <?php echo __('Finding Aids'); ?>
+        </th>
+        <th style="width:200px" data-col-key="location_originals">
+          <?php echo __('Location Of Originals'); ?>
+        </th>
+        <th style="width:200px" data-col-key="location_copies">
+          <?php echo __('Location Of Copies'); ?>
+        </th>
+        <th style="width:110px" data-col-key="related_units">
+          <?php echo __('Related Units Of Description'); ?>
+        </th>
+        <th style="width:110px" data-col-key="institution_responsible">
+          <?php echo __('Institution Responsible Identifier'); ?>
+        </th>
+        <th style="width:200px" data-col-key="rules">
+          <?php echo __('Rules'); ?>
+        </th>
+        <th style="width:200px" data-col-key="sources">
+          <?php echo __('Sources'); ?>
+        </th>
+        <th style="width:200px" data-col-key="revision_history">
+          <?php echo __('Revision History'); ?>
+        </th>
+        <th style="width:110px" data-col-key="culture">
+          <?php echo __('Culture'); ?>
+        </th>
+
+        <?php if (isset($_GET['cbPreservationObject'])) { ?>
+          <th data-col-key="pres_usability"><?php echo __('Usability'); ?></th>
+          <th data-col-key="pres_measure"><?php echo __('Measure'); ?></th>
+          <th data-col-key="pres_availability"><?php echo __('Available'); ?></th>
+          <th data-col-key="pres_restoration"><?php echo __('Restoration'); ?></th>
+          <th data-col-key="pres_method"><?php echo __('Method of Storage'); ?></th>
+          <th data-col-key="pres_type"><?php echo __('Archive Type'); ?></th>
+        <?php } ?>
+
+        <?php if (isset($_GET['cbAccessObject'])) { ?>
+          <th data-col-key="acc_refusal"><?php echo __('Refusal'); ?></th>
+          <th data-col-key="acc_sensitive"><?php echo __('Sensitive'); ?></th>
+          <th data-col-key="acc_publish"><?php echo __('Publish'); ?></th>
+          <th data-col-key="acc_classification"><?php echo __('Classification'); ?></th>
+          <th data-col-key="acc_restriction"><?php echo __('Restriction'); ?></th>
+        <?php } ?>
+
+        <?php if (isset($_GET['cbPhysicalStorageObject'])) { ?>
+          <th data-col-key="phys_strong_room"><?php echo __('Strong Room'); ?></th>
+          <th data-col-key="phys_unique_id"><?php echo __('Unique Identifier'); ?></th>
+          <th data-col-key="phys_location"><?php echo __('Location'); ?></th>
+        <?php } ?>
+
+        <?php if ('QubitInformationObject' == $className && 0 < sfConfig::get('app_multi_repository')) { ?>
+          <th style="width:110px" data-col-key="repository"><?php echo __('Repository'); ?></th>
+        <?php } ?>
+
+        <th style="width:110px" data-col-key="timestamp">
+          <?php echo ('CREATED_AT' != $dateOf) ? __('Updated') : __('Created'); ?>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php if (isset($pager) && isset($pager->results)) { ?>
+        <?php foreach ($pager->results as $result) { ?>
+          <tr class="<?php echo 0 == @++$row % 2 ? 'even' : 'odd'; ?>">
+            
+            <td data-col-key="identifier">
+              <?php if (isset($result->identifier)) { ?>
+                <?php echo link_to($result->identifier, ['module' => 'informationobject', 'slug' => $result->id]); ?>
+              <?php } else { ?>
+                -
+              <?php } ?>
+            </td>
+
+            <td data-col-key="title">
+              <?php echo isset($result->title) ? $result->title : '-'; ?>
+            </td>
+
+            <td data-col-key="alt_title">
+              <?php echo isset($result->alternateTitle) ? $result->alternateTitle : '-'; ?>
+            </td>
+
+            <td data-col-key="extent_medium">
+              <?php echo isset($result->extentAndMedium) ? $result->extentAndMedium : '-'; ?>
+            </td>
+
+            <td data-col-key="archival_history">
+              <?php echo isset($result->archivalHistory) ? $result->archivalHistory : '-'; ?>
+            </td>
+
+            <td data-col-key="acquisition">
+              <?php echo isset($result->acquisition) ? $result->acquisition : '-'; ?>
+            </td>
+
+            <td data-col-key="scope_content">
+              <?php echo isset($result->scopeAndContent) ? $result->scopeAndContent : '-'; ?>
+            </td>
+
+            <td data-col-key="appraisal">
+              <?php echo isset($result->appraisal) ? $result->appraisal : '-'; ?>
+            </td>
+
+            <td data-col-key="accruals">
+              <?php echo isset($result->accruals) ? $result->accruals : '-'; ?>
+            </td>
+
+            <td data-col-key="arrangement">
+              <?php echo isset($result->arrangement) ? $result->arrangement : '-'; ?>
+            </td>
+
+            <td data-col-key="access_conditions">
+              <?php echo isset($result->accessConditions) ? $result->accessConditions : '-'; ?>
+            </td>
+
+            <td data-col-key="reproduction_conditions">
+              <?php echo isset($result->reproductionConditions) ? $result->reproductionConditions : '-'; ?>
+            </td>
+
+            <td data-col-key="physical_characteristics">
+              <?php echo isset($result->physicalCharacteristics) ? $result->physicalCharacteristics : '-'; ?>
+            </td>
+
+            <td data-col-key="finding_aids">
+              <?php echo isset($result->findingAids) ? $result->findingAids : '-'; ?>
+            </td>
+
+            <td data-col-key="location_originals">
+              <?php echo isset($result->locationOfOriginals) ? $result->locationOfOriginals : '-'; ?>
+            </td>
+
+            <td data-col-key="location_copies">
+              <?php echo isset($result->locationOfCopies) ? $result->locationOfCopies : '-'; ?>
+            </td>
+
+            <td data-col-key="related_units">
+              <?php echo isset($result->relatedUnitsOfDescription) ? $result->relatedUnitsOfDescription : '-'; ?>
+            </td>
+
+            <td data-col-key="institution_responsible">
+              <?php echo isset($result->institutionResponsibleIdentifier) ? $result->institutionResponsibleIdentifier : '-'; ?>
+            </td>
+
+            <td data-col-key="rules">
+              <?php echo isset($result->rules) ? $result->rules : '-'; ?>
+            </td>
+
+            <td data-col-key="sources">
+              <?php echo isset($result->sources) ? $result->sources : '-'; ?>
+            </td>
+
+            <td data-col-key="revision_history">
+              <?php echo isset($result->revisionHistory) ? $result->revisionHistory : '-'; ?>
+            </td>
+
+            <td data-col-key="culture">
+              <?php echo isset($result->culture) ? $result->culture : '-'; ?>
+            </td>
+
+            <?php if (isset($_GET['cbPreservationObject'])) { ?>
+              <?php
+                // MIGRATED: Use repository instead of QubitInformationObject
+                $ioRepository = new \AtomExtensions\Repositories\InformationObjectRepository();
+                $preservationObjects = []; // TODO: Implement preservation objects query
+              ?>
+              <?php if (!empty($preservationObjects)) { ?>
+                <?php foreach ($preservationObjects as $item) { ?>
+                  <td data-col-key="pres_usability">
+                    <?php echo isset($item->usabilityId) ? $termService->getTermName($item->usabilityId) : '-'; ?>
+                  </td>
+                  <td data-col-key="pres_measure">
+                    <?php echo isset($item->measureId) ? $termService->getTermName($item->measureId) : '-'; ?>
+                  </td>
+                  <td data-col-key="pres_availability">
+                    <?php echo isset($item->availabilityId) ? $termService->getTermName($item->availabilityId) : '-'; ?>
+                  </td>
+                  <td data-col-key="pres_restoration">
+                    <?php echo isset($item->restorationId) ? $termService->getTermName($item->restorationId) : '-'; ?>
+                  </td>
+                  <td data-col-key="pres_method">
+                    <?php echo isset($item->conservationId) ? $termService->getTermName($item->conservationId) : '-'; ?>
+                  </td>
+                  <td data-col-key="pres_type">
+                    <?php echo isset($item->typeId) ? $termService->getTermName($item->typeId) : '-'; ?>
+                  </td>
+                <?php } ?>
+              <?php } else { ?>
+                <td data-col-key="pres_usability">-</td>
+                <td data-col-key="pres_measure">-</td>
+                <td data-col-key="pres_availability">-</td>
+                <td data-col-key="pres_restoration">-</td>
+                <td data-col-key="pres_method">-</td>
+                <td data-col-key="pres_type">-</td>
+              <?php } ?>
+            <?php } ?>
+
+            <?php if (isset($_GET['cbAccessObject'])) { ?>
+              <?php
+                // MIGRATED: Use repository instead of QubitInformationObject
+                $accessObjects = []; // TODO: Implement access objects query
+              ?>
+              <?php if (!empty($accessObjects)) { ?>
+                <?php foreach ($accessObjects as $item) { ?>
+                  <td data-col-key="acc_refusal">
+                    <?php echo isset($item->refusalId) ? $termService->getTermName($item->refusalId) : '-'; ?>
+                  </td>
+                  <td data-col-key="acc_sensitive">
+                    <?php echo isset($item->sensitivityId) ? $termService->getTermName($item->sensitivityId) : '-'; ?>
+                  </td>
+                  <td data-col-key="acc_publish">
+                    <?php echo isset($item->publishId) ? $termService->getTermName($item->publishId) : '-'; ?>
+                  </td>
+                  <td data-col-key="acc_classification">
+                    <?php echo isset($item->classificationId) ? $termService->getTermName($item->classificationId) : '-'; ?>
+                  </td>
+                  <td data-col-key="acc_restriction">
+                    <?php echo isset($item->restrictionId) ? $termService->getTermName($item->restrictionId) : '-'; ?>
+                  </td>
+                <?php } ?>
+              <?php } else { ?>
+                <td data-col-key="acc_refusal">-</td>
+                <td data-col-key="acc_sensitive">-</td>
+                <td data-col-key="acc_publish">-</td>
+                <td data-col-key="acc_classification">-</td>
+                <td data-col-key="acc_restriction">-</td>
+              <?php } ?>
+            <?php } ?>
+
+            <?php if (isset($_GET['cbPhysicalStorageObject'])) { ?>
+              <td data-col-key="phys_strong_room">-</td>
+              <td data-col-key="phys_unique_id">-</td>
+              <td data-col-key="phys_location">-</td>
+            <?php } ?>
+
+            <?php if ('QubitInformationObject' == $className && 0 < sfConfig::get('app_multi_repository')) { ?>
+              <td data-col-key="repository">
+                <?php
+                  // MIGRATED: Use repository method
+                  if (isset($result->repositoryId)) {
+                    $repo = $ioRepository->getRepository($result->id);
+                    echo $repo ? $repo->name : '-';
+                  } else {
+                    echo '-';
+                  }
+                ?>
+              </td>
+            <?php } ?>
+
+            <td class="text-nowrap" data-col-key="timestamp">
+              <?php
+                if ('CREATED_AT' != $dateOf) {
+                  echo isset($result->updatedAt) ? $result->updatedAt : '-';
+                } else {
+                  echo isset($result->createdAt) ? $result->createdAt : '-';
+                }
+              ?>
+            </td>
+
+          </tr>
+        <?php } ?>
+      <?php } ?>
+    </tbody>
+  </table>
+</div>
+
+<?php end_slot(); ?>
+
+<?php slot('after-content'); ?>
+  <?php if (isset($pager)) { ?>
+    <div class="pagination">
+      <p>
+        <?php echo __('Showing %1% to %2% of %3% results', [
+          '%1%' => ($pager->page - 1) * $pager->limit + 1,
+          '%2%' => min($pager->page * $pager->limit, $pager->total),
+          '%3%' => $pager->total
+        ]); ?>
+      </p>
+    </div>
+  <?php } ?>
+<?php end_slot(); ?>
+
+<?php slot('javascripts'); ?>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    console.log('[InfoReport] JS loaded');
+
+    var STORAGE_KEY = 'atom_informationobject_report_columns_v1';
+
+    function loadColumnState() {
+      try {
+        var raw = window.localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          console.log('[InfoReport] No saved column state, using defaults');
+          return {};
+        }
+        var parsed = JSON.parse(raw);
+        console.log('[InfoReport] Loaded column state:', parsed);
+        return (parsed && typeof parsed === 'object') ? parsed : {};
+      } catch (e) {
+        console.warn('[InfoReport] Failed to load column state', e);
+        return {};
+      }
+    }
+
+    function saveColumnState(state) {
+      try {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        console.log('[InfoReport] Saved column state:', state);
+      } catch (e) {
+        console.warn('[InfoReport] Failed to save column state', e);
+      }
+    }
+
+    function setColumnVisibility(key, visible) {
+      var selector =
+        '.info-report-table table thead th[data-col-key="' + key + '"], ' +
+        '.info-report-table table tbody td[data-col-key="' + key + '"]';
+
+      var nodes = document.querySelectorAll(selector);
+      nodes.forEach(function (el) {
+        if (visible) {
+          el.style.display = '';
+          el.classList.remove('d-none');
+        } else {
+          el.style.display = 'none';
+          el.classList.add('d-none');
+        }
+      });
+    }
+
+    var state = loadColumnState();
+
+    // Build defaults from currently rendered checkboxes
+    var defaultVisible = {};
+    document.querySelectorAll('.info-report-col-toggle').forEach(function (cb) {
+      var key = cb.getAttribute('data-col-key');
+      if (key) {
+        defaultVisible[key] = true;
+      }
+    });
+
+    // Merge defaults into stored state
+    Object.keys(defaultVisible).forEach(function (key) {
+      if (typeof state[key] === 'undefined') {
+        state[key] = defaultVisible[key];
+      }
+    });
+
+    var checkboxes = document.querySelectorAll('.info-report-col-toggle');
+
+    checkboxes.forEach(function (cb) {
+      var key = cb.getAttribute('data-col-key');
+      if (!key) {
+        return;
+      }
+
+      cb.checked = !!state[key];
+      setColumnVisibility(key, cb.checked);
+
+      cb.addEventListener('change', function () {
+        var visible = cb.checked;
+        state[key] = visible;
+        console.log('[InfoReport] Column toggled:', key, '=>', visible);
+        setColumnVisibility(key, visible);
+        saveColumnState(state);
+      });
+    });
+
+    // Safety: if somehow all columns are hidden, restore defaults
+    if (!Object.values(state).some(function (v) { return !!v; })) {
+      console.warn('[InfoReport] All columns hidden, restoring defaults');
+      Object.keys(defaultVisible).forEach(function (key) {
+        state[key] = defaultVisible[key];
+
+        var cb = document.querySelector(
+          '.info-report-col-toggle[data-col-key="' + key + '"]'
+        );
+        if (cb) {
+          cb.checked = state[key];
+        }
+
+        setColumnVisibility(key, state[key]);
+      });
+      saveColumnState(state);
+    }
+
+    // --- Export table to CSV (only visible columns) ---
+    function exportInfoReportCsv() {
+      var table = document.querySelector('.info-report-table table');
+      if (!table) {
+        console.warn('[InfoReport] Table not found for CSV export');
+        return;
+      }
+
+      console.log('[InfoReport] Starting CSV export');
+
+      var rows = Array.from(table.querySelectorAll('tr'));
+      var csv = [];
+
+      rows.forEach(function (row) {
+        var cells = Array.from(row.querySelectorAll('th, td'));
+
+        var rowData = cells
+          .filter(function (cell) {
+            var styleDisplay = window.getComputedStyle(cell).display;
+            var keep = styleDisplay !== 'none' && !cell.classList.contains('d-none');
+            return keep;
+          })
+          .map(function (cell) {
+            var text = cell.innerText || cell.textContent || '';
+            text = text.replace(/\s+/g, ' ').trim();
+            if (text.indexOf('"') !== -1 || text.indexOf(',') !== -1 || text.indexOf('\n') !== -1) {
+              text = '"' + text.replace(/"/g, '""') + '"';
+            }
+            return text;
+          });
+
+        csv.push(rowData.join(','));
+      });
+
+      var csvContent = csv.join('\n');
+      console.log('[InfoReport] CSV created, length:', csvContent.length);
+
+      var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      var url = URL.createObjectURL(blob);
+
+      var link = document.createElement('a');
+      link.href = url;
+      link.download = 'archival_description_report.csv';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(url);
+
+      console.log('[InfoReport] CSV download triggered');
+    }
+
+    var exportBtn = document.getElementById('info-report-export-btn');
+    if (exportBtn) {
+      console.log('[InfoReport] Export button found');
+      exportBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        console.log('[InfoReport] Export button clicked');
+        exportInfoReportCsv();
+      });
+    } else {
+      console.warn('[InfoReport] Export button NOT found');
+    }
+
+    // --- Fullscreen toggle ---
+    var fullscreenBtn = document.getElementById('info-report-fullscreen-btn');
+    if (fullscreenBtn) {
+      console.log('[InfoReport] Fullscreen button found');
+      fullscreenBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        console.log('[InfoReport] Fullscreen button clicked');
+        document.body.classList.toggle('info-report-fullscreen');
+        console.log('[InfoReport] Body class now:', document.body.className);
+      });
+    } else {
+      console.warn('[InfoReport] Fullscreen button NOT found');
+    }
+  });
+</script>
+<?php end_slot(); ?>

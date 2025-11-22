@@ -1,0 +1,147 @@
+<?php
+
+/*
+ * This file is part of Qubit Toolkit.
+ *
+ * Qubit Toolkit is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Qubit Toolkit is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Qubit Toolkit.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+class reportsAuditArchivalDescriptionAction extends sfAction
+{
+    public static function doSelect(Criteria $criteria, ?PropelPDO $con = null)
+    {
+        $dbMap = Propel::getDatabaseMap($criteria->getDbName());
+        $db = Propel::getDB($criteria->getDbName());
+
+        if (null === $con) {
+            $con = Propel::getConnection($criteria->getDbName(), Propel::CONNECTION_READ);
+        }
+
+        $stmt = null;
+
+        if ($criteria->isUseTransaction()) {
+        $con->beginTransaction();
+        }
+
+        try {
+            $params = [];
+            $sql = BasePeer::createSelectSql($criteria, $params);
+
+            $stmt = $con->prepare($sql);
+            BasePeer::populateStmtValues($stmt, $params, $dbMap, $db);
+
+            $stmt->execute();
+
+            if ($criteria->isUseTransaction()) {
+            $con->commit();
+            }
+        } catch (Exception $e) {
+            if ($stmt) {
+            $stmt = null;
+            } // close
+            if ($criteria->isUseTransaction()) {
+            $con->rollBack();
+            }
+            Propel::log($e->getMessage(), Propel::LOG_ERR);
+
+            throw new PropelException($e);
+        }
+
+        return $stmt;
+    }
+
+  public function execute($request)
+  {
+    // Check user authorization
+    if (!$this->getUser()->isAuthenticated()) {
+      QubitAcl::forwardUnauthorized();
+    }
+
+    // Check authorization
+    if ((!sfContext::getInstance()->getUser()->hasGroup(QubitAclGroup::ADMINISTRATOR_ID)) && !$this->getUser()->hasGroup(QubitAclGroup::AUDIT_ID)) {
+      $this->redirect('admin/secure');
+    }
+
+    if (!isset($request->limit)) {
+      $request->limit = sfConfig::get('app_hits_per_page');
+    }
+
+$criteria = new Criteria();
+
+// Select necessary columns directly
+$criteria->addSelectColumn(QubitInformationObject::ID);
+$criteria->addSelectColumn(QubitInformationObject::IDENTIFIER);
+BaseAuditObject::addSelectColumns($criteria);
+
+// Add a JOIN condition
+$criteria->addJoin(QubitAuditObject::RECORD_ID, QubitInformationObject::ID);
+
+// Add filtering condition for RECORD_ID
+$criteria->add(QubitAuditObject::RECORD_ID, $request->source, Criteria::EQUAL);
+
+// Set a limit if not already provided
+if (!isset($limit)) {
+    $limit = sfConfig::get('app_hits_per_page');
+}
+
+// Add ordering condition
+$criteria->addDescendingOrderByColumn(QubitAuditObject::ACTION_DATE_TIME);
+/*
+    $criteria = new Criteria;
+    $c1 = new Criteria;
+    $c2 = new Criteria;
+    $c3 = new Criteria;
+    $c4 = new Criteria;
+    $c5 = new Criteria;
+    $c6 = new Criteria;
+    $c7 = new Criteria;
+    $c8 = new Criteria;
+    $c9 = new Criteria;
+    $c10 = new Criteria;
+    $c11 = new Criteria;
+    $c12 = new Criteria;
+    $c13 = new Criteria;
+    $c14 = new Criteria;
+    $c15 = new Criteria;
+    $c16 = new Criteria;
+    $c17 = new Criteria;
+    $c18 = new Criteria;
+    $c19 = new Criteria;
+    $c20 = new Criteria;
+    $criteria->addSelectColumn(QubitInformationObject::ID);
+    $criteria->addSelectColumn(QubitInformationObject::IDENTIFIER);
+    BaseAuditObject::addSelectColumns($criteria);
+
+    $criteria->addjoin(QubitAuditObject::RECORD_ID, QubitInformationObject::ID);
+    $criteria->add(QubitAuditObject::RECORD_ID, $request->source, Criteria::EQUAL);
+    if (!isset($limit))
+    {
+      $limit = sfConfig::get('app_hits_per_page');
+    }
+
+    $criteria->addDescendingOrderByColumn(QubitAuditObject::ACTION_DATE_TIME);
+    */
+// echo $criteria->toString()."<br>";
+    // Page results
+    $this->pager = new QubitPagerAudit('QubitAuditObject');
+    $this->pager->setCriteria($criteria);
+    $this->pager->setMaxPerPage($limit);
+    $this->pager->setPage($request->page);
+
+    $this->auditObjectsOlder = $this->pager->getResults();
+
+    $c2 = clone $criteria;
+    $this->foundcount = BasePeer::doCount($c2)->fetchColumn(0);
+  }
+}

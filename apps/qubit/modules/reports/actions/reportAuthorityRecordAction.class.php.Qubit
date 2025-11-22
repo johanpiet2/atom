@@ -1,0 +1,161 @@
+<?php
+
+/**
+ * Authority Record Report Action - Framework v2.
+ *
+ * MIGRATED: Uses AuthorityRecordReportService instead of Propel Criteria
+ * 
+ * @author Johan Pieterse <johan@theahg.co.za>
+ */
+class reportsReportAuthorityRecordAction extends sfAction
+{
+    public function execute($request)
+    {
+        // Authorization check
+        if (!$this->hasReportAccess()) {
+            QubitAcl::forwardUnauthorized();
+        }
+
+        // Create and configure form
+        $this->form = $this->createReportForm();
+        
+        // Bind request parameters with defaults
+        $this->form->bind(
+            $request->getRequestParameters() + 
+            $request->getGetParameters() + 
+            $this->getDefaultParameters()
+        );
+
+        // Execute search if form is valid
+        if ($this->form->isValid()) {
+            $this->executeSearch();
+        }
+    }
+
+    /**
+     * Execute the report search using the service layer.
+     */
+    private function executeSearch(): void
+    {
+        try {
+            // Create filter from form
+            $filter = \AtomExtensions\Reports\Filters\ReportFilter::fromForm($this->form);
+
+            // Get report service
+            $service = $this->getReportService();
+
+            // Execute search
+            $this->results = $service->search($filter);
+
+            // Get statistics for dashboard
+            $this->statistics = $service->getStatistics();
+            
+        } catch (Exception $e) {
+            $this->getReportLogger()->error('Authority report failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            
+            $this->getUser()->setFlash('error', 'An error occurred generating the report. Please try again.');
+        }
+    }
+
+    /**
+     * Get the report service with dependencies.
+     */
+    private function getReportService(): \AtomExtensions\Reports\Services\AuthorityRecordReportService
+    {
+        $repository = new \AtomExtensions\Repositories\ActorRepository();
+        $logger = $this->getReportLogger();
+
+        return new \AtomExtensions\Reports\Services\AuthorityRecordReportService(
+            $repository,
+            $logger
+        );
+    }
+
+    /**
+     * Create the report form with all fields.
+     */
+    private function createReportForm(): sfForm
+    {
+        $form = new sfForm([], [], false);
+        $form->getValidatorSchema()->setOption('allow_extra_fields', true);
+
+        // Add standard report fields using FormFieldFactory
+        \AtomExtensions\Forms\FormFieldFactory::addDateFields($form);
+        \AtomExtensions\Forms\FormFieldFactory::addControlFields($form);
+
+        // Add entity type selector (Person, Corporate body, Family)
+        // $this->addEntityTypeField($form); // TODO: Fix entity type constant
+
+        return $form;
+    }
+
+    /**
+     * Add entity type dropdown field.
+     */
+    private function addEntityTypeField(sfForm $form): void
+    {
+        $choices = [null => 'All types'];
+
+        try {
+            foreach (QubitTerm::getByParentId(QubitTerm::ACTOR_ENTITY_TYPE_ID) as $term) {
+                $choices[$term->id] = $term->__toString();
+            }
+        } catch (Exception $e) {
+            $this->getReportLogger()->warning('Failed to load entity types', [
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        $form->setValidator('entityType', new sfValidatorString(['required' => false]));
+        $form->setWidget('entityType', new sfWidgetFormSelect(['choices' => $choices]));
+    }
+
+    /**
+     * Get default form parameters.
+     */
+    private function getDefaultParameters(): array
+    {
+        return [
+            'className' => 'QubitActor',
+            'dateStart' => date('d/m/Y', strtotime('-1 month')),
+            'dateEnd' => date('d/m/Y'),
+            'dateOf' => 'CREATED_AT',
+            'limit' => '20',
+            'sort' => 'updatedDown',
+            'page' => '1',
+        ];
+    }
+
+    /**
+     * Check if user has report access.
+     */
+    private function hasReportAccess(): bool
+    {
+        return $this->context->user->isAdministrator()
+            || $this->context->user->isSuperUser()
+            || $this->context->user->isAuditUser();
+    }
+
+    /**
+     * Get logger instance (lazy loaded).
+     */
+    private function getReportLogger(): \Psr\Log\LoggerInterface
+    {
+        static $logger = null;
+
+        if ($logger === null) {
+            $logger = new \Monolog\Logger('authority-reports');
+            $logger->pushHandler(
+                new \Monolog\Handler\StreamHandler(
+                    sfConfig::get('sf_log_dir', '/var/log/atom') . '/atom-reports.log',
+                    \Monolog\Logger::INFO
+                )
+            );
+        }
+
+        return $logger;
+    }
+}

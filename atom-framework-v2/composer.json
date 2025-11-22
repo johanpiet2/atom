@@ -1,0 +1,16 @@
+{
+    "name": "atom-extensions/framework-v2",
+    "description": "AtoM Framework v2 - Modern PHP components",
+    "type": "library",
+    "require": {
+        "php": ">=8.1",
+        "illuminate/database": "^10.0",
+        "psr/log": "^1.1",
+        "monolog/monolog": "^2.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "AtomExtensions\\": "src/"
+        }
+    }
+}
