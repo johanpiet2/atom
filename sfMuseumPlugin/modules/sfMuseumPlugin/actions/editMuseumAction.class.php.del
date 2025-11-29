@@ -1,0 +1,33 @@
+<?php
+
+class InformationObjectEditMuseumAction extends InformationObjectEditAction
+{
+    public function execute($request)
+    {
+        parent::execute($request);
+
+        if ($request->isMethod('post')) {
+            $this->form->bind($request->getPostParameters());
+
+            if ($this->form->isValid()) {
+                $this->processForm();
+
+                // Process museum metadata
+                $this->saveMuseumMetadata($request);
+
+                $this->redirect([$this->resource, 'module' => 'informationobject']);
+            }
+        }
+    }
+
+    protected function saveMuseumMetadata($request)
+    {
+        use arMuseumMetadataPlugin\Adapters\PropelMuseumObjectAdapter;
+        $adapter = new PropelMuseumObjectAdapter();
+
+        // Build museum data array ...
+        // (rest of file unchanged)
+    }
+
+    // processMaterials(), processTechniques(), parseMeasurements(), etc...
+}
