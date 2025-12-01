@@ -1,0 +1,61 @@
+# Spectrum GRAP Extension Routes
+
+# API Routes
+api_grap_items:
+  url: /api/grap/items
+  param: { module: api, action: getItems }
+  requirements:
+    sf_method: [get]
+
+api_grap_item:
+  url: /api/grap/items/:id
+  param: { module: api, action: getItem }
+  requirements:
+    sf_method: [get]
+
+api_grap_create_item:
+  url: /api/grap/items
+  param: { module: api, action: createOrUpdateItem }
+  requirements:
+    sf_method: [post]
+
+api_grap_update_item:
+  url: /api/grap/items/:id
+  param: { module: api, action: updateItem }
+  requirements:
+    sf_method: [put]
+
+api_grap_delete_item:
+  url: /api/grap/items/:id
+  param: { module: api, action: deleteItem }
+  requirements:
+    sf_method: [delete]
+
+api_grap_journal_entries:
+  url: /api/grap/journal-entries
+  param: { module: api, action: getJournalEntries }
+
+api_grap_balance_sheet:
+  url: /api/grap/balance-sheet
+  param: { module: api, action: getBalanceSheet }
+
+api_grap_reconciliation:
+  url: /api/grap/reconciliation
+  param: { module: api, action: getReconciliation }
+
+# Report Routes
+grap_report:
+  url: /grap/report
+  param: { module: grapReport, action: index }
+
+grap_report_export:
+  url: /grap/report/export
+  param: { module: grapReport, action: export }
+
+grap_compliance_check:
+  url: /grap/compliance
+  param: { module: grapReport, action: complianceCheck }
+
+grap_103_disclosure:
+  url: /grap/disclosure/103
+  param: { module: grapReport, action: grap103Disclosure }

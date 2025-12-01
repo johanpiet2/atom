@@ -1,0 +1,22 @@
+# arSpectrumPlugin routing configuration
+
+spectrum_dashboard:
+  url: /spectrum/dashboard
+  param: { module: arSpectrumPlugin, action: dashboard }
+
+spectrum_edit:
+  url: /:slug/spectrum/edit/:procedure
+  param: { module: arSpectrumPlugin, action: edit }
+  requirements:
+    procedure: entry|acquisition|location|movement|loan_in|loan_out|condition|conservation|exit|deaccession|valuation
+
+spectrum_index:
+  url: /:slug/spectrum
+  param: { module: arSpectrumPlugin, action: index }
+  
+spectrum_delete:
+  url: /:slug/spectrum/delete/:procedure/:id
+  param: { module: arSpectrumPlugin, action: delete }
+  requirements:
+    procedure: entry|acquisition|location|movement|loan_in|loan_out|condition|conservation|exit|deaccession|valuation
+    id: \d+
